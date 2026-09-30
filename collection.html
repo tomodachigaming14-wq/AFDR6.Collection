@@ -1,0 +1,1907 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <base target="_top">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ELUPDD | COLLECTION MANAGEMENT</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* ===== BASE STYLES ===== */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Inter", "Segoe UI", Roboto, sans-serif; }
+        body { min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 2rem 1.5rem; background: #fdeceb; position: relative; }
+        body::before { content: ""; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: radial-gradient(ellipse at 20% 50%, rgba(239, 68, 68, 0.06) 0%, transparent 60%), radial-gradient(ellipse at 80% 50%, rgba(251, 146, 60, 0.05) 0%, transparent 60%), linear-gradient(145deg, #fdeceb 0%, #fadbd8 100%); z-index: 0; }
+
+        /* ===== TOAST ===== */
+        .toast-container { position: fixed; top: 20px; right: 20px; z-index: 999999; display: flex; flex-direction: column; gap: 10px; max-width: 400px; width: 100%; pointer-events: none; }
+        .toast { pointer-events: auto; background: white; border-radius: 16px; padding: 1rem 1.5rem; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15); display: flex; align-items: center; gap: 14px; transform: translateX(120%); animation: slideIn 0.5s ease forwards; border-left: 5px solid #2563eb; min-height: 60px; }
+        .toast.hiding { animation: slideOut 0.4s ease forwards; }
+        .toast-success { border-left-color: #10b981; }
+        .toast-error { border-left-color: #ef4444; }
+        .toast-info { border-left-color: #2563eb; }
+        .toast-warning { border-left-color: #f59e0b; }
+        .toast-icon { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
+        .toast-success .toast-icon { background: #d1fae5; color: #059669; }
+        .toast-error .toast-icon { background: #fee2e2; color: #dc2626; }
+        .toast-info .toast-icon { background: #dbeafe; color: #2563eb; }
+        .toast-warning .toast-icon { background: #fef3c7; color: #d97706; }
+        .toast-content { flex: 1; }
+        .toast-title { font-weight: 700; font-size: 0.9rem; color: #0f172a; }
+        .toast-message { font-size: 0.8rem; color: #64748b; margin-top: 2px; }
+        .toast-close { background: none; border: none; color: #94a3b8; cursor: pointer; font-size: 1.2rem; padding: 4px; flex-shrink: 0; }
+        .toast-close:hover { color: #475569; }
+        @keyframes slideIn { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes slideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(120%); opacity: 0; } }
+
+        /* ===== LOADING OVERLAY ===== */
+        #loadingOverlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #fdeceb; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; transition: opacity 1.2s ease, visibility 1.2s ease; }
+        #loadingOverlay.hidden { opacity: 0; visibility: hidden; }
+        .loading-logo { position: relative; width: 200px; height: 200px; margin-bottom: 30px; display: flex; align-items: center; justify-content: center; }
+        .loading-logo .ring-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; animation: pulseLogo 2s ease-in-out infinite; }
+        .loading-logo .ring { fill: none; stroke: #ef4444; stroke-width: 3; stroke-linecap: round; stroke-dasharray: 300; stroke-dashoffset: 300; animation: drawRing 2.5s ease-in-out infinite; }
+        .loading-logo .ring:nth-child(2) { stroke: #f59e0b; stroke-dasharray: 250; stroke-dashoffset: 250; animation-delay: 0.5s; }
+        .loading-logo .ring:nth-child(3) { stroke: #dc2626; stroke-dasharray: 200; stroke-dashoffset: 200; animation-delay: 1s; }
+        .loading-logo .logo-image { position: relative; z-index: 2; width: 80px; height: auto; border-radius: 12px; object-fit: contain; filter: drop-shadow(0 4px 20px rgba(239, 68, 68, 0.3)); }
+        @keyframes drawRing { 0% { stroke-dashoffset: 300; } 50% { stroke-dashoffset: 0; } 100% { stroke-dashoffset: -300; } }
+        @keyframes pulseLogo { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.03); } }
+        .loading-text { color: #334155; font-size: 1.1rem; letter-spacing: 3px; text-transform: uppercase; font-weight: 300; animation: fadeText 1.5s ease-in-out infinite; }
+        .loading-text span { color: #dc2626; font-weight: 600; }
+        .loading-dots { display: inline-block; margin-left: 5px; }
+        .loading-dots span { display: inline-block; width: 8px; height: 8px; background: #dc2626; border-radius: 50%; margin: 0 3px; animation: dotBounce 1.4s ease-in-out infinite both; }
+        .loading-dots span:nth-child(1) { animation-delay: 0s; }
+        .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes dotBounce { 0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; } 40% { transform: scale(1.2); opacity: 1; } }
+        @keyframes fadeText { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
+        .loading-progress { width: 200px; height: 2px; background: rgba(0, 0, 0, 0.1); border-radius: 4px; margin-top: 30px; overflow: hidden; }
+        .loading-progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, #ef4444, #f59e0b); border-radius: 4px; animation: progressLoad 3s ease-in-out forwards; }
+        @keyframes progressLoad { 0% { width: 0%; } 100% { width: 100%; } }
+
+        /* ===== CARD ===== */
+        .card { max-width: 1000px; width: 100%; background: white; border-radius: 28px; padding: 2.5rem 3rem; border: 1px solid #fecaca; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.06); position: relative; z-index: 1; opacity: 0; transform: translateY(30px); transition: opacity 0.8s ease, transform 0.8s ease; }
+        .card.visible { opacity: 1; transform: translateY(0); }
+        .header { display: flex; align-items: center; justify-content: space-between; padding-bottom: 1.5rem; margin-bottom: 2rem; border-bottom: 1px solid #fecaca; flex-wrap: wrap; gap: 1rem; }
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        .header-icon { width: 52px; height: 52px; background: linear-gradient(135deg, #991b1b, #dc2626); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; color: white; box-shadow: 0 8px 24px rgba(220, 38, 38, 0.3); }
+        .header h1 { font-size: 1.6rem; font-weight: 700; color: #991b1b; letter-spacing: -0.5px; }
+        .header h1 small { display: block; font-size: 0.7rem; font-weight: 400; color: #64748b; letter-spacing: 1px; text-transform: uppercase; margin-top: 2px; }
+        .header-badge { background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.25); padding: 0.4rem 1rem; border-radius: 40px; color: #dc2626; font-size: 0.7rem; font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase; display: flex; align-items: center; gap: 6px; }
+        .header-badge strong { color: #991b1b; font-weight: 700; }
+
+        /* ===== TOGGLE ===== */
+        .toggle-container { display: flex; gap: 0; margin-bottom: 2rem; border-radius: 16px; overflow: hidden; border: 2px solid #fecaca; background: #fef2f2; }
+        .toggle-btn { flex: 1; padding: 0.8rem 1.5rem; border: none; background: transparent; font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: all 0.3s ease; color: #64748b; position: relative; font-family: "Inter", sans-serif; }
+        .toggle-btn i { margin-right: 8px; }
+        .toggle-btn.active { background: #991b1b; color: white; box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3); }
+        .toggle-btn:not(.active):hover { background: #fecaca; color: #991b1b; }
+        .toggle-btn:first-child { border-radius: 14px 0 0 14px; }
+        .toggle-btn:last-child { border-radius: 0 14px 14px 0; }
+
+        /* ===== FORM ===== */
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem 1.8rem; }
+        .full-width { grid-column: 1 / -1; }
+        .field-group { display: flex; flex-direction: column; gap: 0.4rem; }
+        .field-group label { font-weight: 700; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.6px; color: #334155; display: flex; align-items: center; gap: 8px; }
+        .field-group label i { color: #dc2626; font-size: 0.75rem; width: 16px; }
+        .field-group label .required { color: #dc2626; font-size: 0.6rem; }
+        .field-group input, .field-group select, .field-group textarea { background: #ffffff; border: 1.5px solid #e5c5c5; border-radius: 16px; padding: 0.75rem 1.1rem; font-size: 0.9rem; transition: all 0.25s ease; outline: none; width: 100%; color: #0f172a; font-weight: 400; font-family: "Inter", "Segoe UI", Roboto, sans-serif; }
+        .field-group input:focus, .field-group select:focus, .field-group textarea:focus { border-color: #dc2626; background: #ffffff; box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.12); }
+        .field-group select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23475569' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 1rem center; cursor: pointer; color: #0f172a; min-height: 50px; }
+        .field-group select:disabled { background-color: #fef2f2; color: #475569; cursor: not-allowed; }
+        .form-type { display: none; }
+        .form-type.active { display: block; }
+
+        /* ===== MULTI-ENTRY ROWS ===== */
+        .entries-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.8rem; padding: 0.6rem 1rem; background: #fee2e2; border-radius: 14px; border: 1px solid #fecaca; }
+        .entries-header h3 { font-size: 0.85rem; font-weight: 700; color: #991b1b; display: flex; align-items: center; gap: 8px; }
+        .add-entry-btn { background: #10b981; color: white; border: none; padding: 0.5rem 1.2rem; border-radius: 30px; font-weight: 700; cursor: pointer; font-size: 0.8rem; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 6px; font-family: "Inter", sans-serif; }
+        .add-entry-btn:hover { background: #059669; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); }
+        .add-entry-btn:active { transform: scale(0.95); }
+
+        .entry-row { display: grid; grid-template-columns: 1.4fr 1.4fr 0.9fr 1.3fr 50px; gap: 0.6rem; margin-bottom: 0.6rem; padding: 0.9rem; background: #fef2f2; border: 1.5px solid #fecaca; border-radius: 16px; align-items: end; transition: all 0.3s ease; animation: entrySlide 0.3s ease; }
+        .entry-row:hover { border-color: #fca5a5; background: #fef5f5; }
+        @keyframes entrySlide { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+        .entry-row .field-group label { font-size: 0.6rem; }
+        .entry-row .field-group input, .entry-row .field-group select { padding: 0.55rem 0.8rem; font-size: 0.8rem; border-radius: 12px; min-height: 42px; }
+        .entry-row .amount-words-box { font-size: 0.65rem; min-height: 42px; padding: 0.5rem 0.8rem; border-radius: 12px; }
+
+        .remove-entry { background: #ef4444; color: white; border: none; padding: 0.55rem; border-radius: 12px; cursor: pointer; height: 42px; transition: all 0.3s ease; font-family: "Inter", sans-serif; display: flex; align-items: center; justify-content: center; }
+        .remove-entry:hover { background: #dc2626; transform: translateY(-2px); }
+        .remove-entry:active { transform: scale(0.9); }
+
+        /* Amount words */
+        .amount-words-box { background: #fef2f2; border: 1.5px dashed #fca5a5; border-radius: 16px; padding: 0.75rem 1.1rem; font-size: 0.8rem; color: #991b1b; font-weight: 600; font-style: italic; text-transform: uppercase; min-height: 50px; display: flex; align-items: center; transition: all 0.3s ease; }
+        .amount-words-box.filled { background: #ecfdf5; border-color: #6ee7b7; color: #065f46; border-style: solid; }
+
+        /* ===== BUTTONS ===== */
+        .btn-submit { background: linear-gradient(135deg, #dc2626, #991b1b); border: none; padding: 1rem 2rem; border-radius: 60px; font-weight: 700; font-size: 1rem; color: white; display: inline-flex; align-items: center; justify-content: center; gap: 12px; cursor: pointer; transition: all 0.3s ease; width: 100%; margin-top: 1.2rem; letter-spacing: 0.5px; box-shadow: 0 4px 6px rgba(220, 38, 38, 0.25); position: relative; overflow: hidden; font-family: "Inter", "Segoe UI", Roboto, sans-serif; }
+        .btn-submit::before { content: ""; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent); transition: left 0.6s ease; }
+        .btn-submit:hover::before { left: 100%; }
+        .btn-submit:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(220, 38, 38, 0.4); }
+        .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none !important; }
+
+        .btn-test { background: #fef2f2; border: 1px solid #fecaca; padding: 0.5rem 1rem; border-radius: 40px; color: #475569; cursor: pointer; font-size: 0.75rem; font-weight: 600; transition: all 0.3s ease; flex: 1; font-family: "Inter", sans-serif; }
+        .btn-test:hover { background: #fee2e2; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(220, 38, 38, 0.12); }
+        .btn-test i { margin-right: 4px; }
+        .btn-group { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
+        .btn-view-all { background: #991b1b; border: 1px solid #991b1b; color: white; }
+        .btn-view-all:hover { background: #dc2626; border-color: #dc2626; }
+        .btn-print { background: #7c3aed; border: 1px solid #7c3aed; color: white; }
+        .btn-print:hover { background: #6d28d9; border-color: #6d28d9; }
+        .btn-sheet { background: #0f9d58; border: 1px solid #0f9d58; color: white; }
+        .btn-sheet:hover { background: #0b7e48; border-color: #0b7e48; }
+
+        .status-message { margin-top: 1.2rem; padding: 0.8rem 1.2rem; border-radius: 16px; background: #fef2f2; border: 1px solid #fecaca; color: #475569; display: flex; align-items: center; gap: 12px; transition: all 0.3s ease; font-size: 0.85rem; min-height: 52px; }
+        .status-message i { font-size: 1rem; color: #dc2626; flex-shrink: 0; }
+        .status-message.success { background: #f0fdf4; border-color: #86efac; color: #166534; }
+        .status-message.success i { color: #10b981; }
+        .status-message.error { background: #fef2f2; border-color: #fca5a5; color: #991b1b; }
+        .status-message.error i { color: #dc2626; }
+        .footer-note { margin-top: 1.5rem; font-size: 0.65rem; color: #94a3b8; text-align: center; border-top: 1px solid #fecaca; padding-top: 1.2rem; letter-spacing: 0.5px; }
+        .spinner { display: inline-block; width: 20px; height: 20px; border: 2px solid rgba(255, 255, 255, 0.15); border-top: 2px solid white; border-radius: 50%; animation: spin 0.7s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .logo-image { height: 50px; width: auto; display: block; }
+        .header-icon, .header-logo { display: flex; align-items: center; }
+
+        /* ===== MODALS ===== */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(4px); z-index: 99999; justify-content: center; align-items: center; padding: 1rem; animation: fadeIn 0.3s ease; }
+        .modal-overlay.active { display: flex; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .modal-box { background: white; border-radius: 24px; max-width: 95vw; width: 100%; max-height: 92vh; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3); animation: slideUp 0.3s ease; overflow: hidden; }
+        @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 1.2rem 1.5rem; border-bottom: 1px solid #fecaca; flex-wrap: wrap; gap: 0.5rem; flex-shrink: 0; }
+        .modal-header h2 { font-size: 1.1rem; font-weight: 700; color: #991b1b; display: flex; align-items: center; gap: 8px; }
+        .modal-header h2 i { color: #dc2626; }
+        .modal-header .close-btn { background: #fef2f2; border: none; width: 36px; height: 36px; border-radius: 50%; font-size: 1.1rem; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; color: #475569; }
+        .modal-header .close-btn:hover { background: #fee2e2; color: #dc2626; transform: rotate(90deg); }
+
+        .modal-search { padding: 0.6rem 1.5rem; border-bottom: 1px solid #fecaca; display: flex; gap: 0.8rem; flex-wrap: wrap; align-items: center; background: #fefafa; flex-shrink: 0; }
+        .modal-search input { flex: 1; min-width: 150px; padding: 0.4rem 0.8rem; border: 1.5px solid #e5c5c5; border-radius: 10px; font-size: 0.8rem; outline: none; }
+        .modal-search input:focus { border-color: #dc2626; }
+        .modal-search select { padding: 0.4rem 0.8rem; border: 1.5px solid #e5c5c5; border-radius: 10px; font-size: 0.8rem; outline: none; background: white; cursor: pointer; font-family: "Inter", sans-serif; }
+        .modal-search select:focus { border-color: #dc2626; }
+        .modal-search .search-info { font-size: 0.75rem; color: #64748b; white-space: nowrap; }
+        .modal-search .search-info span { font-weight: 700; color: #991b1b; }
+        .filter-label { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; color: #64748b; letter-spacing: 0.5px; }
+
+        .table-wrapper { overflow: auto; flex: 1; padding: 0.5rem 0; max-height: calc(92vh - 300px); min-height: 200px; }
+        .table-wrapper::-webkit-scrollbar { width: 8px; height: 8px; }
+        .table-wrapper::-webkit-scrollbar-track { background: #fef2f2; }
+        .table-wrapper::-webkit-scrollbar-thumb { background: #fca5a5; border-radius: 4px; }
+        .modal-body { padding: 0 1.5rem; flex: 1; display: flex; flex-direction: column; }
+        .modal-body table { width: 100%; border-collapse: collapse; font-size: 0.7rem; min-width: 1100px; }
+        .modal-body table th { background: #fef2f2; color: #991b1b; font-weight: 700; font-size: 0.6rem; text-transform: uppercase; padding: 0.5rem 0.4rem; text-align: left; border-bottom: 2px solid #fecaca; position: sticky; top: 0; z-index: 10; white-space: nowrap; }
+        .modal-body table td { padding: 0.45rem 0.4rem; border-bottom: 1px solid #fef2f2; color: #334155; }
+        .modal-body table tr:hover td { background: #fefafa; }
+        .modal-body table tr.clickable-row { cursor: pointer; transition: background 0.15s ease; }
+        .modal-body table tr.clickable-row:hover td { background: #fee2e2; }
+        .modal-body table tr.editing td { background: #fffbeb !important; padding: 0.3rem 0.35rem; }
+        .modal-body table input.edit-input, .modal-body table select.edit-input { width: 100%; padding: 0.35rem 0.5rem; border: 1.5px solid #fbbf24; border-radius: 8px; font-size: 0.7rem; font-family: "Inter", sans-serif; outline: none; background: white; }
+        .modal-body table input.edit-input:focus, .modal-body table select.edit-input:focus { border-color: #dc2626; box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.12); }
+        .modal-body table .no-records td { text-align: center; padding: 2rem 0; color: #94a3b8; }
+        .modal-body .action-cell { display: flex; gap: 3px; flex-wrap: nowrap; }
+        .modal-body .btn-action { padding: 0.25rem 0.5rem; border: none; border-radius: 6px; font-size: 0.65rem; font-weight: 600; cursor: pointer; font-family: "Inter", sans-serif; transition: all 0.25s ease; }
+        .modal-body .btn-action:hover { transform: translateY(-1px); }
+        .btn-action.btn-view { background: #0ea5e9; color: white; }
+        .btn-action.btn-view:hover { background: #0284c7; box-shadow: 0 4px 10px rgba(14, 165, 233, 0.4); }
+        .btn-action.btn-edit { background: #f59e0b; color: white; }
+        .btn-action.btn-edit:hover { background: #d97706; box-shadow: 0 4px 10px rgba(245, 158, 11, 0.4); }
+        .btn-action.btn-save { background: #10b981; color: white; }
+        .btn-action.btn-save:hover { background: #059669; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.4); }
+        .btn-action.btn-cancel { background: #94a3b8; color: white; }
+        .btn-action.btn-cancel:hover { background: #64748b; }
+        .btn-action.btn-delete { background: #ef4444; color: white; }
+        .btn-action.btn-delete:hover { background: #dc2626; box-shadow: 0 4px 10px rgba(239, 68, 68, 0.4); }
+        .month-badge { display: inline-block; padding: 0.15rem 0.5rem; background: #fee2e2; color: #991b1b; border-radius: 20px; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.3px; white-space: nowrap; }
+        .accounts-badge { display: inline-block; padding: 0.15rem 0.5rem; background: #dbeafe; color: #1e40af; border-radius: 20px; font-size: 0.6rem; font-weight: 600; white-space: nowrap; }
+
+        /* Sortable column header */
+        th.sortable { cursor: pointer; user-select: none; transition: background 0.2s ease; }
+        th.sortable:hover { background: #fecaca; }
+        th.sortable .sort-icon { margin-left: 4px; font-size: 0.65rem; color: #94a3b8; }
+        th.sortable.sort-active { background: #fecaca; color: #991b1b; }
+        th.sortable.sort-active .sort-icon { color: #dc2626; }
+
+        .modal-footer { padding: 0.8rem 1.5rem; border-top: 1px solid #fecaca; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.8rem; background: #fefafa; border-radius: 0 0 24px 24px; flex-shrink: 0; }
+        .modal-footer .record-count { font-size: 0.8rem; color: #475569; }
+        .modal-footer .record-count span { font-weight: 700; color: #991b1b; }
+        .modal-footer .btn-close-modal { background: #dc2626; border: none; padding: 0.4rem 1.2rem; border-radius: 40px; color: white; font-weight: 600; cursor: pointer; font-size: 0.8rem; }
+        .modal-footer .btn-close-modal:hover { background: #b91c1c; }
+
+        /* ===== VIEW DETAILS MODAL ===== */
+        .details-modal .modal-box { max-width: 640px; }
+        .details-modal .modal-body { padding: 1.5rem; gap: 0; }
+        .details-hero { background: linear-gradient(135deg, #991b1b, #dc2626); border-radius: 20px; padding: 1.4rem 1.6rem; color: white; margin-bottom: 1.4rem; position: relative; overflow: hidden; }
+        .details-hero::before { content: ""; position: absolute; top: -50%; right: -20%; width: 200px; height: 200px; background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%); border-radius: 50%; }
+        .details-hero .dh-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1.5px; opacity: 0.8; font-weight: 500; }
+        .details-hero .dh-name { font-size: 1.4rem; font-weight: 800; margin: 4px 0 8px; letter-spacing: -0.3px; position: relative; }
+        .details-hero .dh-amount { font-size: 1.6rem; font-weight: 800; position: relative; }
+        .details-hero .dh-amount small { font-size: 0.85rem; font-weight: 500; opacity: 0.85; }
+
+        .details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem; }
+        .detail-item { background: #fefafa; border: 1px solid #fecaca; border-radius: 14px; padding: 0.75rem 1rem; transition: all 0.25s ease; }
+        .detail-item:hover { border-color: #fca5a5; background: #fef5f5; }
+        .detail-item.full { grid-column: 1 / -1; }
+        .detail-label { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.6px; color: #64748b; font-weight: 700; display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+        .detail-label i { color: #dc2626; font-size: 0.7rem; }
+        .detail-value { font-size: 0.85rem; color: #0f172a; font-weight: 600; word-break: break-word; }
+        .detail-value.money { color: #059669; font-size: 1rem; }
+        .detail-value.words { font-style: italic; color: #991b1b; font-weight: 600; text-transform: uppercase; font-size: 0.75rem; line-height: 1.4; }
+
+        .details-modal .modal-footer { border-radius: 0 0 24px 24px; }
+
+        /* ===== PRINT MODAL ===== */
+        .print-modal .modal-box { max-width: 520px; }
+        .print-modal .modal-body { padding: 1.5rem; }
+        .print-option { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 1rem; }
+        .print-option label { font-weight: 700; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.6px; color: #334155; display: flex; align-items: center; gap: 8px; }
+        .print-option label i { color: #dc2626; }
+        .print-option select { background: #ffffff; border: 1.5px solid #e5c5c5; border-radius: 12px; padding: 0.7rem 1rem; font-size: 0.9rem; outline: none; cursor: pointer; font-family: "Inter", sans-serif; }
+        .print-option select:focus { border-color: #dc2626; box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.12); }
+        .print-note { font-size: 0.75rem; color: #64748b; background: #fef2f2; border: 1px solid #fecaca; padding: 0.7rem 1rem; border-radius: 12px; margin-top: 0.5rem; }
+        .print-note i { color: #dc2626; margin-right: 6px; }
+        .print-actions { display: flex; gap: 0.7rem; margin-top: 1.2rem; }
+        .btn-print-cancel { flex: 1; background: #f1f5f9; border: 1px solid #e2e8f0; padding: 0.8rem 1rem; border-radius: 40px; color: #475569; font-weight: 700; cursor: pointer; font-family: "Inter", sans-serif; }
+        .btn-print-cancel:hover { background: #e2e8f0; }
+        .btn-print-go { flex: 2; background: linear-gradient(135deg, #7c3aed, #6d28d9); border: none; padding: 0.8rem 1rem; border-radius: 40px; color: white; font-weight: 700; cursor: pointer; font-family: "Inter", sans-serif; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-print-go:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(124, 58, 237, 0.4); }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 900px) {
+            .entry-row { grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+            .entry-row .remove-entry { grid-column: 1 / -1; height: 38px; }
+            .details-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 700px) {
+            .card { padding: 1.5rem; border-radius: 2rem; }
+            .form-grid { grid-template-columns: 1fr; gap: 0.8rem; }
+            .full-width { grid-column: 1; }
+            .header h1 { font-size: 1.1rem; }
+            .header-icon { width: 42px; height: 42px; font-size: 1.2rem; }
+            .header-badge { display: none; }
+            .loading-logo { width: 140px; height: 140px; }
+            .loading-logo .logo-image { width: 60px; }
+            .btn-group { flex-direction: column; }
+            .toggle-btn { font-size: 0.75rem; padding: 0.6rem 0.8rem; }
+            .entry-row { grid-template-columns: 1fr; }
+            .modal-box { max-width: 100vw; max-height: 98vh; border-radius: 16px; }
+            .modal-header { padding: 0.8rem 1rem; }
+            .modal-search { padding: 0.6rem 1rem; flex-direction: column; }
+            .modal-search input, .modal-search select { width: 100%; }
+            .modal-body { padding: 0 0.8rem; }
+            .table-wrapper { max-height: calc(92vh - 350px); }
+            .modal-footer { padding: 0.6rem 1rem; flex-direction: column; text-align: center; }
+            .toast-container { top: 10px; right: 10px; left: 10px; max-width: 100%; }
+            .details-hero .dh-name { font-size: 1.15rem; }
+            .details-hero .dh-amount { font-size: 1.35rem; }
+        }
+
+        /* ===== PRINT OUTPUT (only visible when printing report) ===== */
+        #printArea { display: none; }
+        @media print {
+            body * { visibility: hidden; }
+            #printArea, #printArea * { visibility: visible; }
+            #printArea { display: block; position: absolute; left: 0; top: 0; width: 100%; background: white; }
+            .no-print { display: none !important; }
+        }
+        .report-page { font-family: "Inter", "Segoe UI", Roboto, sans-serif; padding: 20px 24px; color: #000; background: white; font-size: 10.5px; }
+        .report-page .rpt-header { text-align: center; margin-bottom: 10px; }
+        .report-page .rpt-header .rpt-line1 { font-weight: 700; font-size: 12px; }
+        .report-page .rpt-header .rpt-line2 { font-weight: 700; font-size: 12px; }
+        .report-page .rpt-header .rpt-line3 { font-weight: 800; font-size: 12px; }
+        .report-page .rpt-header .rpt-line4 { font-weight: 600; font-size: 11px; margin-top: 4px; }
+        .report-page table.rpt { width: 100%; border-collapse: collapse; margin-top: 8px; }
+        .report-page table.rpt th, .report-page table.rpt td { border: 1px solid #333; padding: 2px 5px; font-size: 10px; vertical-align: top; }
+        .report-page table.rpt th { background: #f2f2f2; text-align: center; font-weight: 700; }
+        .report-page table.rpt td.lbl { text-align: left; }
+        .report-page table.rpt td.num { text-align: right; white-space: nowrap; }
+        .report-page table.rpt tr.section-hdr td { font-weight: 700; background: #fafafa; }
+        .report-page table.rpt tr.total-row td { font-weight: 700; background: #f4f4f4; }
+        .report-page table.rpt tr.grand-row td { font-weight: 800; background: #ececec; }
+        .report-page .rpt-sign { margin-top: 30px; display: flex; justify-content: space-between; gap: 20px; font-size: 10px; }
+        .report-page .rpt-sign .sign-block { flex: 1; text-align: center; }
+        .report-page .rpt-sign .sign-name { font-weight: 700; margin-top: 22px; text-decoration: underline; }
+        .report-page .rpt-sign .sign-title { font-size: 9.5px; }
+        .report-page .rpt-sign .sign-role { font-weight: 700; font-size: 9.5px; margin-bottom: 2px; }
+    </style>
+</head>
+<body>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- ===== LOADING OVERLAY ===== -->
+<div id="loadingOverlay">
+    <div class="loading-logo">
+        <img src="DHSUD_LOGO.png" alt="DHSUD Logo" class="logo-image" onerror="this.style.display='none'">
+        <div class="ring-container">
+            <svg viewBox="0 0 200 200">
+                <circle class="ring" cx="100" cy="100" r="80" />
+                <circle class="ring" cx="100" cy="100" r="60" />
+                <circle class="ring" cx="100" cy="100" r="40" />
+            </svg>
+        </div>
+    </div>
+    <div class="loading-text">
+        Loading <span>COLLECTION</span>
+        <div class="loading-dots"><span></span><span></span><span></span></div>
+    </div>
+    <div class="loading-progress"><div class="loading-progress-bar"></div></div>
+</div>
+
+<div class="card" id="mainCard">
+    <div class="header">
+        <div class="header-left">
+            <div class="header-logo">
+                <img src="DHSUD_LOGO.png" alt="DHSUD Logo" class="logo-image" onerror="this.style.display='none'">
+            </div>
+            <div>
+                <h1>
+                    Collection Management System
+                    <small>Summary of Collection &amp; Official Receipt</small>
+                </h1>
+            </div>
+        </div>
+        <div class="header-badge">
+            <i class="fas fa-circle" style="font-size: 0.4rem; color: #dc2626;"></i>
+            <span id="currentSheetBadge">Live</span>
+        </div>
+    </div>
+
+    <!-- Toggle Buttons -->
+    <div class="toggle-container">
+        <button class="toggle-btn active" data-type="SUMMARY" id="toggleSummary">
+            <i class="fas fa-file-invoice-dollar"></i> Summary of Collection
+        </button>
+        <button class="toggle-btn" data-type="OR" id="toggleOR">
+            <i class="fas fa-receipt"></i> Official Receipt
+        </button>
+    </div>
+
+    <!-- ===== SUMMARY OF COLLECTION FORM ===== -->
+    <div class="form-type active" id="formSUMMARY">
+        <form id="summaryForm">
+            <div class="form-grid">
+                <div class="field-group">
+                    <label><i class="fas fa-calendar-alt"></i> Date <span class="required">*</span></label>
+                    <input type="date" id="summary_date" required>
+                </div>
+                <div class="field-group">
+                    <label><i class="fas fa-user"></i> Name <span class="required">*</span></label>
+                    <input type="text" id="summary_name" placeholder="Enter payor / client name..." required>
+                </div>
+                <div class="field-group">
+                    <label><i class="fas fa-hashtag"></i> Order of Payment No. <span class="required">*</span></label>
+                    <input type="text" id="summary_opNo" placeholder="e.g. 0214708" required>
+                </div>
+                <div class="field-group">
+                    <label><i class="fas fa-receipt"></i> O.R. No. (Serial)</label>
+                    <input type="text" id="summary_orNo" placeholder="e.g. 0017561">
+                </div>
+            </div>
+
+            <!-- Multi-entry rows -->
+            <div style="margin-top: 1.8rem;">
+                <div class="entries-header">
+                    <h3><i class="fas fa-list"></i> Collection Entries</h3>
+                    <button type="button" class="add-entry-btn" id="addEntryBtn">
+                        <i class="fas fa-plus"></i> Add Entry
+                    </button>
+                </div>
+                <div id="summaryEntries"></div>
+            </div>
+
+            <div class="field-group full-width" style="margin-top: 1rem;">
+                <label><i class="fas fa-pencil-alt"></i> Remarks</label>
+                <input type="text" id="summary_remarks" placeholder="N/A or additional notes">
+            </div>
+
+            <button type="submit" class="btn-submit" id="summary_submitBtn">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <span>Save to Google Sheet (Summary)</span>
+            </button>
+        </form>
+    </div>
+
+    <!-- ===== OFFICIAL RECEIPT FORM ===== -->
+    <div class="form-type" id="formOR">
+        <form id="orForm">
+            <div class="form-grid">
+                <div class="field-group">
+                    <label><i class="fas fa-calendar-alt"></i> Date <span class="required">*</span></label>
+                    <input type="date" id="or_date" required>
+                </div>
+                <div class="field-group">
+                    <label><i class="fas fa-receipt"></i> O.R. No. <span class="required">*</span></label>
+                    <input type="text" id="or_orNo" placeholder="e.g. 0017561" required>
+                </div>
+                <div class="field-group">
+                    <label><i class="fas fa-hashtag"></i> O.P. No. <span class="required">*</span></label>
+                    <input type="text" id="or_opNo" placeholder="e.g. 0214708" required>
+                </div>
+                <div class="field-group">
+                    <label><i class="fas fa-user"></i> Name <span class="required">*</span></label>
+                    <input type="text" id="or_name" placeholder="Enter payor / client name..." required>
+                </div>
+            </div>
+
+            <!-- Multi-entry rows -->
+            <div style="margin-top: 1.8rem;">
+                <div class="entries-header">
+                    <h3><i class="fas fa-list"></i> Collection Entries</h3>
+                    <button type="button" class="add-entry-btn" id="addOrEntryBtn">
+                        <i class="fas fa-plus"></i> Add Entry
+                    </button>
+                </div>
+                <div id="orEntries"></div>
+            </div>
+
+            <div class="field-group full-width" style="margin-top: 1rem;">
+                <label><i class="fas fa-pencil-alt"></i> Remarks</label>
+                <input type="text" id="or_remarks" placeholder="N/A or additional notes">
+            </div>
+
+            <button type="submit" class="btn-submit" id="or_submitBtn">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <span>Save to Google Sheet (Official Receipt)</span>
+            </button>
+        </form>
+    </div>
+
+    <!-- Buttons -->
+    <div class="btn-group">
+        <button type="button" class="btn-test btn-view-all" id="viewAllBtn">
+            <i class="fas fa-database"></i> View All Records
+        </button>
+        <button type="button" class="btn-test btn-print" id="printBtn">
+            <i class="fas fa-print"></i> Print
+        </button>
+        <button type="button" class="btn-test btn-sheet" id="sheetBtn">
+            <i class="fas fa-external-link-alt"></i> View Google Sheet
+        </button>
+    </div>
+
+    <div id="statusMessage" class="status-message">
+        <i class="fas fa-info-circle"></i>
+        <span id="statusText">Ready · fill in all required fields</span>
+    </div>
+
+    <div class="footer-note">
+        <i class="fas fa-database"></i> Data saved directly to Google Sheets via Apps Script
+    </div>
+</div>
+
+<!-- ===== RECORDS MODAL ===== -->
+<div class="modal-overlay" id="recordsModal">
+    <div class="modal-box" style="max-width: 1400px;">
+        <div class="modal-header">
+            <h2><i class="fas fa-table"></i> <span id="recordsModalTitle">All Records</span></h2>
+            <button class="close-btn" id="closeModalBtn"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-search">
+            <input type="text" id="searchInput" placeholder="🔍 Search by Name, O.P. No., Nature, Accounts...">
+            <span class="filter-label">Month:</span>
+            <select id="filterMonth">
+                <option value="">All</option>
+                <option value="01">January</option>
+                <option value="02">February</option>
+                <option value="03">March</option>
+                <option value="04">April</option>
+                <option value="05">May</option>
+                <option value="06">June</option>
+                <option value="07">July</option>
+                <option value="08">August</option>
+                <option value="09">September</option>
+                <option value="10">October</option>
+                <option value="11">November</option>
+                <option value="12">December</option>
+            </select>
+            <span class="filter-label">Year:</span>
+            <select id="filterYear">
+                <option value="">All</option>
+            </select>
+            <span class="search-info">Showing <span id="displayCount">0</span> of <span id="totalCount">0</span> records</span>
+        </div>
+        <div class="modal-body">
+            <div class="table-wrapper">
+                <div id="modalBodyContent">
+                    <div style="text-align:center; padding: 2rem; color: #94a3b8;">
+                        <i class="fas fa-spinner fa-spin" style="font-size: 2rem;"></i>
+                        <p style="margin-top: 1rem;">Loading records...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <span class="record-count">Total: <span id="footerTotalCount">0</span> record(s)</span>
+            <button class="btn-close-modal" id="closeModalBtn2">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== VIEW DETAILS MODAL ===== -->
+<div class="modal-overlay details-modal" id="detailsModal">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h2><i class="fas fa-file-invoice"></i> Record Details</h2>
+            <button class="close-btn" id="closeDetailsBtn"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body" id="detailsModalBody">
+            <div style="text-align:center; padding: 2rem; color: #94a3b8;">
+                <i class="fas fa-spinner fa-spin" style="font-size: 2rem;"></i>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <span class="record-count">📋 Collection Record</span>
+            <button class="btn-close-modal" id="closeDetailsBtn2">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== PRINT MODAL ===== -->
+<div class="modal-overlay print-modal" id="printModal">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h2><i class="fas fa-print"></i> Print Statement of Income</h2>
+            <button class="close-btn" id="closePrintBtn"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body">
+            <div class="print-option">
+                <label><i class="fas fa-calendar-alt"></i> Month</label>
+                <select id="printMonth">
+                    <option value="0">January</option>
+                    <option value="1">February</option>
+                    <option value="2">March</option>
+                    <option value="3">April</option>
+                    <option value="4">May</option>
+                    <option value="5">June</option>
+                    <option value="6">July</option>
+                    <option value="7">August</option>
+                    <option value="8">September</option>
+                    <option value="9">October</option>
+                    <option value="10">November</option>
+                    <option value="11">December</option>
+                </select>
+            </div>
+            <div class="print-option">
+                <label><i class="fas fa-calendar-check"></i> Year</label>
+                <select id="printYear"></select>
+            </div>
+            <div class="print-note">
+                <i class="fas fa-info-circle"></i>
+                The report will show the selected month's total and the cumulative total from January up to the selected month.
+            </div>
+            <div class="print-actions">
+                <button type="button" class="btn-print-cancel" id="printCancelBtn">Cancel</button>
+                <button type="button" class="btn-print-go" id="printGoBtn">
+                    <i class="fas fa-print"></i> Print
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== HIDDEN PRINT AREA ===== -->
+<div id="printArea"></div>
+
+<script>
+// ============================================
+// ⚠️ WEB APP URL
+// ============================================
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwdszoGcMLYpMrURNT1lXaXIos4XWX_BqrmTxii1cYB7AeQE7H-4_KQhx2CDF4zFPUH/exec';
+const GOOGLE_SHEET_URL = 'https://docs.google.com/spreadsheets/d/1CzOpsrOlC1eO97WQsLMSaUIxIK8qtVs7G2aKM6kizuM/edit';
+
+// ============================================
+// TOAST
+// ============================================
+function showToast(title, message, type = 'info', duration = 4000) {
+    const container = document.getElementById('toastContainer');
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    const icons = { success: 'fa-check-circle', error: 'fa-times-circle', warning: 'fa-exclamation-triangle', info: 'fa-info-circle' };
+    toast.innerHTML = `
+        <div class="toast-icon"><i class="fas ${icons[type] || icons.info}"></i></div>
+        <div class="toast-content">
+            <div class="toast-title">${title}</div>
+            <div class="toast-message">${message}</div>
+        </div>
+        <button class="toast-close" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>
+    `;
+    container.appendChild(toast);
+    setTimeout(() => { toast.classList.add('hiding'); setTimeout(() => toast.remove(), 400); }, duration);
+}
+
+// ============================================
+// NATURE → ACCOUNT MAPPING
+// ============================================
+const ACCOUNTS = {
+    REGISTRATION_FEES: { code: '4020102000', name: 'REGISTRATION FEES' },
+    CLEARANCE_FEES:    { code: '4020104001', name: 'CLEARANCE FEES' },
+    CERTIFICATION_FEES:{ code: '4020104002', name: 'CERTIFICATION FEES' },
+    LEGAL_FEES:        { code: '4020109000', name: 'LEGAL FEES' },
+    INSPECTION_FEES:   { code: '4020110000', name: 'INSPECTION FEES' },
+    PROCESSING_FEES:   { code: '4020113003', name: 'PROCESSING FEES' },
+    FINES_PENALTIES:   { code: '4020114000', name: 'FINES AND PENALTIES' },
+    OTHER_SERVICE:     { code: '4020199099', name: 'OTHER SERVICE INCOME' },
+    CASH_BOND:         { code: '2040101000', name: 'CASH BOND' },
+    ADV_OFFICERS:      { code: '19901040',   name: 'ADVANCES TO OFFICERS & EMPLOYEES' },
+    DUE_NGAS:          { code: '20201050',   name: 'DUE TO NGAs (UPLRF c/o Bureau of Treasury)' },
+    ADV_SDO:           { code: '19901030',   name: 'ADVANCES TO SPECIAL DISBURSING OFFICER' }
+};
+
+const NATURE_TO_ACCOUNT = {
+    'Registration of Broker 2026': ACCOUNTS.REGISTRATION_FEES.code,
+    'Registration of Salesperson (2026)': ACCOUNTS.REGISTRATION_FEES.code,
+    'Registration of Business Firm': ACCOUNTS.REGISTRATION_FEES.code,
+    'Renewal of Business Firm 2026': ACCOUNTS.REGISTRATION_FEES.code,
+    'Renewal of Salesperson (2026)': ACCOUNTS.REGISTRATION_FEES.code,
+    'Renewal of Broker (2026)': ACCOUNTS.REGISTRATION_FEES.code,
+    'Inspection Fees': ACCOUNTS.INSPECTION_FEES.code,
+    'Inspection Fees (HOA)': ACCOUNTS.INSPECTION_FEES.code,
+    'Clearance to Mortgage': ACCOUNTS.CLEARANCE_FEES.code,
+    'Lifting of Suspended LS': ACCOUNTS.CLEARANCE_FEES.code,
+    'Lifting of Cease and Desist Order': ACCOUNTS.CLEARANCE_FEES.code,
+    'Locational Clearance': ACCOUNTS.CLEARANCE_FEES.code,
+    'Temporary Use Permit (TUP)': ACCOUNTS.CLEARANCE_FEES.code,
+    'Certified True Copy': ACCOUNTS.CERTIFICATION_FEES.code,
+    'Certificate of Completion (COC)': ACCOUNTS.CERTIFICATION_FEES.code,
+    'Certificate of Occupancy': ACCOUNTS.CERTIFICATION_FEES.code,
+    'Certificate of Compliance': ACCOUNTS.CERTIFICATION_FEES.code,
+    'Site Zoning Certificate (SZC)': ACCOUNTS.CERTIFICATION_FEES.code,
+    'Certificate of Zoning Compliance (CZC)': ACCOUNTS.CERTIFICATION_FEES.code,
+    'Certification Fee (APD)': ACCOUNTS.CERTIFICATION_FEES.code,
+    'Certification of No Records': ACCOUNTS.CERTIFICATION_FEES.code,
+    'Certificate of Local Viability': ACCOUNTS.CERTIFICATION_FEES.code,
+    'Certificate of Creditable Withholding Tax (CWT)': ACCOUNTS.CERTIFICATION_FEES.code,
+    'Other Certification': ACCOUNTS.CERTIFICATION_FEES.code,
+    'Legal Fees': ACCOUNTS.LEGAL_FEES.code,
+    'Appeal Fee': ACCOUNTS.LEGAL_FEES.code,
+    'Preliminary Approval': ACCOUNTS.PROCESSING_FEES.code,
+    'Examining and Filing Fee for Registration of Amended Articles of Incorporation': ACCOUNTS.PROCESSING_FEES.code,
+    'Examining and Filing Fee for Registration of By-laws': ACCOUNTS.PROCESSING_FEES.code,
+    'Examining and Filing Fee for Amended Articles of Incorporation': ACCOUNTS.PROCESSING_FEES.code,
+    'Examining and Filing Fee for Amended of By-laws': ACCOUNTS.PROCESSING_FEES.code,
+    'HOA Registration': ACCOUNTS.PROCESSING_FEES.code,
+    'Final Approval': ACCOUNTS.PROCESSING_FEES.code,
+    'Development Permit': ACCOUNTS.PROCESSING_FEES.code,
+    'CRLS': ACCOUNTS.PROCESSING_FEES.code,
+    'Alteration of Plan': ACCOUNTS.PROCESSING_FEES.code,
+    'Building Permit': ACCOUNTS.PROCESSING_FEES.code,
+    'Accreditation Fee': ACCOUNTS.PROCESSING_FEES.code,
+    'Advertisement Approval': ACCOUNTS.PROCESSING_FEES.code,
+    'Reduction of Performance Bond': ACCOUNTS.PROCESSING_FEES.code,
+    'Lifting of Suspension of License to Sell': ACCOUNTS.PROCESSING_FEES.code,
+    'ETD Processing Fee': ACCOUNTS.PROCESSING_FEES.code,
+    'Exemption from Cease and Desist Order': ACCOUNTS.PROCESSING_FEES.code,
+    'Change of Name / Ownership': ACCOUNTS.PROCESSING_FEES.code,
+    'Amendment of License to Sell': ACCOUNTS.PROCESSING_FEES.code,
+    'Penalty': ACCOUNTS.FINES_PENALTIES.code,
+    'Penalty (Non-Renewal)': ACCOUNTS.FINES_PENALTIES.code,
+    'Admin Fine': ACCOUNTS.FINES_PENALTIES.code,
+    'CRLS Forms': ACCOUNTS.OTHER_SERVICE.code,
+    'Photocopy': ACCOUNTS.OTHER_SERVICE.code,
+    'Sale of Books': ACCOUNTS.OTHER_SERVICE.code,
+    'Sale of Bid Documents': ACCOUNTS.OTHER_SERVICE.code,
+    'Stamping of HOA Books': ACCOUNTS.OTHER_SERVICE.code,
+    'Miscellaneous Fees': ACCOUNTS.OTHER_SERVICE.code,
+    'Proceeds From Disposal of PPE': ACCOUNTS.OTHER_SERVICE.code,
+    'Advances to Special Disbursing Officer': ACCOUNTS.ADV_SDO.code,
+    'Advances to Officers & Employees': ACCOUNTS.ADV_OFFICERS.code,
+    'UPLRF': ACCOUNTS.DUE_NGAS.code,
+    'Cash Bond': ACCOUNTS.CASH_BOND.code
+};
+
+// Reverse: Account code → name
+const CODE_TO_ACCOUNT = {};
+Object.values(ACCOUNTS).forEach(a => CODE_TO_ACCOUNT[a.code] = a.name);
+
+const NATURE_OPTIONS = [
+    'Registration of Broker 2026',
+    'Registration of Salesperson (2026)',
+    'Registration of Business Firm',
+    'Renewal of Business Firm 2026',
+    'Renewal of Salesperson (2026)',
+    'Renewal of Broker (2026)',
+    'Inspection Fees',
+    'Inspection Fees (HOA)',
+    'Clearance to Mortgage',
+    'Lifting of Suspended LS',
+    'Lifting of Cease and Desist Order',
+    'Locational Clearance',
+    'Temporary Use Permit (TUP)',
+    'Certified True Copy',
+    'Certificate of Completion (COC)',
+    'Certificate of Occupancy',
+    'Certificate of Compliance',
+    'Site Zoning Certificate (SZC)',
+    'Certificate of Zoning Compliance (CZC)',
+    'Certification Fee (APD)',
+    'Certification of No Records',
+    'Certificate of Local Viability',
+    'Certificate of Creditable Withholding Tax (CWT)',
+    'Other Certification',
+    'Legal Fees',
+    'Appeal Fee',
+    'Preliminary Approval',
+    'Examining and Filing Fee for Registration of Amended Articles of Incorporation',
+    'Examining and Filing Fee for Registration of By-laws',
+    'Examining and Filing Fee for Amended Articles of Incorporation',
+    'Examining and Filing Fee for Amended of By-laws',
+    'HOA Registration',
+    'Final Approval',
+    'Development Permit',
+    'CRLS',
+    'Alteration of Plan',
+    'Building Permit',
+    'Accreditation Fee',
+    'Advertisement Approval',
+    'Reduction of Performance Bond',
+    'Lifting of Suspension of License to Sell',
+    'ETD Processing Fee',
+    'Exemption from Cease and Desist Order',
+    'Change of Name / Ownership',
+    'Amendment of License to Sell',
+    'Penalty',
+    'Penalty (Non-Renewal)',
+    'Admin Fine',
+    'CRLS Forms',
+    'Photocopy',
+    'Sale of Books',
+    'Sale of Bid Documents',
+    'Stamping of HOA Books',
+    'Miscellaneous Fees',
+    'Proceeds From Disposal of PPE',
+    'Advances to Special Disbursing Officer',
+    'Advances to Officers & Employees',
+    'UPLRF',
+    'Cash Bond'
+];
+
+const ACCOUNTS_OPTIONS = Object.values(ACCOUNTS).map(a => ({ code: a.code, name: a.name }));
+
+// ============================================
+// AMOUNT IN WORDS
+// ============================================
+const ONES = ['', 'ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX', 'SEVEN', 'EIGHT', 'NINE',
+    'TEN', 'ELEVEN', 'TWELVE', 'THIRTEEN', 'FOURTEEN', 'FIFTEEN', 'SIXTEEN', 'SEVENTEEN', 'EIGHTEEN', 'NINETEEN'];
+const TENS = ['', '', 'TWENTY', 'THIRTY', 'FORTY', 'FIFTY', 'SIXTY', 'SEVENTY', 'EIGHTY', 'NINETY'];
+
+function numberToWords(num) {
+    num = Math.floor(Number(num));
+    if (isNaN(num) || num === 0) return 'ZERO';
+    if (num < 0) return 'NEGATIVE ' + numberToWords(Math.abs(num));
+    let words = '';
+    if (Math.floor(num / 1000000) > 0) {
+        words += numberToWords(Math.floor(num / 1000000)) + ' MILLION ';
+        num %= 1000000;
+    }
+    if (Math.floor(num / 1000) > 0) {
+        words += numberToWords(Math.floor(num / 1000)) + ' THOUSAND ';
+        num %= 1000;
+    }
+    if (Math.floor(num / 100) > 0) {
+        words += ONES[Math.floor(num / 100)] + ' HUNDRED ';
+        num %= 100;
+    }
+    if (num > 0) {
+        if (words !== '') words += 'AND ';
+        if (num < 20) words += ONES[num];
+        else {
+            words += TENS[Math.floor(num / 10)];
+            if (num % 10 > 0) words += '-' + ONES[num % 10];
+        }
+    }
+    return words.trim();
+}
+
+function amountToWords(amount) {
+    if (!amount && amount !== 0) return '— auto —';
+    const num = parseFloat(amount);
+    if (isNaN(num) || num === 0) return '— auto —';
+    const whole = Math.floor(num);
+    const cents = Math.round((num - whole) * 100);
+    let result = numberToWords(whole) + ' PESOS';
+    if (cents > 0) result += ' AND ' + numberToWords(cents) + ' CENTAVOS';
+    result += ' ONLY';
+    return result;
+}
+
+// ============================================
+// MULTI-ENTRY MANAGER
+// ============================================
+let entryCounters = { summary: 0, or: 0 };
+
+function createEntryRow(containerId, formKey) {
+    entryCounters[formKey]++;
+    const id = `${formKey}_entry_${entryCounters[formKey]}`;
+    const wrapper = document.createElement('div');
+    wrapper.id = id;
+    wrapper.className = 'entry-row';
+
+    wrapper.innerHTML = `
+        <div class="field-group">
+            <label><i class="fas fa-tags"></i> Nature of Collection *</label>
+            <select class="entry-nature" required>
+                <option value="">Select Nature...</option>
+            </select>
+        </div>
+        <div class="field-group">
+            <label><i class="fas fa-book"></i> Accounts * <small style="color:#10b981;font-weight:600;font-size:0.55rem;text-transform:none;letter-spacing:0;">(auto)</small></label>
+            <select class="entry-accounts" required disabled>
+                <option value="">Select Nature first...</option>
+            </select>
+        </div>
+        <div class="field-group">
+            <label><i class="fas fa-money-bill-wave"></i> Amount (₱) *</label>
+            <input type="number" class="entry-amount" placeholder="0.00" step="0.01" min="0" required>
+        </div>
+        <div class="field-group">
+            <label><i class="fas fa-font"></i> Amount in Words</label>
+            <div class="amount-words-box entry-words">— auto —</div>
+        </div>
+        <button type="button" class="remove-entry" title="Remove this entry">
+            <i class="fas fa-trash"></i>
+        </button>
+    `;
+
+    const natureSel = wrapper.querySelector('.entry-nature');
+    NATURE_OPTIONS.forEach(n => {
+        const o = document.createElement('option');
+        o.value = n; o.textContent = n;
+        natureSel.appendChild(o);
+    });
+
+    const acctSel = wrapper.querySelector('.entry-accounts');
+    ACCOUNTS_OPTIONS.forEach(a => {
+        const o = document.createElement('option');
+        o.value = a.code; o.textContent = `${a.name} (${a.code})`;
+        acctSel.appendChild(o);
+    });
+
+    natureSel.addEventListener('change', () => {
+        const nature = natureSel.value;
+        acctSel.innerHTML = '';
+
+        if (!nature) {
+            const o = document.createElement('option');
+            o.value = ''; o.textContent = 'Select Nature first...';
+            acctSel.appendChild(o);
+            acctSel.disabled = true;
+            acctSel.style.backgroundColor = '#f1f5f9';
+            return;
+        }
+
+        const acctCode = NATURE_TO_ACCOUNT[nature];
+        if (!acctCode) {
+            const o = document.createElement('option');
+            o.value = ''; o.textContent = 'No account mapped';
+            acctSel.appendChild(o);
+            acctSel.disabled = true;
+            return;
+        }
+
+        const account = ACCOUNTS_OPTIONS.find(a => a.code === acctCode);
+        if (!account) return;
+
+        const o = document.createElement('option');
+        o.value = account.code;
+        o.textContent = `${account.name} (${account.code})`;
+        o.selected = true;
+        acctSel.appendChild(o);
+        acctSel.disabled = true;
+        acctSel.style.backgroundColor = '#f1f5f9';
+    });
+
+    const amtInput = wrapper.querySelector('.entry-amount');
+    const wordsBox = wrapper.querySelector('.entry-words');
+    amtInput.addEventListener('input', () => {
+        const v = amtInput.value;
+        if (!v || parseFloat(v) === 0) {
+            wordsBox.textContent = '— auto —';
+            wordsBox.classList.remove('filled');
+        } else {
+            wordsBox.textContent = amountToWords(v);
+            wordsBox.classList.add('filled');
+        }
+    });
+
+    wrapper.querySelector('.remove-entry').addEventListener('click', () => {
+        const container = document.getElementById(containerId);
+        if (container.querySelectorAll('.entry-row').length <= 1) {
+            showToast('⚠️ Warning', 'At least one entry is required.', 'warning');
+            return;
+        }
+        wrapper.remove();
+    });
+
+    document.getElementById(containerId).appendChild(wrapper);
+}
+
+document.getElementById('addEntryBtn').addEventListener('click', () => createEntryRow('summaryEntries', 'summary'));
+document.getElementById('addOrEntryBtn').addEventListener('click', () => createEntryRow('orEntries', 'or'));
+
+// ============================================
+// TOGGLE FORM
+// ============================================
+let currentFormType = 'SUMMARY';
+
+function switchForm(type) {
+    currentFormType = type;
+    document.querySelectorAll('.toggle-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.type === type);
+    });
+    document.getElementById('formSUMMARY').classList.toggle('active', type === 'SUMMARY');
+    document.getElementById('formOR').classList.toggle('active', type === 'OR');
+    setStatus('📋 ' + (type === 'SUMMARY' ? 'Summary of Collection' : 'Official Receipt') + ' form selected', 'info');
+}
+
+document.getElementById('toggleSummary').addEventListener('click', () => switchForm('SUMMARY'));
+document.getElementById('toggleOR').addEventListener('click', () => switchForm('OR'));
+
+// ============================================
+// STATUS
+// ============================================
+const statusDiv = document.getElementById('statusMessage');
+const statusText = document.getElementById('statusText');
+function setStatus(message, type = 'info') {
+    statusText.textContent = message;
+    statusDiv.className = 'status-message';
+    const icon = statusDiv.querySelector('i');
+    if (type === 'success') { statusDiv.classList.add('success'); icon.className = 'fas fa-check-circle'; }
+    else if (type === 'error') { statusDiv.classList.add('error'); icon.className = 'fas fa-exclamation-circle'; }
+    else { icon.className = 'fas fa-info-circle'; }
+}
+
+// ============================================
+// COLLECT ENTRIES HELPER
+// ============================================
+function collectEntries(containerId, formType, commonFields) {
+    const rows = document.querySelectorAll(`#${containerId} .entry-row`);
+    const entries = [];
+    let hasError = false;
+
+    rows.forEach(row => {
+        const nature = row.querySelector('.entry-nature').value;
+        const acctSel = row.querySelector('.entry-accounts');
+        const accounts = acctSel.value;
+        const accountsLabel = acctSel.options[acctSel.selectedIndex]?.text || '';
+        const amount = row.querySelector('.entry-amount').value;
+
+        if (!nature || !accounts || !amount) { hasError = true; return; }
+
+        entries.push({
+            formType,
+            ...commonFields,
+            natureOfCollection: nature,
+            accounts,
+            accountsLabel,
+            totalAmount: amount,
+            amountInWords: amountToWords(amount)
+        });
+    });
+
+    return { entries, hasError };
+}
+
+// ============================================
+// SUBMIT: SUMMARY
+// ============================================
+document.getElementById('summaryForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const date = document.getElementById('summary_date').value;
+    const name = document.getElementById('summary_name').value.trim();
+    const opNo = document.getElementById('summary_opNo').value.trim();
+    const orNo = document.getElementById('summary_orNo').value.trim();
+    const remarks = document.getElementById('summary_remarks').value.trim() || 'N/A';
+
+    if (!date || !name || !opNo) {
+        showToast('❌ Validation', 'Please fill in Date, Name, and O.P. No.', 'error');
+        return;
+    }
+
+    const { entries, hasError } = collectEntries('summaryEntries', 'SUMMARY', { date, orNo, opNo, name, remarks });
+
+    if (hasError || entries.length === 0) {
+        showToast('❌ Validation', 'Please complete all entries.', 'error');
+        return;
+    }
+
+    const btn = document.getElementById('summary_submitBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Saving...';
+
+    try {
+        await fetch(WEB_APP_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ entries })
+        });
+        showToast('✅ Success', `${entries.length} entries saved!`, 'success');
+        setStatus(`✅ Saved ${entries.length} entries to Google Sheet`, 'success');
+        resetForm('SUMMARY');
+    } catch (err) {
+        showToast('❌ Error', 'Failed: ' + err.message, 'error');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> <span>Save to Google Sheet (Summary)</span>';
+    }
+});
+
+// ============================================
+// SUBMIT: OFFICIAL RECEIPT
+// ============================================
+document.getElementById('orForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const date = document.getElementById('or_date').value;
+    const orNo = document.getElementById('or_orNo').value.trim();
+    const opNo = document.getElementById('or_opNo').value.trim();
+    const name = document.getElementById('or_name').value.trim();
+    const remarks = document.getElementById('or_remarks').value.trim() || 'N/A';
+
+    if (!date || !orNo || !opNo || !name) {
+        showToast('❌ Validation', 'Please fill in Date, O.R. No., O.P. No., and Name.', 'error');
+        return;
+    }
+
+    const { entries, hasError } = collectEntries('orEntries', 'OR', { date, orNo, opNo, name, remarks });
+
+    if (hasError || entries.length === 0) {
+        showToast('❌ Validation', 'Please complete all entries.', 'error');
+        return;
+    }
+
+    const btn = document.getElementById('or_submitBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Saving...';
+
+    try {
+        await fetch(WEB_APP_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ entries })
+        });
+        showToast('✅ Success', `${entries.length} entries saved!`, 'success');
+        setStatus(`✅ Saved ${entries.length} entries to Google Sheet`, 'success');
+        resetForm('OR');
+    } catch (err) {
+        showToast('❌ Error', 'Failed: ' + err.message, 'error');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> <span>Save to Google Sheet (Official Receipt)</span>';
+    }
+});
+
+// ============================================
+// RESET
+// ============================================
+function resetForm(type) {
+    const today = new Date().toISOString().split('T')[0];
+    if (type === 'SUMMARY') {
+        document.getElementById('summaryForm').reset();
+        document.getElementById('summary_date').value = today;
+        document.getElementById('summaryEntries').innerHTML = '';
+        entryCounters.summary = 0;
+        createEntryRow('summaryEntries', 'summary');
+    } else {
+        document.getElementById('orForm').reset();
+        document.getElementById('or_date').value = today;
+        document.getElementById('orEntries').innerHTML = '';
+        entryCounters.or = 0;
+        createEntryRow('orEntries', 'or');
+    }
+}
+
+// ============================================
+// RECORDS MODAL
+// ============================================
+const recordsModal = document.getElementById('recordsModal');
+const modalBodyContent = document.getElementById('modalBodyContent');
+let allRecords = [];
+let filteredRecords = [];
+let editingRowNumber = null;
+let editingOriginalRecord = null;
+
+// ==== SORT STATE for Day column ====
+// 'none'   → default (newest first, i.e. Month desc then Day desc)
+// 'asc'    → day ascending  (1,2,3,4)
+// 'desc'   → day descending (4,3,2,1)
+let daySortDir = 'none';
+
+function openRecordsModal() {
+    recordsModal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    document.getElementById('recordsModalTitle').textContent = 'All Records (All Months)';
+    editingRowNumber = null;
+    editingOriginalRecord = null;
+    daySortDir = 'none';   // reset sort each time
+    loadRecords();
+}
+
+function closeRecordsModal() {
+    recordsModal.classList.remove('active');
+    document.body.style.overflow = 'auto';
+    editingRowNumber = null;
+    editingOriginalRecord = null;
+}
+
+document.getElementById('closeModalBtn').addEventListener('click', closeRecordsModal);
+document.getElementById('closeModalBtn2').addEventListener('click', closeRecordsModal);
+recordsModal.addEventListener('click', (e) => { if (e.target === recordsModal) closeRecordsModal(); });
+
+async function loadRecords() {
+    modalBodyContent.innerHTML = `<div style="text-align:center; padding: 2rem; color: #94a3b8;"><i class="fas fa-spinner fa-spin" style="font-size: 2rem;"></i><p style="margin-top: 1rem;">Loading all records from every month...</p></div>`;
+    try {
+        const url = WEB_APP_URL + '?action=records&type=' + currentFormType + '&listAll=1';
+        const response = await fetch(url, { method: 'GET' });
+        const result = await response.json();
+
+        if (result.result === 'success') {
+            allRecords = (result.records || []).map(r => {
+                const parts = (r.sheetName || '').split(' ');
+                const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+                const mIdx = months.indexOf(parts[0]);
+                const y = parseInt(parts[1], 10);
+                const day = String(r.date || '').padStart(2, '0');
+                const dateFull = (mIdx >= 0 && !isNaN(y)) ? `${y}-${String(mIdx + 1).padStart(2, '0')}-${day}` : null;
+                return { ...r, dateFull, monthLabel: r.sheetName || '—' };
+            });
+
+            populateYearFilter();
+            applyFilters();
+        } else {
+            modalBodyContent.innerHTML = `<div style="text-align:center; padding: 2rem; color: #dc2626;">Error: ${result.message}</div>`;
+        }
+    } catch (error) {
+        modalBodyContent.innerHTML = `<div style="text-align:center; padding: 2rem; color: #dc2626;">Failed to load: ${error.message}</div>`;
+    }
+}
+
+function formatCurrency(v) {
+    const n = parseFloat(v);
+    if (isNaN(n)) return '₱0.00';
+    return '₱' + n.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function escapeHtml(s) {
+    if (s === null || s === undefined) return '';
+    return String(s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+// ============================================
+// FILTERS (Month + Year)
+// ============================================
+function applyFilters() {
+    const searchTerm = (document.getElementById('searchInput').value || '').trim().toLowerCase();
+    const monthFilter = document.getElementById('filterMonth').value;
+    const yearFilter = document.getElementById('filterYear').value;
+
+    let filtered = allRecords.filter(r => {
+        if (searchTerm) {
+            const hit =
+                (r.orNo || '').toLowerCase().includes(searchTerm) ||
+                (r.opNo || '').toLowerCase().includes(searchTerm) ||
+                (r.date || '').toLowerCase().includes(searchTerm) ||
+                (r.natureOfCollection || '').toLowerCase().includes(searchTerm) ||
+                (r.accounts || '').toLowerCase().includes(searchTerm) ||
+                (r.accountsLabel || '').toLowerCase().includes(searchTerm);
+            if (!hit) return false;
+        }
+        if (monthFilter || yearFilter) {
+            const fullDate = r.dateFull || null;
+            if (fullDate) {
+                const [y, m] = fullDate.split('-');
+                if (monthFilter && m !== monthFilter) return false;
+                if (yearFilter && y !== yearFilter) return false;
+            } else {
+                return false;
+            }
+        }
+        return true;
+    });
+
+    // Sort
+    if (daySortDir === 'none') {
+        // Default: newest first (Month desc, then Day desc)
+        filtered.sort((a, b) => {
+            const da = a.dateFull || '';
+            const db = b.dateFull || '';
+            if (da !== db) return db.localeCompare(da);
+            return (b.rowNumber || 0) - (a.rowNumber || 0);
+        });
+    } else {
+        // Sort by Day column (numeric)
+        const dir = (daySortDir === 'asc') ? 1 : -1;
+        filtered.sort((a, b) => {
+            const da = parseInt(a.date, 10) || 0;
+            const db = parseInt(b.date, 10) || 0;
+            if (da !== db) return (da - db) * dir;
+            // Tiebreaker: keep month/year context in a stable order
+            const fa = a.dateFull || '';
+            const fb = b.dateFull || '';
+            return fb.localeCompare(fa);
+        });
+    }
+
+    filteredRecords = filtered;
+    renderTable(filtered);
+    document.getElementById('displayCount').textContent = filtered.length;
+    document.getElementById('totalCount').textContent = allRecords.length;
+    document.getElementById('footerTotalCount').textContent = allRecords.length;
+}
+
+document.getElementById('searchInput').addEventListener('input', applyFilters);
+document.getElementById('filterMonth').addEventListener('change', applyFilters);
+document.getElementById('filterYear').addEventListener('change', applyFilters);
+
+// Toggle Day sort: none → asc → desc → asc → ...
+window.toggleDaySort = function() {
+    if (daySortDir === 'none' || daySortDir === 'desc') {
+        daySortDir = 'asc';
+    } else {
+        daySortDir = 'desc';
+    }
+    applyFilters();
+};
+
+function populateYearFilter() {
+    const sel = document.getElementById('filterYear');
+    const currentVal = sel.value;
+    const years = new Set();
+    allRecords.forEach(r => {
+        if (r.dateFull) years.add(r.dateFull.split('-')[0]);
+    });
+    years.add(String(new Date().getFullYear()));
+    sel.innerHTML = '<option value="">All</option>';
+    [...years].sort().reverse().forEach(y => {
+        const o = document.createElement('option');
+        o.value = y; o.textContent = y;
+        sel.appendChild(o);
+    });
+    if (currentVal && [...years].includes(currentVal)) sel.value = currentVal;
+}
+
+// ============================================
+// TABLE RENDER — Sortable Day column
+// ============================================
+function renderTable(records) {
+    // Build the Day column header with sort indicator
+    let dayIcon, dayClass;
+    if (daySortDir === 'asc') {
+        dayIcon = '<i class="fas fa-sort-up sort-icon"></i>';
+        dayClass = 'sortable sort-active';
+    } else if (daySortDir === 'desc') {
+        dayIcon = '<i class="fas fa-sort-down sort-icon"></i>';
+        dayClass = 'sortable sort-active';
+    } else {
+        dayIcon = '<i class="fas fa-sort sort-icon"></i>';
+        dayClass = 'sortable';
+    }
+
+    if (!records || records.length === 0) {
+        modalBodyContent.innerHTML = `<table><thead><tr><th>#</th><th>Month</th><th class="${dayClass}" onclick="toggleDaySort()">Day ${dayIcon}</th><th>Name (O.R. No.)</th><th>O.P. No.</th><th>Nature of Collection</th><th>Accounts</th><th>Total</th><th>Actions</th></tr></thead><tbody><tr class="no-records"><td colspan="9">📭 No records found.</td></tr></tbody></table>`;
+        return;
+    }
+
+    let html = `<table><thead><tr>
+        <th>#</th>
+        <th>Month</th>
+        <th class="${dayClass}" onclick="toggleDaySort()" title="Click to sort by Day">Day ${dayIcon}</th>
+        <th>Name (O.R. No.)</th>
+        <th>O.P. No.</th>
+        <th>Nature of Collection</th>
+        <th>Accounts</th>
+        <th>Total</th>
+        <th>Actions</th>
+    </tr></thead><tbody>`;
+
+    records.forEach((r, i) => {
+        const rowNum = i + 1;
+        const actualRow = r.rowNumber || (i + 3);
+        const recordJson = encodeURIComponent(JSON.stringify(r));
+        const isEditing = (editingRowNumber === actualRow && editingOriginalRecord &&
+                           editingOriginalRecord.sheetName === r.sheetName);
+
+        const acctCode = r.accounts || '';
+        const acctName = CODE_TO_ACCOUNT[acctCode] || '';
+        const acctDisplay = acctName ? `${acctName} (${acctCode})` : (acctCode || '—');
+        const monthLabel = r.monthLabel || r.sheetName || '—';
+
+        if (isEditing) {
+            html += `<tr class="editing" data-row="${actualRow}">
+                <td>${rowNum}</td>
+                <td><span class="month-badge">${escapeHtml(monthLabel)}</span></td>
+                <td><input class="edit-input" data-field="date" value="${escapeHtml(r.date || '')}" style="width:55px;"></td>
+                <td><input class="edit-input" data-field="orNo" value="${escapeHtml(r.orNo || '')}"></td>
+                <td><input class="edit-input" data-field="opNo" value="${escapeHtml(r.opNo || '')}"></td>
+                <td style="max-width:180px;">${escapeHtml(r.natureOfCollection || '—')}</td>
+                <td><span class="accounts-badge">${escapeHtml(acctDisplay)}</span></td>
+                <td><input class="edit-input" data-field="total" type="number" step="0.01" value="${escapeHtml(r.total || 0)}" style="text-align:right;"></td>
+                <td class="action-cell">
+                    <button class="btn-action btn-save" onclick="event.stopPropagation(); saveEdit(${actualRow})" title="Save"><i class="fas fa-save"></i></button>
+                    <button class="btn-action btn-cancel" onclick="event.stopPropagation(); cancelEdit()" title="Cancel"><i class="fas fa-times"></i></button>
+                </td>
+            </tr>`;
+        } else {
+            html += `<tr class="clickable-row" onclick="openDetails('${recordJson}')">
+                <td>${rowNum}</td>
+                <td><span class="month-badge">${escapeHtml(monthLabel)}</span></td>
+                <td>${escapeHtml(r.date || '-')}</td>
+                <td>${escapeHtml((r.orNo || '-').toString().substring(0, 28))}</td>
+                <td>${escapeHtml(r.opNo || '-')}</td>
+                <td style="max-width:220px;">${escapeHtml(r.natureOfCollection || '—')}</td>
+                <td><span class="accounts-badge">${escapeHtml(acctDisplay)}</span></td>
+                <td style="text-align:right;font-weight:600;">${formatCurrency(r.total)}</td>
+                <td class="action-cell">
+                    <button class="btn-action btn-view" onclick="event.stopPropagation(); openDetails('${recordJson}')" title="View Details">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="btn-action btn-edit" onclick="event.stopPropagation(); startEdit(${actualRow}, '${escapeHtml(r.sheetName || '')}')" title="Edit">
+                        <i class="fas fa-pen"></i>
+                    </button>
+                    <button class="btn-action btn-delete" onclick="event.stopPropagation(); deleteRecord(${actualRow}, '${escapeHtml(r.sheetName || '')}')" title="Delete">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            </tr>`;
+        }
+    });
+    html += `</tbody></table>`;
+    modalBodyContent.innerHTML = html;
+}
+
+// ============================================
+// EDIT / SAVE
+// ============================================
+window.startEdit = function(rowNumber, sheetName) {
+    editingRowNumber = rowNumber;
+    editingOriginalRecord = allRecords.find(r =>
+        (r.rowNumber || -1) === rowNumber && (r.sheetName || '') === sheetName
+    ) || null;
+    if (!editingOriginalRecord) {
+        showToast('❌ Error', 'Record not found.', 'error');
+        return;
+    }
+    renderTable(filteredRecords);
+};
+
+window.cancelEdit = function() {
+    editingRowNumber = null;
+    editingOriginalRecord = null;
+    renderTable(filteredRecords);
+};
+
+window.saveEdit = async function(rowNumber) {
+    const row = document.querySelector(`tr.editing[data-row="${rowNumber}"]`);
+    if (!row) return;
+
+    const dateVal = row.querySelector('input[data-field="date"]').value.trim();
+    const orNoVal = row.querySelector('input[data-field="orNo"]').value.trim();
+    const opNoVal = row.querySelector('input[data-field="opNo"]').value.trim();
+    const totalVal = parseFloat(row.querySelector('input[data-field="total"]').value);
+
+    if (!dateVal || !orNoVal || !opNoVal || isNaN(totalVal)) {
+        showToast('❌ Validation', 'Please fill Day, Name, O.P. No., and Total.', 'error');
+        return;
+    }
+
+    const orig = editingOriginalRecord || {};
+    const payload = {
+        action: 'editRecord',
+        sheetName: orig.sheetName || null,
+        rowNumber: rowNumber,
+        date: dateVal,
+        orNo: orNoVal,
+        opNo: opNoVal,
+        total: totalVal,
+        natureOfCollection: orig.natureOfCollection || '',
+        accounts: orig.accounts || '',
+        accountsLabel: orig.accountsLabel || ''
+    };
+
+    try {
+        await fetch(WEB_APP_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        showToast('✅ Saved', 'Record updated.', 'success');
+        editingRowNumber = null;
+        editingOriginalRecord = null;
+        setTimeout(loadRecords, 900);
+    } catch (e) {
+        showToast('❌ Error', 'Failed: ' + e.message, 'error');
+    }
+};
+
+// ============================================
+// VIEW DETAILS MODAL
+// ============================================
+const detailsModal = document.getElementById('detailsModal');
+const detailsModalBody = document.getElementById('detailsModalBody');
+
+window.openDetails = function(encodedRecord) {
+    try {
+        const r = JSON.parse(decodeURIComponent(encodedRecord));
+        const nature = r.natureOfCollection || '—';
+        const accountCode = r.accounts || '';
+        const accountName = CODE_TO_ACCOUNT[accountCode] || '';
+        const accountsDisplay = accountName
+            ? `${accountName} (${accountCode})`
+            : (accountCode || '—');
+        const total = parseFloat(r.total) || 0;
+        const words = r.amountInWords && r.amountInWords !== '— auto —'
+            ? r.amountInWords
+            : amountToWords(total);
+
+        const hero = `
+            <div class="details-hero">
+                <div class="dh-label">Payor / Client</div>
+                <div class="dh-name">${escapeHtml(r.orNo || '—')}</div>
+                <div class="dh-amount">${formatCurrency(total)} <small>${words}</small></div>
+            </div>
+        `;
+
+        const grid = `
+            <div class="details-grid">
+                <div class="detail-item">
+                    <div class="detail-label"><i class="fas fa-calendar-alt"></i> Month / Day</div>
+                    <div class="detail-value">${escapeHtml(r.monthLabel || r.sheetName || '—')} · ${escapeHtml(r.date || '—')}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label"><i class="fas fa-hashtag"></i> O.P. No.</div>
+                    <div class="detail-value">${escapeHtml(r.opNo || '—')}</div>
+                </div>
+                <div class="detail-item full">
+                    <div class="detail-label"><i class="fas fa-tags"></i> Nature of Collection</div>
+                    <div class="detail-value">${escapeHtml(nature)}</div>
+                </div>
+                <div class="detail-item full">
+                    <div class="detail-label"><i class="fas fa-book"></i> Accounts</div>
+                    <div class="detail-value">${escapeHtml(accountsDisplay)}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label"><i class="fas fa-money-bill-wave"></i> Total Amount</div>
+                    <div class="detail-value money">${formatCurrency(total)}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label"><i class="fas fa-list-ol"></i> Sheet Row</div>
+                    <div class="detail-value">#${escapeHtml(r.rowNumber || '—')}</div>
+                </div>
+                <div class="detail-item full">
+                    <div class="detail-label"><i class="fas fa-font"></i> Amount in Words</div>
+                    <div class="detail-value words">${escapeHtml(words)}</div>
+                </div>
+            </div>
+        `;
+
+        detailsModalBody.innerHTML = hero + grid;
+        detailsModal.classList.add('active');
+    } catch (e) {
+        showToast('❌ Error', 'Failed to open details: ' + e.message, 'error');
+    }
+};
+
+function closeDetailsModal() {
+    detailsModal.classList.remove('active');
+}
+
+document.getElementById('closeDetailsBtn').addEventListener('click', closeDetailsModal);
+document.getElementById('closeDetailsBtn2').addEventListener('click', closeDetailsModal);
+detailsModal.addEventListener('click', (e) => { if (e.target === detailsModal) closeDetailsModal(); });
+
+// ============================================
+// DELETE
+// ============================================
+window.deleteRecord = async function(rowNumber, sheetName) {
+    if (!confirm('Delete this record? Cannot be undone.')) return;
+    try {
+        await fetch(WEB_APP_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                action: 'deleteRecord',
+                rowNumber: rowNumber,
+                sheetName: sheetName || null
+            })
+        });
+        showToast('🗑️ Deleted', 'Record deleted.', 'success');
+        setTimeout(loadRecords, 900);
+    } catch (e) {
+        showToast('❌ Error', 'Failed: ' + e.message, 'error');
+    }
+};
+
+// ============================================
+// PRINT MODAL + REPORT
+// ============================================
+const printModal = document.getElementById('printModal');
+
+function openPrintModal() {
+    const yearSel = document.getElementById('printYear');
+    const currentYear = new Date().getFullYear();
+    yearSel.innerHTML = '';
+    for (let y = currentYear; y >= currentYear - 5; y--) {
+        const o = document.createElement('option');
+        o.value = y; o.textContent = y;
+        yearSel.appendChild(o);
+    }
+    document.getElementById('printMonth').value = new Date().getMonth();
+    yearSel.value = currentYear;
+
+    printModal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closePrintModal() {
+    printModal.classList.remove('active');
+    document.body.style.overflow = 'auto';
+}
+
+document.getElementById('printBtn').addEventListener('click', openPrintModal);
+document.getElementById('closePrintBtn').addEventListener('click', closePrintModal);
+document.getElementById('printCancelBtn').addEventListener('click', closePrintModal);
+printModal.addEventListener('click', (e) => { if (e.target === printModal) closePrintModal(); });
+
+document.getElementById('printGoBtn').addEventListener('click', async () => {
+    const month = parseInt(document.getElementById('printMonth').value, 10);
+    const year = parseInt(document.getElementById('printYear').value, 10);
+
+    document.getElementById('printGoBtn').disabled = true;
+    document.getElementById('printGoBtn').innerHTML = '<span class="spinner"></span> Preparing...';
+
+    try {
+        const ok = await buildAndShowPrint(month, year);
+        if (!ok) {
+            showToast('⚠️ No Data', 'No records found for that month/year.', 'warning');
+        }
+    } catch (e) {
+        showToast('❌ Error', 'Print failed: ' + e.message, 'error');
+    } finally {
+        document.getElementById('printGoBtn').disabled = false;
+        document.getElementById('printGoBtn').innerHTML = '<i class="fas fa-print"></i> Print';
+        closePrintModal();
+    }
+});
+
+// Report category definitions — mirrors the Excel layout
+const REPORT_CATEGORIES = [
+    {
+        code: '4020102000',
+        label: 'I.  REGISTRATION FEES [4020102000]',
+        items: [
+            { key: 'Registration of Business Firm', label: 'I.1  Registration Fees for Business Firms' },
+            { key: 'Registration of Broker 2026', label: 'I.3  Registration Fees for Brokers', extraKeys: ['Renewal of Broker (2026)'] },
+            { key: 'Registration of Salesperson (2026)', label: 'I.2  Registration Fees for Salesperson', extraKeys: ['Renewal of Salesperson (2026)'] }
+        ]
+    },
+    {
+        code: '4020104001',
+        label: 'II. CLEARANCE FEES [4020104001]',
+        items: [
+            { key: 'Clearance to Mortgage', label: 'II.1 Clearance to Mortgage' },
+            { key: 'Lifting of Cease and Desist Order', label: 'II.2 Lifting of Cease and Desist Order' },
+            { key: 'Locational Clearance', label: 'II.3 Locational Clearance (LC) / Temporary Use Permit (TUP)', extraKeys: ['Temporary Use Permit (TUP)'] }
+        ]
+    },
+    {
+        code: '4020104002',
+        label: 'III. CERTIFICATION FEES [4020104002]',
+        items: [
+            { key: 'Certified True Copy', label: 'III.1 Certified True Copy' },
+            { key: 'Certificate of Completion (COC)', label: 'III.2 Certificate of Completion   (COC)' },
+            { key: 'Certificate of Occupancy', label: 'III.3 Certificate of Occupancy' },
+            { key: 'Certificate of Compliance', label: 'III.4 Certificate of Compliance (Sec. 18, R.A. 7279)' },
+            { key: 'Site Zoning Certificate (SZC)', label: 'III.5 Site Zoning Certificate   (SZC)' },
+            { key: 'Certificate of Zoning Compliance (CZC)', label: 'III.6 Certificate of Zoning Compliance   (CZC)' },
+            { key: 'Certification Fee (APD)', label: 'III.7 Certification Fee (APD)' },
+            { key: 'Certification of No Records', label: 'III.8 Certification of New Rights/ Sale/ Registration/ No-Records/ Finality/  Non-Submission/ Certification' },
+            { key: 'Certificate of Local Viability', label: 'III.9 Certificate of Local Viability' },
+            { key: 'Certificate of Creditable Withholding Tax (CWT)', label: 'III.10 Certificate of Creditable Withholding Tax  (CWT)' },
+            { key: 'Other Certification', label: 'III.11 Other Certification: (SEC/ BP220/ CDO)' }
+        ]
+    },
+    {
+        code: '4020109000',
+        label: 'IV. LEGAL FEES [4020109000]',
+        items: [
+            { key: 'Legal Fees', label: 'IV. 1 Complaint/ Opposition Fees, Petition for Review/ Appeals Fee/ Surcharge', extraKeys: ['Appeal Fee'] }
+        ]
+    },
+    {
+        code: '4020110000',
+        label: 'V. INSPECTION FEES [4020110000]',
+        items: [
+            { key: 'Inspection Fees', label: ' V.1 Inspection Fees (HREDRD)' },
+            { key: 'Inspection Fees (HOA)', label: ' V.2 Inspection Fees (for offsite HOA projects)' }
+        ]
+    },
+    {
+        code: '4020113003',
+        label: 'VI. PROCESSING FEES [4020113003]',
+        items: [
+            { key: 'Examining and Filing Fee for Registration of Amended Articles of Incorporation', label: '        VI.1 Examining and Filing Fee for Amended Articles of Incorporated/ By-laws/ Dissolution of HOA/ Magna Carta for HOA',
+              extraKeys: ['Examining and Filing Fee for Registration of By-laws', 'Examining and Filing Fee for Amended Articles of Incorporation', 'Examining and Filing Fee for Amended of By-laws', 'HOA Registration'] },
+            { key: 'Preliminary Approval', label: '        VI.2 Preliminary Approval / SSA' },
+            { key: 'Final Approval', label: '        VI.3 Final Approval and Development Permit  (FADP)', extraKeys: ['Development Permit'] },
+            { key: 'Alteration of Plan', label: '        VI.4 Alteration of Plan / Expansion' },
+            { key: 'Building Permit', label: '        VI.5 Building Permit' },
+            { key: 'CRLS', label: '        VI.6 Certificate of Registration and License to Sell  (CR/LS)' },
+            { key: 'Accreditation Fee', label: '        VI.7 Accreditation Fee' },
+            { key: 'Advertisement Approval', label: '        VI.8 Advertisement Approval' },
+            { key: 'Reduction of Performance Bond', label: '        VI.9 Cancellation / Reduction of Performance Bond' },
+            { key: 'Lifting of Suspension of License to Sell', label: '        VI.10 Lifting of Suspension of License to Sell' },
+            { key: 'ETD Processing Fee', label: '        VI.11 Extension of Time to Complete Development (ETD)' },
+            { key: 'Exemption from Cease and Desist Order', label: '        VI.12 Exemption from Cease and Desist Order' },
+            { key: 'Change of Name / Ownership', label: '        VI.13  Change of Name / Ownership' },
+            { key: 'Voluntary Cancellation of CR / LS', label: '        VI.14  Voluntary Cancellation of CR / LS' },
+            { key: 'Revalidation / Renewal of Permit Condominium', label: '        VI.15 Revalidation / Renewal of Permit Condominium' },
+            { key: 'HOA Registration', label: '        VI.16 HOA Registration' },
+            { key: 'Amendment of License to Sell', label: '        VI.17 Amendment of License to Sell' },
+            { key: 'Availability of Records', label: '        VI.18 Availability of Records' }
+        ]
+    },
+    {
+        code: '4020114000',
+        label: 'VII. FINES AND PENALTIES [4020114000]',
+        items: [
+            { key: 'Penalty', label: '        VII.1 For violation of TPZ & ULRZ/APD laws, rules & regulations' },
+            { key: 'Penalty (Non-Renewal)', label: '        VII.2 For violation of ULRZ/APD, laws, rules & conditions' },
+            { key: 'Admin Fine', label: '        VII.3 For violation of Real Estate laws, rules & regulations' },
+            { key: 'Failure to register or renew registration (per year)- Broker', label: '        VII.5 Failure to register or renew registration (per year)- Broker' },
+            { key: 'Failure to register or renew registration (per year)- Salesperson', label: '        VII.6 Failure to register or renew registration (per year)- Salesperson' },
+            { key: 'Failure to register or renew registration (per year)- Business Firm', label: '        VII.7 Failure to register or renew registration (per year)- Business Firm' }
+        ]
+    },
+    {
+        code: '4020199099',
+        label: 'VIII. OTHER SERVICE INCOME [4020199099]',
+        items: [
+            { key: 'Stamping of HOA Books', label: '        VIII.1 Registration of Books for Homeowners Ass\'n (stamping only)' },
+            { key: 'Photocopy', label: '        VIII.2 Photocopy/ Sale of Forms/ Publications' },
+            { key: 'Sale of Books', label: '        VIII.3 Sale of Books (BP220 / PD957/ etc.)' },
+            { key: 'Proceeds From Disposal of PPE', label: '        VIII.4 Unservisable Properties & Equipment' },
+            { key: 'CRLS Forms', label: '        VIII.5 CR/LS Forms; Amendment; Upgrading of Selling Price; Amended Master Deed' },
+            { key: 'Miscellaneous Fees', label: '        VIII.6 Miscellaneous Fees' }
+        ]
+    }
+];
+
+function fmtMoney(n) {
+    const v = parseFloat(n) || 0;
+    if (v === 0) return ' -   ';
+    return v.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function aggregateByNature(records) {
+    const map = {};
+    records.forEach(r => {
+        const key = r.natureOfCollection || 'Unknown';
+        const amt = parseFloat(r.total) || 0;
+        if (!map[key]) map[key] = 0;
+        map[key] += amt;
+    });
+    return map;
+}
+
+function sumKeys(map, keys) {
+    let sum = 0;
+    keys.forEach(k => { sum += (map[k] || 0); });
+    return sum;
+}
+
+async function buildAndShowPrint(month, year) {
+    const allRecordsLocal = await fetchAllRecordsOnce();
+
+    const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+    const currentRecords = allRecordsLocal.filter(r => {
+        if (!r.dateFull) return false;
+        const [y, m] = r.dateFull.split('-');
+        return parseInt(y, 10) === year && parseInt(m, 10) === (month + 1);
+    });
+
+    const cumulativeRecords = allRecordsLocal.filter(r => {
+        if (!r.dateFull) return false;
+        const [y, m] = r.dateFull.split('-');
+        if (parseInt(y, 10) !== year) return false;
+        return parseInt(m, 10) <= (month + 1);
+    });
+
+    if (currentRecords.length === 0 && cumulativeRecords.length === 0) {
+        return false;
+    }
+
+    const monthName = months[month];
+    const lastDay = new Date(year, month + 1, 0).getDate();
+
+    const monthMap = aggregateByNature(currentRecords);
+    const cumMap = aggregateByNature(cumulativeRecords);
+
+    let html = `
+        <div class="report-page">
+            <div class="rpt-header">
+                <div class="rpt-line1">DEPARTMENT OF HUMAN SETTLEMENTS &amp; URBAN DEVELOPMENT (DHSUD)</div>
+                <div class="rpt-line2">Region 6, Iloilo City</div>
+                <div class="rpt-line3">STATEMENT OF INCOME (NGAS)</div>
+                <div class="rpt-line4">For the period ${monthName} 1-${lastDay} , ${year}</div>
+            </div>
+            <table class="rpt">
+                <thead>
+                    <tr>
+                        <th style="width:60%;">PARTICULAR</th>
+                        <th style="width:20%;">Month</th>
+                        <th style="width:20%;">Cummulative</th>
+                    </tr>
+                </thead>
+                <tbody>
+    `;
+
+    let grandMonth = 0;
+    let grandCum = 0;
+
+    REPORT_CATEGORIES.forEach(cat => {
+        html += `<tr class="section-hdr"><td colspan="3">   ${cat.label}</td></tr>`;
+
+        let catMonth = 0;
+        let catCum = 0;
+
+        cat.items.forEach(item => {
+            const keys = [item.key, ...(item.extraKeys || [])];
+            const m = sumKeys(monthMap, keys);
+            const c = sumKeys(cumMap, keys);
+            catMonth += m;
+            catCum += c;
+            html += `<tr>
+                <td class="lbl">${item.label}</td>
+                <td class="num"> ${fmtMoney(m)} </td>
+                <td class="num"> ${fmtMoney(c)} </td>
+            </tr>`;
+        });
+
+        grandMonth += catMonth;
+        grandCum += catCum;
+
+        html += `<tr class="total-row">
+            <td class="lbl">TOTAL  ${cat.label.replace(/^[IVX]+\.\s*/, '').replace(/\s*\[.*$/, '')} </td>
+            <td class="num"> ${fmtMoney(catMonth)} </td>
+            <td class="num"> ${fmtMoney(catCum)} </td>
+        </tr>`;
+    });
+
+    html += `<tr class="total-row"><td class="lbl">&nbsp;</td><td class="num">&nbsp;</td><td class="num">&nbsp;</td></tr>`;
+    html += `<tr class="total-row">
+        <td class="lbl">      TOTAL INCOME</td>
+        <td class="num"> ${fmtMoney(grandMonth)} </td>
+        <td class="num"> ${fmtMoney(grandCum)} </td>
+    </tr>`;
+    html += `<tr><td colspan="3">&nbsp;</td></tr>`;
+
+    const advOffM = sumKeys(monthMap, ['Advances to Officers & Employees']);
+    const advOffC = sumKeys(cumMap, ['Advances to Officers & Employees']);
+    const advSdoM = sumKeys(monthMap, ['Advances to Special Disbursing Officer']);
+    const advSdoC = sumKeys(cumMap, ['Advances to Special Disbursing Officer']);
+    const bondM = sumKeys(monthMap, ['Cash Bond']);
+    const bondC = sumKeys(cumMap, ['Cash Bond']);
+    const consigM = sumKeys(monthMap, ['Consignation (Appeal Bond)']);
+    const consigC = sumKeys(cumMap, ['Consignation (Appeal Bond)']);
+    const uplrfM = sumKeys(monthMap, ['UPLRF']);
+    const uplrfC = sumKeys(cumMap, ['UPLRF']);
+
+    html += `<tr class="section-hdr"><td colspan="3">ADVANCES TO OFFICERS &amp; EMPLOYEES (1-99-01-040)</td></tr>`;
+    html += `<tr><td class="lbl">&nbsp;</td><td class="num"> ${fmtMoney(advOffM)} </td><td class="num"> ${fmtMoney(advOffC)} </td></tr>`;
+    html += `<tr class="section-hdr"><td colspan="3">ADVANCES TO SPECIAL DISBURSING OFFICER (1-99-01-030)</td></tr>`;
+    html += `<tr><td class="lbl">&nbsp;</td><td class="num"> ${fmtMoney(advSdoM)} </td><td class="num"> ${fmtMoney(advSdoC)} </td></tr>`;
+    html += `<tr class="section-hdr"><td colspan="3">TRUST LIABILITIES(Trust Receipts)(2-04-01-010)-Brokers/Salespersons Bond</td></tr>`;
+    html += `<tr><td class="lbl">&nbsp;</td><td class="num"> ${fmtMoney(bondM)} </td><td class="num"> ${fmtMoney(bondC)} </td></tr>`;
+    html += `<tr class="section-hdr"><td colspan="3">TRUST LIABILITIES (2-04-01-010)-Consignation - Appeal Bond</td></tr>`;
+    html += `<tr><td class="lbl">&nbsp;</td><td class="num"> ${fmtMoney(consigM)} </td><td class="num"> ${fmtMoney(consigC)} </td></tr>`;
+    html += `<tr class="section-hdr"><td colspan="3">DUE TO NGAs (UPLRF c/o Bureau of Treasury)(2-02-01-050)</td></tr>`;
+    html += `<tr><td class="lbl">&nbsp;</td><td class="num"> ${fmtMoney(uplrfM)} </td><td class="num"> ${fmtMoney(uplrfC)} </td></tr>`;
+
+    const grandTotalMonth = grandMonth + advOffM + advSdoM + bondM + consigM + uplrfM;
+    const grandTotalCum = grandCum + advOffC + advSdoC + bondC + consigC + uplrfC;
+
+    html += `<tr><td colspan="3">&nbsp;</td></tr>`;
+    html += `<tr class="grand-row">
+        <td class="lbl">GRAND TOTAL COLLECTIONS</td>
+        <td class="num"> ${fmtMoney(grandTotalMonth)} </td>
+        <td class="num"> ${fmtMoney(grandTotalCum)} </td>
+    </tr>`;
+
+    html += `
+                </tbody>
+            </table>
+            <div class="rpt-sign">
+                <div class="sign-block">
+                    <div class="sign-role">PREPARED BY:</div>
+                    <div class="sign-name">KYLA MARIE L. LABRAMONTE</div>
+                    <div class="sign-title">Administrative Officer V</div>
+                </div>
+                <div class="sign-block">
+                    <div class="sign-role">CERTIFIED CORRECT:</div>
+                    <div class="sign-name">VINCENT P. BARBOZA</div>
+                    <div class="sign-title">Accountant III</div>
+                </div>
+                <div class="sign-block">
+                    <div class="sign-role">NOTED BY:</div>
+                    <div class="sign-name">EVA MARIA P. MARFIL</div>
+                    <div class="sign-title">Regional Director</div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.getElementById('printArea').innerHTML = html;
+    setTimeout(() => { window.print(); }, 250);
+    return true;
+}
+
+async function fetchAllRecordsOnce() {
+    try {
+        const url = WEB_APP_URL + '?action=records&type=' + currentFormType + '&listAll=1';
+        const res = await fetch(url, { method: 'GET' });
+        const json = await res.json();
+        if (json.result !== 'success' || !Array.isArray(json.records)) return [];
+
+        const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+        return json.records.map(r => {
+            const parts = (r.sheetName || '').split(' ');
+            const mIdx = months.indexOf(parts[0]);
+            const y = parseInt(parts[1], 10);
+            const day = String(r.date || '').padStart(2, '0');
+            const dateFull = (mIdx >= 0 && !isNaN(y)) ? `${y}-${String(mIdx + 1).padStart(2, '0')}-${day}` : null;
+            return { ...r, dateFull };
+        }).filter(r => r.dateFull);
+    } catch (e) {
+        return [];
+    }
+}
+
+// ============================================
+// BUTTON EVENTS
+// ============================================
+document.getElementById('viewAllBtn').addEventListener('click', openRecordsModal);
+document.getElementById('sheetBtn').addEventListener('click', () => {
+    window.open(GOOGLE_SHEET_URL, '_blank');
+    showToast('📊 Info', 'Opening Google Sheet...', 'info');
+});
+
+// ============================================
+// INIT
+// ============================================
+document.addEventListener('DOMContentLoaded', function() {
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('summary_date').value = today;
+    document.getElementById('or_date').value = today;
+
+    createEntryRow('summaryEntries', 'summary');
+    createEntryRow('orEntries', 'or');
+
+    fetch(WEB_APP_URL + '?action=getCurrentSheet', { method: 'GET' })
+        .then(r => r.json())
+        .then(result => {
+            if (result.result === 'success' && result.sheetName) {
+                document.getElementById('currentSheetBadge').textContent = result.sheetName;
+            }
+        })
+        .catch(() => {});
+
+    setStatus('📋 Ready · select Summary of Collection or Official Receipt', 'info');
+});
+
+setTimeout(function() {
+    document.getElementById('loadingOverlay').classList.add('hidden');
+    document.getElementById('mainCard').classList.add('visible');
+}, 2500);
+</script>
+</body>
+</html>
