@@ -114,6 +114,14 @@
         .amount-words-box { background: #fef2f2; border: 1.5px dashed #fca5a5; border-radius: 16px; padding: 0.75rem 1.1rem; font-size: 0.8rem; color: #991b1b; font-weight: 600; font-style: italic; text-transform: uppercase; min-height: 50px; display: flex; align-items: center; transition: all 0.3s ease; }
         .amount-words-box.filled { background: #ecfdf5; border-color: #6ee7b7; color: #065f46; border-style: solid; }
 
+        /* ===== LOAD RECORD BAR ===== */
+        .load-record-bar { display: flex; gap: 0.8rem; align-items: center; padding: 0.7rem 1rem; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 14px; margin-bottom: 1.2rem; flex-wrap: wrap; }
+        .load-record-bar label { font-weight: 700; font-size: 0.7rem; text-transform: uppercase; color: #1e40af; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px; }
+        .load-record-bar select { flex: 1; min-width: 200px; padding: 0.5rem 0.8rem; border: 1.5px solid #bfdbfe; border-radius: 10px; font-size: 0.8rem; outline: none; background: white; cursor: pointer; font-family: "Inter", sans-serif; }
+        .load-record-bar select:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12); }
+        .load-record-bar .btn-load { background: #2563eb; color: white; border: none; padding: 0.5rem 1rem; border-radius: 10px; font-size: 0.75rem; font-weight: 700; cursor: pointer; font-family: "Inter", sans-serif; transition: all 0.25s ease; }
+        .load-record-bar .btn-load:hover { background: #1d4ed8; transform: translateY(-1px); }
+
         /* ===== BUTTONS ===== */
         .btn-submit { background: linear-gradient(135deg, #dc2626, #991b1b); border: none; padding: 1rem 2rem; border-radius: 60px; font-weight: 700; font-size: 1rem; color: white; display: inline-flex; align-items: center; justify-content: center; gap: 12px; cursor: pointer; transition: all 0.3s ease; width: 100%; margin-top: 1.2rem; letter-spacing: 0.5px; box-shadow: 0 4px 6px rgba(220, 38, 38, 0.25); position: relative; overflow: hidden; font-family: "Inter", "Segoe UI", Roboto, sans-serif; }
         .btn-submit::before { content: ""; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent); transition: left 0.6s ease; }
@@ -129,6 +137,12 @@
         .btn-view-all:hover { background: #dc2626; border-color: #dc2626; }
         .btn-print { background: #7c3aed; border: 1px solid #7c3aed; color: white; }
         .btn-print:hover { background: #6d28d9; border-color: #6d28d9; }
+        .btn-print-or { background: linear-gradient(135deg, #7c3aed, #5b21b6); border: 1px solid #7c3aed; color: white; }
+        .btn-print-or:hover { background: #6d28d9; border-color: #6d28d9; }
+        .btn-print-blank { background: linear-gradient(135deg, #0ea5e9, #0284c7); border: 1px solid #0ea5e9; color: white; }
+        .btn-print-blank:hover { background: #0369a1; border-color: #0369a1; }
+        .btn-print-details { background: linear-gradient(135deg, #f59e0b, #d97706); border: 1px solid #f59e0b; color: white; }
+        .btn-print-details:hover { background: #b45309; border-color: #b45309; }
         .btn-sheet { background: #0f9d58; border: 1px solid #0f9d58; color: white; }
         .btn-sheet:hover { background: #0b7e48; border-color: #0b7e48; }
 
@@ -196,7 +210,6 @@
         .month-badge { display: inline-block; padding: 0.15rem 0.5rem; background: #fee2e2; color: #991b1b; border-radius: 20px; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.3px; white-space: nowrap; }
         .accounts-badge { display: inline-block; padding: 0.15rem 0.5rem; background: #dbeafe; color: #1e40af; border-radius: 20px; font-size: 0.6rem; font-weight: 600; white-space: nowrap; }
 
-        /* Sortable column header */
         th.sortable { cursor: pointer; user-select: none; transition: background 0.2s ease; }
         th.sortable:hover { background: #fecaca; }
         th.sortable .sort-icon { margin-left: 4px; font-size: 0.65rem; color: #94a3b8; }
@@ -277,33 +290,244 @@
             .details-hero .dh-amount { font-size: 1.35rem; }
         }
 
-        /* ===== PRINT OUTPUT (only visible when printing report) ===== */
+        /* ============================================================
+           PRINT OUTPUT
+           ============================================================ */
         #printArea { display: none; }
+
         @media print {
             body * { visibility: hidden; }
             #printArea, #printArea * { visibility: visible; }
-            #printArea { display: block; position: absolute; left: 0; top: 0; width: 100%; background: white; }
+            #printArea {
+                display: block;
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                background: white;
+            }
             .no-print { display: none !important; }
         }
-        .report-page { font-family: "Inter", "Segoe UI", Roboto, sans-serif; padding: 20px 24px; color: #000; background: white; font-size: 10.5px; }
-        .report-page .rpt-header { text-align: center; margin-bottom: 10px; }
-        .report-page .rpt-header .rpt-line1 { font-weight: 700; font-size: 12px; }
-        .report-page .rpt-header .rpt-line2 { font-weight: 700; font-size: 12px; }
-        .report-page .rpt-header .rpt-line3 { font-weight: 800; font-size: 12px; }
-        .report-page .rpt-header .rpt-line4 { font-weight: 600; font-size: 11px; margin-top: 4px; }
-        .report-page table.rpt { width: 100%; border-collapse: collapse; margin-top: 8px; }
-        .report-page table.rpt th, .report-page table.rpt td { border: 1px solid #333; padding: 2px 5px; font-size: 10px; vertical-align: top; }
-        .report-page table.rpt th { background: #f2f2f2; text-align: center; font-weight: 700; }
-        .report-page table.rpt td.lbl { text-align: left; }
-        .report-page table.rpt td.num { text-align: right; white-space: nowrap; }
-        .report-page table.rpt tr.section-hdr td { font-weight: 700; background: #fafafa; }
-        .report-page table.rpt tr.total-row td { font-weight: 700; background: #f4f4f4; }
-        .report-page table.rpt tr.grand-row td { font-weight: 800; background: #ececec; }
-        .report-page .rpt-sign { margin-top: 30px; display: flex; justify-content: space-between; gap: 20px; font-size: 10px; }
+
+        @media print {
+            body:has(.report-page) @page {
+                size: 8.5in 13.0in portrait;
+                margin: 0.2in 0.2in 0.2in 0.2in;
+            }
+        }
+
+        /* ============================================================
+           STATEMENT OF INCOME
+           ============================================================ */
+        .report-page { font-family: Arial, "Helvetica Neue", Helvetica, sans-serif; padding: 0; color: #000; background: white; font-size: 8px; line-height: 1.15; width: 100%; max-width: 7.9in; margin: 0 auto; }
+        .report-page .rpt-header { text-align: center; margin-bottom: 4px; border: 1.3px solid #000; padding: 4px 6px 5px 6px; line-height: 1.15; }
+        .report-page .rpt-header .rpt-line1 { font-weight: 700; font-size: 12px; letter-spacing: 0.2px; }
+        .report-page .rpt-header .rpt-line2 { font-weight: 700; font-size: 12px; letter-spacing: 0.2px; }
+        .report-page .rpt-header .rpt-line3 { font-weight: 800; font-size: 12px; letter-spacing: 0.4px; margin-top: 0; }
+        .report-page .rpt-header .rpt-line4 { font-weight: 600; font-size: 11px; margin-top: 1px; font-style: italic; }
+        .report-page table.rpt { width: 100%; border-collapse: collapse; margin-top: 0; table-layout: fixed; }
+        .report-page table.rpt th, .report-page table.rpt td { border: 0.9px solid #000; padding: 1.1px 3px; font-size: 8px; vertical-align: middle; line-height: 1.15; }
+        .report-page table.rpt th { background: #ffffff; text-align: center; font-weight: 700; font-size: 8.5px; padding: 3px 3px; }
+        .report-page table.rpt td.lbl { text-align: left; padding-left: 4px; font-size: 8px; }
+        .report-page table.rpt td.num { text-align: right; white-space: nowrap; padding-right: 4px; font-size: 8px; }
+        .report-page table.rpt tr.section-hdr td { font-weight: 700; background: #ffffff; font-size: 9px; }
+        .report-page table.rpt tr.total-row-special td { font-weight: 700; background: #ffffff; font-size: 9px; border-bottom: 3px double #000; }
+        .report-page table.rpt tr.total-row-special td.lbl { text-align: center; }
+        .report-page table.rpt tr.total-row-special td.num { text-align: right; }
+        .report-page table.rpt tr.grand-row td { font-weight: 800; background: #ffffff; font-size: 9px; padding-top: 2px; padding-bottom: 2px; text-align: center; border-bottom: 3px double #000; }
+        .report-page .rpt-sign { margin-top: 12px; display: flex; justify-content: space-between; gap: 8px; font-size: 8px; page-break-inside: avoid; }
         .report-page .rpt-sign .sign-block { flex: 1; text-align: center; }
-        .report-page .rpt-sign .sign-name { font-weight: 700; margin-top: 22px; text-decoration: underline; }
-        .report-page .rpt-sign .sign-title { font-size: 9.5px; }
-        .report-page .rpt-sign .sign-role { font-weight: 700; font-size: 9.5px; margin-bottom: 2px; }
+        .report-page .rpt-sign .sign-role { font-weight: 700; font-size: 8px; margin-bottom: 2px; text-align: left; }
+        .report-page .rpt-sign .sign-name { font-weight: 700; margin-top: 12px; text-decoration: underline; font-size: 11px; }
+        .report-page .rpt-sign .sign-title { font-size: 9px; margin-top: 0; }
+
+        /* ============================================================
+           OFFICIAL RECEIPT — PORTRAIT (LEFT-ALIGNED) - DOT MATRIX OPTIMIZED
+           ============================================================ */
+        .or-page {
+            font-family: "Courier New", Courier, monospace;
+            padding: 0;
+            color: #000;
+            background: white;
+            width: 3.5in;
+            margin: 0;
+        }
+
+        @media print {
+            body:has(.or-page) @page {
+                size: 8.5in 13.0in portrait;
+                margin: 0.0in;
+            }
+        }
+
+        .or-page .or-outer { border: 1.6px solid #000; border-radius: 6px; padding: 8px 10px; display: flex; flex-direction: column; }
+        .or-page .or-header { display: flex; align-items: center; justify-content: center; gap: 10px; padding-bottom: 6px; margin-bottom: 6px; border-bottom: 1.6px solid #000; }
+        .or-page .or-header .or-logo-left,
+        .or-page .or-header .or-logo-right { width: 45px; height: 45px; object-fit: contain; display: block; flex-shrink: 0; }
+        .or-page .or-header .or-title-block { text-align: center; padding: 0 2px; }
+        .or-page .or-header .or-title-1 { font-family: "Times New Roman", serif; font-weight: 700; font-size: 14px; letter-spacing: 0.4px; line-height: 1.1; white-space: nowrap; }
+        .or-page .or-header .or-title-2 { font-family: "Times New Roman", serif; font-weight: 600; font-size: 8px; margin-top: 1px; white-space: nowrap; }
+        .or-page .or-header .or-title-3 { font-family: "Times New Roman", serif; font-weight: 700; font-size: 7px; margin-top: 1px; letter-spacing: 0.2px; white-space: nowrap; }
+        .or-page .or-header .or-title-4 { font-family: "Times New Roman", serif; font-weight: 700; font-size: 7px; letter-spacing: 0.2px; white-space: nowrap; }
+
+        .or-page .or-info-box { border: 1.6px solid #000; border-radius: 4px; margin-bottom: 4px; overflow: hidden; display: grid; grid-template-columns: 1.5fr 1fr; grid-template-rows: auto auto; }
+        .or-page .or-info-box .or-info-cell { padding: 4px 6px; line-height: 1.2; border-right: 1.6px solid #000; border-bottom: 1.6px solid #000; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; min-height: 32px; }
+        .or-page .or-info-box .or-info-cell:nth-child(2n) { border-right: none; }
+        .or-page .or-info-box .or-info-cell:nth-child(n+3) { border-bottom: none; }
+        .or-page .or-info-box .or-info-cell .or-form-label { font-size: 7.5px; font-style: italic; font-weight: 700; line-height: 1.3; text-align: center; width: 100%; }
+        .or-page .or-info-box .or-info-cell .or-original { font-family: "Times New Roman", serif; font-weight: 700; font-size: 14px; letter-spacing: 1px; }
+        .or-page .or-info-box .or-info-cell .or-cell-label { font-size: 7.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.2px; text-align: left; width: 100%; }
+        .or-page .or-info-box .or-info-cell .or-cell-value { font-size: 11px; font-weight: 600; margin-top: 2px; text-align: left; width: 100%; }
+
+        .or-page .or-payor-box { border: 1.6px solid #000; border-radius: 4px; margin-bottom: 4px; overflow: hidden; }
+        .or-page .or-payor-top { padding: 4px 6px; border-bottom: 1.6px solid #000; }
+        .or-page .or-payor-top .or-payor-label { font-size: 7.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.2px; }
+        .or-page .or-payor-top .or-payor-value { font-size: 11px; font-weight: 700; margin-top: 2px; }
+        .or-page .or-payor-bottom { display: flex; }
+        .or-page .or-payor-bottom .or-op-left { flex: 1.5; padding: 4px 6px; border-right: 1.6px solid #000; }
+        .or-page .or-payor-bottom .or-op-right { flex: 1; padding: 4px 6px; }
+        .or-page .or-payor-bottom .or-op-label { font-size: 7.5px; font-weight: 700; text-transform: uppercase; }
+        .or-page .or-payor-bottom .or-op-value { font-size: 11px; font-weight: 600; margin-top: 2px; }
+
+        .or-page .or-table-box { border: 1.6px solid #000; border-radius: 4px; margin-bottom: 4px; overflow: hidden; display: flex; flex-direction: column; }
+        .or-page table.or-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+        .or-page table.or-table th { background: #ffffff; border-bottom: 1.6px solid #000; border-right: 1.6px solid #000; font-size: 7.5px; font-weight: 700; text-align: center; padding: 4px 2px; text-transform: uppercase; line-height: 1.15; }
+        .or-page table.or-table th:last-child { border-right: none; }
+        .or-page table.or-table td { border-bottom: 1.2px solid #000; border-right: 1.6px solid #000; font-size: 9px; padding: 4px; vertical-align: middle; line-height: 1.15; }
+        .or-page table.or-table td:last-child { border-right: none; }
+        .or-page table.or-table tr:last-child td { border-bottom: none; }
+        .or-page table.or-table td.or-col-nature { text-align: left; padding-left: 5px; }
+        .or-page table.or-table td.or-col-code { text-align: left; padding-left: 5px; font-size: 8px; }
+        .or-page table.or-table td.or-col-amount { text-align: left; padding-right: 6px; font-weight: 600; }
+        .or-page table.or-table td.or-col-amount .or-peso { margin-right: px; }
+
+        .or-page table.or-table tr.or-data-row td,
+        .or-page table.or-table tr.or-empty-row td { height: 25px; min-height: 25px; max-height: 25px; padding-top: 0; padding-bottom: 0; vertical-align: middle; line-height: 1.15; box-sizing: border-box; }
+        .or-page table.or-table tr.or-data-row td .or-row-spacer,
+        .or-page table.or-table tr.or-empty-row td .or-row-spacer { height: 25px; min-height: 25px; display: block; }
+
+        .or-page table.or-table tr.or-total-row td { font-weight: 700; font-size: 10px; border-top: 1.6px solid #000; }
+
+        .or-page .or-words-inline { padding: 4px 6px; border-top: 1.6px solid #000; line-height: 1.2; }
+        .or-page .or-words-inline .or-words-label { font-size: 7.5px; font-weight: 700; text-transform: uppercase; }
+        .or-page .or-words-inline .or-words-value { font-size: 10px; font-weight: 700; margin-top: 2px; text-transform: uppercase; }
+
+        .or-page .or-payment-box { border: 1.6px solid #000; border-radius: 4px; margin-bottom: 4px; overflow: hidden; }
+        .or-page .or-payment-main { display: flex; border-bottom: 1.6px solid #000; }
+        .or-page .or-payment-main .or-pay-left { flex: 1; padding: 6px 8px; border-right: 1.6px solid #000; display: flex; flex-direction: column; justify-content: space-between; }
+        .or-page .or-payment-main .or-pay-left .or-checkbox-row { display: flex; align-items: center; gap: 6px; font-size: 9px; margin: 4px 0; font-weight: 600; height: 15px; }
+        .or-page .or-payment-main .or-pay-left .or-checkbox { display: inline-block; width: 10px; height: 10px; border: 1.2px solid #000; border-radius: 2px; flex-shrink: 0; }
+        .or-page .or-payment-main .or-pay-right { flex: 2; display: flex; flex-direction: column; }
+        .or-page .or-payment-main .or-pay-right .or-pay-head { display: flex; border-bottom: 1.2px solid #000; }
+        .or-page .or-payment-main .or-pay-right .or-pay-head div { flex: 1; text-align: center; font-size: 7.5px; font-weight: 700; padding: 4px 2px; border-right: 1.2px solid #000; line-height: 1.15; }
+        .or-page .or-payment-main .or-pay-right .or-pay-head div:last-child { border-right: none; }
+        .or-page .or-payment-main .or-pay-right .or-pay-body { display: flex; flex: 1; min-height: 22px; }
+        .or-page .or-payment-main .or-pay-right .or-pay-body div { flex: 1; border-right: 1.2px solid #000; }
+        .or-page .or-payment-main .or-pay-right .or-pay-body div:last-child { border-right: none; }
+
+        .or-page .or-received-row { padding: 6px 8px 8px 8px; position: relative; min-height: 55px; }
+        .or-page .or-received-row .or-received-text { font-size: 9px; font-weight: 500; }
+        .or-page .or-received-row .or-by-line { position: absolute; bottom: 18px; left: 44%; transform: translateX(-50%); font-size: 9px; font-weight: 600; }
+        .or-page .or-received-row .or-sign-line { position: absolute; bottom: 5px; right: 8px; width: 160px; text-align: center; }
+        .or-page .or-received-row .or-sign-line .or-sign-bar { border-top: 1.2px solid #000; padding-top: 2px; }
+        .or-page .or-received-row .or-sign-line .or-sign-label { font-size: 7.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.2px; }
+
+        .or-page .or-footer-note { font-size: 8px; font-style: italic; text-align: justify; margin-top: 4px; line-height: 1.2; padding: 0 2px 0 8px; }
+
+        /* ============================================================
+           DETAILS-ONLY OVERLAY — v5
+           Aligned to match the blank OR exactly.
+           All boxes, borders, and labels have opacity: 0 so they are
+           invisible but still occupy the same space.
+           ============================================================ */
+        .or-page.or-details-overlay {
+            width: 3.5in;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Outer box: keep border but make it invisible */
+        .or-page.or-details-overlay .or-outer {
+            border: 1.6px solid #000;
+            border-radius: 6px;
+            padding: 8px 10px;
+            display: flex;
+            flex-direction: column;
+            opacity: 1; /* keep the outer box visible? no — set to 0 below */
+        }
+        .or-page.or-details-overlay .or-outer {
+            border-color: transparent; /* hide the outer border */
+        }
+
+        /* Header + logos: hide the CONTENT but keep the space */
+        .or-page.or-details-overlay .or-header {
+            opacity: 0;
+        }
+
+        /* Info box: hide borders and labels, keep values */
+        .or-page.or-details-overlay .or-info-box {
+            border-color: transparent;
+        }
+        .or-page.or-details-overlay .or-info-box .or-info-cell {
+            border-color: transparent;
+        }
+        .or-page.or-details-overlay .or-info-box .or-info-cell .or-form-label,
+        .or-page.or-details-overlay .or-info-box .or-info-cell .or-original,
+        .or-page.or-details-overlay .or-info-box .or-info-cell .or-cell-label {
+            opacity: 0;
+        }
+
+        /* Payor box: hide borders and labels, keep values */
+        .or-page.or-details-overlay .or-payor-box {
+            border-color: transparent;
+        }
+        .or-page.or-details-overlay .or-payor-box .or-payor-top {
+            border-color: transparent;
+        }
+        .or-page.or-details-overlay .or-payor-box .or-payor-bottom .or-op-left {
+            border-color: transparent;
+        }
+        .or-page.or-details-overlay .or-payor-box .or-payor-label,
+        .or-page.or-details-overlay .or-payor-box .or-op-label {
+            opacity: 0;
+        }
+
+        /* Table box: hide border but keep layout */
+        .or-page.or-details-overlay .or-table-box {
+            border-color: transparent;
+        }
+        .or-page.or-details-overlay table.or-table th {
+            border-color: transparent;
+            opacity: 0; /* hide the header text */
+        }
+        .or-page.or-details-overlay table.or-table td {
+            border-color: transparent;
+        }
+        .or-page.or-details-overlay table.or-table tr.or-total-row td {
+            border-color: transparent;
+        }
+        .or-page.or-details-overlay table.or-table tr.or-total-row td:first-child {
+            opacity: 0; /* hide "TOTAL" label */
+        }
+
+        /* Words: hide label, keep value */
+        .or-page.or-details-overlay .or-words-inline {
+            border-color: transparent;
+        }
+        .or-page.or-details-overlay .or-words-inline .or-words-label {
+            opacity: 0;
+        }
+
+        /* Payment box + footer: hide content but keep layout space */
+        .or-page.or-details-overlay .or-payment-box {
+            border-color: transparent;
+        }
+        .or-page.or-details-overlay .or-payment-box * {
+            opacity: 0;
+        }
+        .or-page.or-details-overlay .or-footer-note {
+            opacity: 0;
+        }
     </style>
 </head>
 <body>
@@ -380,7 +604,6 @@
                 </div>
             </div>
 
-            <!-- Multi-entry rows -->
             <div style="margin-top: 1.8rem;">
                 <div class="entries-header">
                     <h3><i class="fas fa-list"></i> Collection Entries</h3>
@@ -406,6 +629,16 @@
     <!-- ===== OFFICIAL RECEIPT FORM ===== -->
     <div class="form-type" id="formOR">
         <form id="orForm">
+            <div class="load-record-bar">
+                <label><i class="fas fa-folder-open"></i> Load Existing Record:</label>
+                <select id="loadRecordSelect">
+                    <option value="">— Select a saved record —</option>
+                </select>
+                <button type="button" class="btn-load" id="loadRecordBtn">
+                    <i class="fas fa-download"></i> Load
+                </button>
+            </div>
+
             <div class="form-grid">
                 <div class="field-group">
                     <label><i class="fas fa-calendar-alt"></i> Date <span class="required">*</span></label>
@@ -425,7 +658,6 @@
                 </div>
             </div>
 
-            <!-- Multi-entry rows -->
             <div style="margin-top: 1.8rem;">
                 <div class="entries-header">
                     <h3><i class="fas fa-list"></i> Collection Entries</h3>
@@ -436,25 +668,30 @@
                 <div id="orEntries"></div>
             </div>
 
-            <div class="field-group full-width" style="margin-top: 1rem;">
-                <label><i class="fas fa-pencil-alt"></i> Remarks</label>
-                <input type="text" id="or_remarks" placeholder="N/A or additional notes">
+            <div class="btn-group" style="margin-top: 1.2rem;">
+                <button type="button" class="btn-test btn-print-or" id="or_printBtn" style="flex: 1;">
+                    <i class="fas fa-print"></i> Print OR (with Details)
+                </button>
+                <button type="button" class="btn-test btn-print-blank" id="or_printBlankBtn" style="flex: 1;">
+                    <i class="fas fa-print"></i> Print Blank OR
+                </button>
+                <button type="button" class="btn-test btn-print-details" id="or_printDetailsOnlyBtn" style="flex: 1;">
+                    <i class="fas fa-file-alt"></i> Print Details Only
+                </button>
+                <button type="button" class="btn-test btn-sheet" id="or_sheetBtn" style="flex: 1;">
+                    <i class="fas fa-external-link-alt"></i> View Google Sheet
+                </button>
             </div>
-
-            <button type="submit" class="btn-submit" id="or_submitBtn">
-                <i class="fas fa-cloud-upload-alt"></i>
-                <span>Save to Google Sheet (Official Receipt)</span>
-            </button>
         </form>
     </div>
 
-    <!-- Buttons -->
-    <div class="btn-group">
+    <!-- Buttons (only shown for Summary) -->
+    <div class="btn-group" id="summaryButtons">
         <button type="button" class="btn-test btn-view-all" id="viewAllBtn">
             <i class="fas fa-database"></i> View All Records
         </button>
         <button type="button" class="btn-test btn-print" id="printBtn">
-            <i class="fas fa-print"></i> Print
+            <i class="fas fa-print"></i> Print Statement of Income
         </button>
         <button type="button" class="btn-test btn-sheet" id="sheetBtn">
             <i class="fas fa-external-link-alt"></i> View Google Sheet
@@ -569,7 +806,7 @@
             </div>
             <div class="print-note">
                 <i class="fas fa-info-circle"></i>
-                The report will show the selected month's total and the cumulative total from January up to the selected month.
+                <b>Month</b> column = selected month's sheet only. <b>Cumulative</b> column = sum of <b>every sheet</b> in the spreadsheet whose year matches the selected year.
             </div>
             <div class="print-actions">
                 <button type="button" class="btn-print-cancel" id="printCancelBtn">Cancel</button>
@@ -691,7 +928,6 @@ const NATURE_TO_ACCOUNT = {
     'Cash Bond': ACCOUNTS.CASH_BOND.code
 };
 
-// Reverse: Account code → name
 const CODE_TO_ACCOUNT = {};
 Object.values(ACCOUNTS).forEach(a => CODE_TO_ACCOUNT[a.code] = a.name);
 
@@ -932,7 +1168,14 @@ function switchForm(type) {
     });
     document.getElementById('formSUMMARY').classList.toggle('active', type === 'SUMMARY');
     document.getElementById('formOR').classList.toggle('active', type === 'OR');
+
+    document.getElementById('summaryButtons').style.display = (type === 'SUMMARY') ? 'flex' : 'none';
+
     setStatus('📋 ' + (type === 'SUMMARY' ? 'Summary of Collection' : 'Official Receipt') + ' form selected', 'info');
+
+    if (type === 'OR') {
+        populateLoadRecordDropdown();
+    }
 }
 
 document.getElementById('toggleSummary').addEventListener('click', () => switchForm('SUMMARY'));
@@ -953,7 +1196,7 @@ function setStatus(message, type = 'info') {
 }
 
 // ============================================
-// COLLECT ENTRIES HELPER
+// COLLECT ENTRIES
 // ============================================
 function collectEntries(containerId, formType, commonFields) {
     const rows = document.querySelectorAll(`#${containerId} .entry-row`);
@@ -1029,51 +1272,6 @@ document.getElementById('summaryForm').addEventListener('submit', async (e) => {
 });
 
 // ============================================
-// SUBMIT: OFFICIAL RECEIPT
-// ============================================
-document.getElementById('orForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const date = document.getElementById('or_date').value;
-    const orNo = document.getElementById('or_orNo').value.trim();
-    const opNo = document.getElementById('or_opNo').value.trim();
-    const name = document.getElementById('or_name').value.trim();
-    const remarks = document.getElementById('or_remarks').value.trim() || 'N/A';
-
-    if (!date || !orNo || !opNo || !name) {
-        showToast('❌ Validation', 'Please fill in Date, O.R. No., O.P. No., and Name.', 'error');
-        return;
-    }
-
-    const { entries, hasError } = collectEntries('orEntries', 'OR', { date, orNo, opNo, name, remarks });
-
-    if (hasError || entries.length === 0) {
-        showToast('❌ Validation', 'Please complete all entries.', 'error');
-        return;
-    }
-
-    const btn = document.getElementById('or_submitBtn');
-    btn.disabled = true;
-    btn.innerHTML = '<span class="spinner"></span> Saving...';
-
-    try {
-        await fetch(WEB_APP_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ entries })
-        });
-        showToast('✅ Success', `${entries.length} entries saved!`, 'success');
-        setStatus(`✅ Saved ${entries.length} entries to Google Sheet`, 'success');
-        resetForm('OR');
-    } catch (err) {
-        showToast('❌ Error', 'Failed: ' + err.message, 'error');
-    } finally {
-        btn.disabled = false;
-        btn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> <span>Save to Google Sheet (Official Receipt)</span>';
-    }
-});
-
-// ============================================
 // RESET
 // ============================================
 function resetForm(type) {
@@ -1094,6 +1292,123 @@ function resetForm(type) {
 }
 
 // ============================================
+// LOAD EXISTING RECORD
+// ============================================
+let allOrRecordsCache = [];
+
+async function populateLoadRecordDropdown() {
+    const sel = document.getElementById('loadRecordSelect');
+    if (!sel) return;
+    sel.innerHTML = '<option value="">Loading records...</option>';
+
+    try {
+        const url = WEB_APP_URL + '?action=records&type=OR&listAll=1';
+        const res = await fetch(url, { method: 'GET' });
+        const json = await res.json();
+        if (json.result !== 'success' || !Array.isArray(json.records)) {
+            sel.innerHTML = '<option value="">— No records available —</option>';
+            return;
+        }
+
+        allOrRecordsCache = json.records;
+        sel.innerHTML = '<option value="">— Select a saved record —</option>';
+
+        const seen = new Set();
+        json.records.forEach((r, idx) => {
+            const key = `${r.orNo}|${r.sheetName}|${r.date}|${r.opNo}`;
+            if (seen.has(key)) return;
+            seen.add(key);
+
+            const label = `${r.orNo} · ${r.sheetName} · ${r.date} · ${r.opNo}`;
+            const opt = document.createElement('option');
+            opt.value = idx;
+            opt.textContent = label;
+            sel.appendChild(opt);
+        });
+    } catch (e) {
+        sel.innerHTML = '<option value="">— Failed to load —</option>';
+    }
+}
+
+document.getElementById('loadRecordBtn').addEventListener('click', () => {
+    const sel = document.getElementById('loadRecordSelect');
+    const idx = parseInt(sel.value, 10);
+    if (isNaN(idx)) {
+        showToast('⚠️ No Selection', 'Please choose a record to load.', 'warning');
+        return;
+    }
+
+    const r = allOrRecordsCache[idx];
+    if (!r) {
+        showToast('❌ Error', 'Record not found in cache.', 'error');
+        return;
+    }
+
+    const group = allOrRecordsCache.filter(x =>
+        x.orNo === r.orNo &&
+        x.sheetName === r.sheetName &&
+        x.date === r.date &&
+        x.opNo === r.opNo
+    );
+
+    const parts = (r.sheetName || '').split(' ');
+    const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    const mIdx = months.indexOf(parts[0]);
+    const y = parseInt(parts[1], 10);
+
+    const dateStr = (mIdx >= 0 && !isNaN(y))
+        ? `${y}-${String(mIdx + 1).padStart(2, '0')}-${String(r.date).padStart(2, '0')}`
+        : new Date().toISOString().split('T')[0];
+
+    document.getElementById('or_date').value = dateStr;
+    document.getElementById('or_orNo').value = r.orNo || '';
+    document.getElementById('or_opNo').value = r.opNo || '';
+    document.getElementById('or_name').value = r.orNo || '';
+
+    const container = document.getElementById('orEntries');
+    container.innerHTML = '';
+    entryCounters.or = 0;
+
+    group.forEach(item => {
+        createEntryRow('orEntries', 'or');
+        const row = container.lastElementChild;
+
+        const natureSel = row.querySelector('.entry-nature');
+        const acctSel = row.querySelector('.entry-accounts');
+        const amtInput = row.querySelector('.entry-amount');
+        const wordsBox = row.querySelector('.entry-words');
+
+        if (item.natureOfCollection) {
+            natureSel.value = item.natureOfCollection;
+            natureSel.dispatchEvent(new Event('change'));
+        }
+
+        if (item.accounts) {
+            acctSel.innerHTML = '';
+            const o = document.createElement('option');
+            const name = CODE_TO_ACCOUNT[item.accounts] || '';
+            o.value = item.accounts;
+            o.textContent = name ? `${name} (${item.accounts})` : item.accounts;
+            o.selected = true;
+            acctSel.appendChild(o);
+            acctSel.disabled = true;
+            acctSel.style.backgroundColor = '#f1f5f9';
+        }
+
+        amtInput.value = item.total || 0;
+        amtInput.dispatchEvent(new Event('input'));
+
+        if (item.amountInWords) {
+            wordsBox.textContent = item.amountInWords;
+            wordsBox.classList.add('filled');
+        }
+    });
+
+    setStatus('✅ Record loaded into OR form', 'success');
+    showToast('✅ Loaded', 'Record successfully loaded.', 'success');
+});
+
+// ============================================
 // RECORDS MODAL
 // ============================================
 const recordsModal = document.getElementById('recordsModal');
@@ -1103,10 +1418,6 @@ let filteredRecords = [];
 let editingRowNumber = null;
 let editingOriginalRecord = null;
 
-// ==== SORT STATE for Day column ====
-// 'none'   → default (newest first, i.e. Month desc then Day desc)
-// 'asc'    → day ascending  (1,2,3,4)
-// 'desc'   → day descending (4,3,2,1)
 let daySortDir = 'none';
 
 function openRecordsModal() {
@@ -1115,7 +1426,7 @@ function openRecordsModal() {
     document.getElementById('recordsModalTitle').textContent = 'All Records (All Months)';
     editingRowNumber = null;
     editingOriginalRecord = null;
-    daySortDir = 'none';   // reset sort each time
+    daySortDir = 'none';
     loadRecords();
 }
 
@@ -1175,7 +1486,7 @@ function escapeHtml(s) {
 }
 
 // ============================================
-// FILTERS (Month + Year)
+// FILTERS
 // ============================================
 function applyFilters() {
     const searchTerm = (document.getElementById('searchInput').value || '').trim().toLowerCase();
@@ -1206,9 +1517,7 @@ function applyFilters() {
         return true;
     });
 
-    // Sort
     if (daySortDir === 'none') {
-        // Default: newest first (Month desc, then Day desc)
         filtered.sort((a, b) => {
             const da = a.dateFull || '';
             const db = b.dateFull || '';
@@ -1216,13 +1525,11 @@ function applyFilters() {
             return (b.rowNumber || 0) - (a.rowNumber || 0);
         });
     } else {
-        // Sort by Day column (numeric)
         const dir = (daySortDir === 'asc') ? 1 : -1;
         filtered.sort((a, b) => {
             const da = parseInt(a.date, 10) || 0;
             const db = parseInt(b.date, 10) || 0;
             if (da !== db) return (da - db) * dir;
-            // Tiebreaker: keep month/year context in a stable order
             const fa = a.dateFull || '';
             const fb = b.dateFull || '';
             return fb.localeCompare(fa);
@@ -1240,7 +1547,6 @@ document.getElementById('searchInput').addEventListener('input', applyFilters);
 document.getElementById('filterMonth').addEventListener('change', applyFilters);
 document.getElementById('filterYear').addEventListener('change', applyFilters);
 
-// Toggle Day sort: none → asc → desc → asc → ...
 window.toggleDaySort = function() {
     if (daySortDir === 'none' || daySortDir === 'desc') {
         daySortDir = 'asc';
@@ -1268,10 +1574,9 @@ function populateYearFilter() {
 }
 
 // ============================================
-// TABLE RENDER — Sortable Day column
+// TABLE RENDER
 // ============================================
 function renderTable(records) {
-    // Build the Day column header with sort indicator
     let dayIcon, dayClass;
     if (daySortDir === 'asc') {
         dayIcon = '<i class="fas fa-sort-up sort-icon"></i>';
@@ -1356,9 +1661,6 @@ function renderTable(records) {
     modalBodyContent.innerHTML = html;
 }
 
-// ============================================
-// EDIT / SAVE
-// ============================================
 window.startEdit = function(rowNumber, sheetName) {
     editingRowNumber = rowNumber;
     editingOriginalRecord = allRecords.find(r =>
@@ -1422,7 +1724,7 @@ window.saveEdit = async function(rowNumber) {
 };
 
 // ============================================
-// VIEW DETAILS MODAL
+// VIEW DETAILS
 // ============================================
 const detailsModal = document.getElementById('detailsModal');
 const detailsModalBody = document.getElementById('detailsModalBody');
@@ -1497,9 +1799,6 @@ document.getElementById('closeDetailsBtn').addEventListener('click', closeDetail
 document.getElementById('closeDetailsBtn2').addEventListener('click', closeDetailsModal);
 detailsModal.addEventListener('click', (e) => { if (e.target === detailsModal) closeDetailsModal(); });
 
-// ============================================
-// DELETE
-// ============================================
 window.deleteRecord = async function(rowNumber, sheetName) {
     if (!confirm('Delete this record? Cannot be undone.')) return;
     try {
@@ -1521,7 +1820,381 @@ window.deleteRecord = async function(rowNumber, sheetName) {
 };
 
 // ============================================
-// PRINT MODAL + REPORT
+// PRINT OFFICIAL RECEIPT - BLANK
+// ============================================
+document.getElementById('or_printBlankBtn').addEventListener('click', () => {
+    buildAndShowORPrint(null, null, null, null, null, true);
+});
+
+// ============================================
+// PRINT OFFICIAL RECEIPT - WITH DETAILS
+// ============================================
+document.getElementById('or_printBtn').addEventListener('click', () => {
+    const date = document.getElementById('or_date').value;
+    const orNo = document.getElementById('or_orNo').value.trim();
+    const opNo = document.getElementById('or_opNo').value.trim();
+    const name = document.getElementById('or_name').value.trim();
+
+    if (!date || !orNo || !opNo || !name) {
+        showToast('❌ Validation', 'Please fill in Date, O.R. No., O.P. No., and Name before printing.', 'error');
+        return;
+    }
+
+    const rows = document.querySelectorAll('#orEntries .entry-row');
+    const entries = [];
+
+    rows.forEach(row => {
+        const nature = row.querySelector('.entry-nature').value;
+        const acctSel = row.querySelector('.entry-accounts');
+        const accounts = acctSel.value;
+        const amount = parseFloat(row.querySelector('.entry-amount').value) || 0;
+        if (nature && accounts && amount > 0) {
+            entries.push({ nature, accounts, amount });
+        }
+    });
+
+    if (entries.length === 0) {
+        showToast('❌ Validation', 'Please add at least one entry with an amount.', 'error');
+        return;
+    }
+
+    buildAndShowORPrint(date, orNo, opNo, name, entries, false);
+});
+
+// ============================================
+// PRINT OFFICIAL RECEIPT - DETAILS ONLY
+// ============================================
+document.getElementById('or_printDetailsOnlyBtn').addEventListener('click', () => {
+    const date = document.getElementById('or_date').value;
+    const orNo = document.getElementById('or_orNo').value.trim();
+    const opNo = document.getElementById('or_opNo').value.trim();
+    const name = document.getElementById('or_name').value.trim();
+
+    if (!date || !orNo || !opNo || !name) {
+        showToast('❌ Validation', 'Please fill in Date, O.R. No., O.P. No., and Name before printing.', 'error');
+        return;
+    }
+
+    const rows = document.querySelectorAll('#orEntries .entry-row');
+    const entries = [];
+
+    rows.forEach(row => {
+        const nature = row.querySelector('.entry-nature').value;
+        const acctSel = row.querySelector('.entry-accounts');
+        const accounts = acctSel.value;
+        const amount = parseFloat(row.querySelector('.entry-amount').value) || 0;
+        if (nature && accounts && amount > 0) {
+            entries.push({ nature, accounts, amount });
+        }
+    });
+
+    if (entries.length === 0) {
+        showToast('❌ Validation', 'Please add at least one entry with an amount.', 'error');
+        return;
+    }
+
+    buildAndShowORPrint(date, orNo, opNo, name, entries, false, true);
+});
+
+document.getElementById('or_sheetBtn').addEventListener('click', () => {
+    window.open(GOOGLE_SHEET_URL, '_blank');
+    showToast('📊 Info', 'Opening Google Sheet...', 'info');
+});
+
+function formatDateLong(dateStr) {
+    if (!dateStr) return '';
+    const d = new Date(dateStr + 'T00:00:00');
+    if (isNaN(d.getTime())) return dateStr;
+    const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    return `${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+}
+
+function fmtORAmount(n) {
+    const v = parseFloat(n) || 0;
+    return v.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function buildAndShowORPrint(date, orNo, opNo, name, entries, isBlank, detailsOnly = false) {
+    const total = isBlank ? 0 : entries.reduce((s, e) => s + (parseFloat(e.amount) || 0), 0);
+    const words = isBlank ? '' : (amountToWords(total) === '— auto —' ? '' : amountToWords(total));
+    const dateLong = isBlank ? '' : formatDateLong(date);
+
+    // ===== FIXED TOTAL ROWS =====
+    const MAX_ROWS = 8;
+    const realCount = isBlank ? 0 : entries.length;
+    const emptyCount = Math.max(0, MAX_ROWS - realCount);
+    const totalRowsToRender = realCount + emptyCount;
+
+    let rowsHtml = '';
+    for (let i = 0; i < totalRowsToRender; i++) {
+        const e = (i < realCount) ? entries[i] : null;
+        if (e) {
+            rowsHtml += `<tr class="or-data-row">
+                <td class="or-col-nature"><div class="or-row-spacer">${escapeHtml(e.nature)}</div></td>
+                <td class="or-col-code"><div class="or-row-spacer">${escapeHtml(e.accounts)}</div></td>
+                <td class="or-col-amount"><div class="or-row-spacer"><span class="or-peso">₱</span>${fmtORAmount(e.amount)}</div></td>
+            </tr>`;
+        } else {
+            rowsHtml += `<tr class="or-empty-row">
+                <td class="or-col-nature"><div class="or-row-spacer"></div></td>
+                <td class="or-col-code"></td>
+                <td class="or-col-amount"></td>
+            </tr>`;
+        }
+    }
+
+    rowsHtml += `<tr class="or-total-row">
+        <td class="or-col-nature">TOTAL</td>
+        <td class="or-col-code"></td>
+        <td class="or-col-amount"><span class="or-peso">₱</span>${isBlank ? '' : fmtORAmount(total)}</td>
+    </tr>`;
+
+    const base = (typeof window !== 'undefined' && window.location)
+        ? window.location.href.split('?')[0].replace(/[^\/]*$/, '')
+        : '';
+    const rnpUrl = base + 'RNP_LOGO.png';
+    const dhsudUrl = base + 'DHSUD_LOGO.png';
+
+    // ===== DETAILS ONLY VARIANT =====
+    // Uses the EXACT same layout as the full OR, but all boxes/borders/labels
+    // are made invisible via opacity: 0 or transparent border colors.
+    if (detailsOnly) {
+        const detailsOnlyHtml = `
+            <div class="or-page or-details-overlay">
+                <div class="or-outer">
+
+                    <div class="or-header">
+                        <img class="or-logo-left" src="${rnpUrl}" alt="" onerror="this.style.display='none'">
+                        <div class="or-title-block">
+                            <div class="or-title-1">OFFICIAL RECEIPT</div>
+                            <div class="or-title-2">Republic of the Philippines</div>
+                            <div class="or-title-3">DEPARTMENT OF HUMAN SETTLEMENTS</div>
+                            <div class="or-title-4">AND URBAN DEVELOPMENT</div>
+                        </div>
+                        <img class="or-logo-right" src="${dhsudUrl}" alt="" onerror="this.style.display='none'">
+                    </div>
+
+                    <div class="or-info-box">
+                        <div class="or-info-cell">
+                            <div class="or-form-label">Accountable Form No. 51</div>
+                            <div class="or-form-label">Revised January, 1992</div>
+                        </div>
+                        <div class="or-info-cell">
+                            <div class="or-original">ORIGINAL</div>
+                        </div>
+                        <div class="or-info-cell">
+                            <div class="or-cell-label">DATE</div>
+                            <div class="or-cell-value">${escapeHtml(dateLong)}</div>
+                        </div>
+                        <div class="or-info-cell">
+                            <div class="or-cell-label">NO.</div>
+                            <div class="or-cell-value">&nbsp;</div>
+                        </div>
+                    </div>
+
+                    <div class="or-payor-box">
+                        <div class="or-payor-top">
+                            <div class="or-payor-label">PAYOR</div>
+                            <div class="or-payor-value">${escapeHtml(name)}</div>
+                        </div>
+                        <div class="or-payor-bottom">
+                            <div class="or-op-left">
+                                <div class="or-op-label">ORDER OF PAYMENT NO.:</div>
+                                <div class="or-op-value">${escapeHtml(opNo)}</div>
+                            </div>
+                            <div class="or-op-right">
+                                <div class="or-op-label">FUND:</div>
+                                <div class="or-op-value">&nbsp;</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="or-table-box">
+                        <table class="or-table">
+                            <thead>
+                                <tr>
+                                    <th style="width:60%;">NATURE OF COLLECTION</th>
+                                    <th style="width:20%;">ACCOUNT CODE</th>
+                                    <th style="width:20%;">AMOUNT</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${rowsHtml}
+                            </tbody>
+                        </table>
+                        <div class="or-words-inline">
+                            <div class="or-words-label">AMOUNT IN WORDS</div>
+                            <div class="or-words-value">${escapeHtml(words || '&nbsp;')}</div>
+                        </div>
+                    </div>
+
+                    <div class="or-payment-box">
+                        <div class="or-payment-main">
+                            <div class="or-pay-left">
+                                <div class="or-checkbox-row"><span class="or-checkbox"></span> Cash</div>
+                                <div class="or-checkbox-row"><span class="or-checkbox"></span> Check</div>
+                                <div class="or-checkbox-row"><span class="or-checkbox"></span> Money Order</div>
+                            </div>
+                            <div class="or-pay-right">
+                                <div class="or-pay-head">
+                                    <div>Drawee Bank</div>
+                                    <div>Number</div>
+                                    <div>Date</div>
+                                </div>
+                                <div class="or-pay-body"><div></div><div></div><div></div></div>
+                                <div class="or-pay-body"><div></div><div></div><div></div></div>
+                            </div>
+                        </div>
+                        <div class="or-received-row">
+                            <div class="or-received-text">Received the amount stated above</div>
+                            <div class="or-by-line">By:</div>
+                            <div class="or-sign-line">
+                                <div class="or-sign-bar"></div>
+                                <div class="or-sign-label">COLLECTING OFFICER</div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="or-footer-note">
+                    Note: Write the number and date of this receipt at the back of check or money order received.<br>
+                    Printed by APO Production Unit, Inc.
+                </div>
+            </div>
+        `;
+        document.getElementById('printArea').innerHTML = detailsOnlyHtml;
+        setTimeout(() => { window.print(); }, 250);
+        return;
+    }
+
+    // ===== FULL OR VARIANT (2x2 grid info box) =====
+    const html = `
+        <div class="or-page">
+            <div class="or-outer">
+
+                <!-- ===== Header: RNP · Title · DHSUD ===== -->
+                <div class="or-header">
+                    <img class="or-logo-left" src="${rnpUrl}" alt="RNP" onerror="this.style.display='none'">
+                    <div class="or-title-block">
+                        <div class="or-title-1">OFFICIAL RECEIPT</div>
+                        <div class="or-title-2">Republic of the Philippines</div>
+                        <div class="or-title-3">DEPARTMENT OF HUMAN SETTLEMENTS</div>
+                        <div class="or-title-4">AND URBAN DEVELOPMENT</div>
+                    </div>
+                    <img class="or-logo-right" src="${dhsudUrl}" alt="DHSUD" onerror="this.style.display='none'">
+                </div>
+
+                <!-- ===== Info box: 2x2 grid in ONE outer box ===== -->
+                <div class="or-info-box">
+                    <div class="or-info-cell">
+                        <div class="or-form-label">Accountable Form No. 51</div>
+                        <div class="or-form-label">Revised January, 1992</div>
+                    </div>
+                    <div class="or-info-cell">
+                        <div class="or-original">ORIGINAL</div>
+                    </div>
+                    <div class="or-info-cell">
+                        <div class="or-cell-label">DATE</div>
+                        <div class="or-cell-value">${isBlank ? '&nbsp;' : escapeHtml(dateLong)}</div>
+                    </div>
+                    <div class="or-info-cell">
+                        <div class="or-cell-label">NO.</div>
+                        <div class="or-cell-value">&nbsp;</div>
+                    </div>
+                </div>
+
+                <!-- ===== Payor + Order of Payment + Fund ===== -->
+                <div class="or-payor-box">
+                    <div class="or-payor-top">
+                        <div class="or-payor-label">PAYOR</div>
+                        <div class="or-payor-value">${isBlank ? '&nbsp;' : escapeHtml(name)}</div>
+                    </div>
+                    <div class="or-payor-bottom">
+                        <div class="or-op-left">
+                            <div class="or-op-label">ORDER OF PAYMENT NO.:</div>
+                            <div class="or-op-value">${isBlank ? '&nbsp;' : escapeHtml(opNo)}</div>
+                        </div>
+                        <div class="or-op-right">
+                            <div class="or-op-label">FUND:</div>
+                            <div class="or-op-value">&nbsp;</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== Table + Total + Amount in Words ===== -->
+                <div class="or-table-box">
+                    <table class="or-table">
+                        <thead>
+                            <tr>
+                                <th style="width:60%;">NATURE OF COLLECTION</th>
+                                <th style="width:20%;">ACCOUNT CODE</th>
+                                <th style="width:20%;">AMOUNT</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${rowsHtml}
+                        </tbody>
+                    </table>
+                    <div class="or-words-inline">
+                        <div class="or-words-label">AMOUNT IN WORDS</div>
+                        <div class="or-words-value">${isBlank ? '&nbsp;' : escapeHtml(words || '&nbsp;')}</div>
+                    </div>
+                </div>
+
+                <!-- ===== Payment + Received ===== -->
+                <div class="or-payment-box">
+                    <div class="or-payment-main">
+                        <div class="or-pay-left">
+                            <div class="or-checkbox-row"><span class="or-checkbox"></span> Cash</div>
+                            <div class="or-checkbox-row"><span class="or-checkbox"></span> Check</div>
+                            <div class="or-checkbox-row"><span class="or-checkbox"></span> Money Order</div>
+                        </div>
+                        <div class="or-pay-right">
+                            <div class="or-pay-head">
+                                <div>Drawee Bank</div>
+                                <div>Number</div>
+                                <div>Date</div>
+                            </div>
+                            <div class="or-pay-body">
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                            </div>
+                            <div class="or-pay-body">
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="or-received-row">
+                        <div class="or-received-text">Received the amount stated above</div>
+                        <div class="or-by-line">By:</div>
+                        <div class="or-sign-line">
+                            <div class="or-sign-bar"></div>
+                            <div class="or-sign-label">COLLECTING OFFICER</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ===== Footer note ===== -->
+            <div class="or-footer-note">
+                Note: Write the number and date of this receipt at the back of check or money order received.<br>
+                Printed by APO Production Unit, Inc.
+            </div>
+
+        </div>
+    `;
+
+    document.getElementById('printArea').innerHTML = html;
+    setTimeout(() => { window.print(); }, 250);
+}
+
+// ============================================
+// PRINT MODAL + STATEMENT OF INCOME
 // ============================================
 const printModal = document.getElementById('printModal');
 
@@ -1529,7 +2202,7 @@ function openPrintModal() {
     const yearSel = document.getElementById('printYear');
     const currentYear = new Date().getFullYear();
     yearSel.innerHTML = '';
-    for (let y = currentYear; y >= currentYear - 5; y--) {
+    for (let y = currentYear + 1; y >= currentYear - 5; y--) {
         const o = document.createElement('option');
         o.value = y; o.textContent = y;
         yearSel.appendChild(o);
@@ -1572,112 +2245,79 @@ document.getElementById('printGoBtn').addEventListener('click', async () => {
     }
 });
 
-// Report category definitions — mirrors the Excel layout
 const REPORT_CATEGORIES = [
-    {
-        code: '4020102000',
-        label: 'I.  REGISTRATION FEES [4020102000]',
-        items: [
-            { key: 'Registration of Business Firm', label: 'I.1  Registration Fees for Business Firms' },
-            { key: 'Registration of Broker 2026', label: 'I.3  Registration Fees for Brokers', extraKeys: ['Renewal of Broker (2026)'] },
-            { key: 'Registration of Salesperson (2026)', label: 'I.2  Registration Fees for Salesperson', extraKeys: ['Renewal of Salesperson (2026)'] }
-        ]
-    },
-    {
-        code: '4020104001',
-        label: 'II. CLEARANCE FEES [4020104001]',
-        items: [
-            { key: 'Clearance to Mortgage', label: 'II.1 Clearance to Mortgage' },
-            { key: 'Lifting of Cease and Desist Order', label: 'II.2 Lifting of Cease and Desist Order' },
-            { key: 'Locational Clearance', label: 'II.3 Locational Clearance (LC) / Temporary Use Permit (TUP)', extraKeys: ['Temporary Use Permit (TUP)'] }
-        ]
-    },
-    {
-        code: '4020104002',
-        label: 'III. CERTIFICATION FEES [4020104002]',
-        items: [
-            { key: 'Certified True Copy', label: 'III.1 Certified True Copy' },
-            { key: 'Certificate of Completion (COC)', label: 'III.2 Certificate of Completion   (COC)' },
-            { key: 'Certificate of Occupancy', label: 'III.3 Certificate of Occupancy' },
-            { key: 'Certificate of Compliance', label: 'III.4 Certificate of Compliance (Sec. 18, R.A. 7279)' },
-            { key: 'Site Zoning Certificate (SZC)', label: 'III.5 Site Zoning Certificate   (SZC)' },
-            { key: 'Certificate of Zoning Compliance (CZC)', label: 'III.6 Certificate of Zoning Compliance   (CZC)' },
-            { key: 'Certification Fee (APD)', label: 'III.7 Certification Fee (APD)' },
-            { key: 'Certification of No Records', label: 'III.8 Certification of New Rights/ Sale/ Registration/ No-Records/ Finality/  Non-Submission/ Certification' },
-            { key: 'Certificate of Local Viability', label: 'III.9 Certificate of Local Viability' },
-            { key: 'Certificate of Creditable Withholding Tax (CWT)', label: 'III.10 Certificate of Creditable Withholding Tax  (CWT)' },
-            { key: 'Other Certification', label: 'III.11 Other Certification: (SEC/ BP220/ CDO)' }
-        ]
-    },
-    {
-        code: '4020109000',
-        label: 'IV. LEGAL FEES [4020109000]',
-        items: [
-            { key: 'Legal Fees', label: 'IV. 1 Complaint/ Opposition Fees, Petition for Review/ Appeals Fee/ Surcharge', extraKeys: ['Appeal Fee'] }
-        ]
-    },
-    {
-        code: '4020110000',
-        label: 'V. INSPECTION FEES [4020110000]',
-        items: [
-            { key: 'Inspection Fees', label: ' V.1 Inspection Fees (HREDRD)' },
-            { key: 'Inspection Fees (HOA)', label: ' V.2 Inspection Fees (for offsite HOA projects)' }
-        ]
-    },
-    {
-        code: '4020113003',
-        label: 'VI. PROCESSING FEES [4020113003]',
-        items: [
-            { key: 'Examining and Filing Fee for Registration of Amended Articles of Incorporation', label: '        VI.1 Examining and Filing Fee for Amended Articles of Incorporated/ By-laws/ Dissolution of HOA/ Magna Carta for HOA',
-              extraKeys: ['Examining and Filing Fee for Registration of By-laws', 'Examining and Filing Fee for Amended Articles of Incorporation', 'Examining and Filing Fee for Amended of By-laws', 'HOA Registration'] },
-            { key: 'Preliminary Approval', label: '        VI.2 Preliminary Approval / SSA' },
-            { key: 'Final Approval', label: '        VI.3 Final Approval and Development Permit  (FADP)', extraKeys: ['Development Permit'] },
-            { key: 'Alteration of Plan', label: '        VI.4 Alteration of Plan / Expansion' },
-            { key: 'Building Permit', label: '        VI.5 Building Permit' },
-            { key: 'CRLS', label: '        VI.6 Certificate of Registration and License to Sell  (CR/LS)' },
-            { key: 'Accreditation Fee', label: '        VI.7 Accreditation Fee' },
-            { key: 'Advertisement Approval', label: '        VI.8 Advertisement Approval' },
-            { key: 'Reduction of Performance Bond', label: '        VI.9 Cancellation / Reduction of Performance Bond' },
-            { key: 'Lifting of Suspension of License to Sell', label: '        VI.10 Lifting of Suspension of License to Sell' },
-            { key: 'ETD Processing Fee', label: '        VI.11 Extension of Time to Complete Development (ETD)' },
-            { key: 'Exemption from Cease and Desist Order', label: '        VI.12 Exemption from Cease and Desist Order' },
-            { key: 'Change of Name / Ownership', label: '        VI.13  Change of Name / Ownership' },
-            { key: 'Voluntary Cancellation of CR / LS', label: '        VI.14  Voluntary Cancellation of CR / LS' },
-            { key: 'Revalidation / Renewal of Permit Condominium', label: '        VI.15 Revalidation / Renewal of Permit Condominium' },
-            { key: 'HOA Registration', label: '        VI.16 HOA Registration' },
-            { key: 'Amendment of License to Sell', label: '        VI.17 Amendment of License to Sell' },
-            { key: 'Availability of Records', label: '        VI.18 Availability of Records' }
-        ]
-    },
-    {
-        code: '4020114000',
-        label: 'VII. FINES AND PENALTIES [4020114000]',
-        items: [
-            { key: 'Penalty', label: '        VII.1 For violation of TPZ & ULRZ/APD laws, rules & regulations' },
-            { key: 'Penalty (Non-Renewal)', label: '        VII.2 For violation of ULRZ/APD, laws, rules & conditions' },
-            { key: 'Admin Fine', label: '        VII.3 For violation of Real Estate laws, rules & regulations' },
-            { key: 'Failure to register or renew registration (per year)- Broker', label: '        VII.5 Failure to register or renew registration (per year)- Broker' },
-            { key: 'Failure to register or renew registration (per year)- Salesperson', label: '        VII.6 Failure to register or renew registration (per year)- Salesperson' },
-            { key: 'Failure to register or renew registration (per year)- Business Firm', label: '        VII.7 Failure to register or renew registration (per year)- Business Firm' }
-        ]
-    },
-    {
-        code: '4020199099',
-        label: 'VIII. OTHER SERVICE INCOME [4020199099]',
-        items: [
-            { key: 'Stamping of HOA Books', label: '        VIII.1 Registration of Books for Homeowners Ass\'n (stamping only)' },
-            { key: 'Photocopy', label: '        VIII.2 Photocopy/ Sale of Forms/ Publications' },
-            { key: 'Sale of Books', label: '        VIII.3 Sale of Books (BP220 / PD957/ etc.)' },
-            { key: 'Proceeds From Disposal of PPE', label: '        VIII.4 Unservisable Properties & Equipment' },
-            { key: 'CRLS Forms', label: '        VIII.5 CR/LS Forms; Amendment; Upgrading of Selling Price; Amended Master Deed' },
-            { key: 'Miscellaneous Fees', label: '        VIII.6 Miscellaneous Fees' }
-        ]
-    }
+    { code: '4020102000', label: 'I.  REGISTRATION FEES [4020102000]', items: [
+        { key: 'Registration of Business Firm', label: 'I.1  Registration Fees for Business Firms' },
+        { key: 'Registration of Broker 2026', label: 'I.3  Registration Fees for Brokers', extraKeys: ['Renewal of Broker (2026)'] },
+        { key: 'Registration of Salesperson (2026)', label: 'I.2  Registration Fees for Salesperson', extraKeys: ['Renewal of Salesperson (2026)'] }
+    ]},
+    { code: '4020104001', label: 'II. CLEARANCE FEES [4020104001]', items: [
+        { key: 'Clearance to Mortgage', label: 'II.1 Clearance to Mortgage' },
+        { key: 'Lifting of Cease and Desist Order', label: 'II.2 Lifting of Cease and Desist Order' },
+        { key: 'Locational Clearance', label: 'II.3 Locational Clearance (LC) / Temporary Use Permit (TUP)', extraKeys: ['Temporary Use Permit (TUP)'] }
+    ]},
+    { code: '4020104002', label: 'III. CERTIFICATION FEES [4020104002]', items: [
+        { key: 'Certified True Copy', label: 'III.1 Certified True Copy' },
+        { key: 'Certificate of Completion (COC)', label: 'III.2 Certificate of Completion   (COC)' },
+        { key: 'Certificate of Occupancy', label: 'III.3 Certificate of Occupancy' },
+        { key: 'Certificate of Compliance', label: 'III.4 Certificate of Compliance (Sec. 18, R.A. 7279)' },
+        { key: 'Site Zoning Certificate (SZC)', label: 'III.5 Site Zoning Certificate   (SZC)' },
+        { key: 'Certificate of Zoning Compliance (CZC)', label: 'III.6 Certificate of Zoning Compliance   (CZC)' },
+        { key: 'Certification Fee (APD)', label: 'III.7 Certification Fee (APD)' },
+        { key: 'Certification of No Records', label: 'III.8 Certification of New Rights/ Sale/ Registration/ No-Records/ Finality/  Non-Submission/ Certification' },
+        { key: 'Certificate of Local Viability', label: 'III.9 Certificate of Local Viability' },
+        { key: 'Certificate of Creditable Withholding Tax (CWT)', label: 'III.10 Certificate of Creditable Withholding Tax  (CWT)' },
+        { key: 'Other Certification', label: 'III.11 Other Certification: (SEC/ BP220/ CDO)' }
+    ]},
+    { code: '4020109000', label: 'IV. LEGAL FEES [4020109000]', items: [
+        { key: 'Legal Fees', label: 'IV. 1 Complaint/ Opposition Fees, Petition for Review/ Appeals Fee/ Surcharge', extraKeys: ['Appeal Fee'] }
+    ]},
+    { code: '4020110000', label: 'V. INSPECTION FEES [4020110000]', items: [
+        { key: 'Inspection Fees', label: ' V.1 Inspection Fees (HREDRD)' },
+        { key: 'Inspection Fees (HOA)', label: ' V.2 Inspection Fees (for offsite HOA projects)' }
+    ]},
+    { code: '4020113003', label: 'VI. PROCESSING FEES [4020113003]', items: [
+        { key: 'Examining and Filing Fee for Registration of Amended Articles of Incorporation', label: '        VI.1 Examining and Filing Fee for Amended Articles of Incorporated/ By-laws/ Dissolution of HOA/ Magna Carta for HOA',
+          extraKeys: ['Examining and Filing Fee for Registration of By-laws', 'Examining and Filing Fee for Amended Articles of Incorporation', 'Examining and Filing Fee for Amended of By-laws', 'HOA Registration'] },
+        { key: 'Preliminary Approval', label: '        VI.2 Preliminary Approval / SSA' },
+        { key: 'Final Approval', label: '        VI.3 Final Approval and Development Permit  (FADP)', extraKeys: ['Development Permit'] },
+        { key: 'Alteration of Plan', label: '        VI.4 Alteration of Plan / Expansion' },
+        { key: 'Building Permit', label: '        VI.5 Building Permit' },
+        { key: 'CRLS', label: '        VI.6 Certificate of Registration and License to Sell  (CR/LS)' },
+        { key: 'Accreditation Fee', label: '        VI.7 Accreditation Fee' },
+        { key: 'Advertisement Approval', label: '        VI.8 Advertisement Approval' },
+        { key: 'Reduction of Performance Bond', label: '        VI.9 Cancellation / Reduction of Performance Bond' },
+        { key: 'Lifting of Suspension of License to Sell', label: '        VI.10 Lifting of Suspension of License to Sell' },
+        { key: 'ETD Processing Fee', label: '        VI.11 Extension of Time to Complete Development (ETD)' },
+        { key: 'Exemption from Cease and Desist Order', label: '        VI.12 Exemption from Cease and Desist Order' },
+        { key: 'Change of Name / Ownership', label: '        VI.13  Change of Name / Ownership' },
+        { key: 'Voluntary Cancellation of CR / LS', label: '        VI.14  Voluntary Cancellation of CR / LS' },
+        { key: 'Revalidation / Renewal of Permit Condominium', label: '        VI.15 Revalidation / Renewal of Permit Condominium' },
+        { key: 'HOA Registration', label: '        VI.16 HOA Registration' },
+        { key: 'Amendment of License to Sell', label: '        VI.17 Amendment of License to Sell' },
+        { key: 'Availability of Records', label: '        VI.18 Availability of Records' }
+    ]},
+    { code: '4020114000', label: 'VII. FINES AND PENALTIES [4020114000]', items: [
+        { key: 'Penalty', label: '        VII.1 For violation of TPZ & ULRZ/APD laws, rules & regulations' },
+        { key: 'Penalty (Non-Renewal)', label: '        VII.2 For violation of ULRZ/APD, laws, rules & conditions' },
+        { key: 'Admin Fine', label: '        VII.3 For violation of Real Estate laws, rules & regulations' },
+        { key: 'Failure to register or renew registration (per year)- Broker', label: '        VII.5 Failure to register or renew registration (per year)- Broker' },
+        { key: 'Failure to register or renew registration (per year)- Salesperson', label: '        VII.6 Failure to register or renew registration (per year)- Salesperson' },
+        { key: 'Failure to register or renew registration (per year)- Business Firm', label: '        VII.7 Failure to register or renew registration (per year)- Business Firm' }
+    ]},
+    { code: '4020199099', label: 'VIII. OTHER SERVICE INCOME [4020199099]', items: [
+        { key: 'Stamping of HOA Books', label: '        VIII.1 Registration of Books for Homeowners Ass\'n (stamping only)' },
+        { key: 'Photocopy', label: '        VIII.2 Photocopy/ Sale of Forms/ Publications' },
+        { key: 'Sale of Books', label: '        VIII.3 Sale of Books (BP220 / PD957/ etc.)' },
+        { key: 'Proceeds From Disposal of PPE', label: '        VIII.4 Unservisable Properties & Equipment' },
+        { key: 'CRLS Forms', label: '        VIII.5 CR/LS Forms; Amendment; Upgrading of Selling Price; Amended Master Deed' },
+        { key: 'Miscellaneous Fees', label: '        VIII.6 Miscellaneous Fees' }
+    ]}
 ];
 
 function fmtMoney(n) {
     const v = parseFloat(n) || 0;
-    if (v === 0) return ' -   ';
+    if (v === 0) return '-';
     return v.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
@@ -1698,22 +2338,24 @@ function sumKeys(map, keys) {
     return sum;
 }
 
+function rawTotal(records) {
+    let sum = 0;
+    records.forEach(r => { sum += parseFloat(r.total) || 0; });
+    return sum;
+}
+
 async function buildAndShowPrint(month, year) {
     const allRecordsLocal = await fetchAllRecordsOnce();
 
     const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    const targetSheetName = `${months[month]} ${year}`;
 
-    const currentRecords = allRecordsLocal.filter(r => {
-        if (!r.dateFull) return false;
-        const [y, m] = r.dateFull.split('-');
-        return parseInt(y, 10) === year && parseInt(m, 10) === (month + 1);
-    });
+    const currentRecords = allRecordsLocal.filter(r => (r.sheetName || '').trim() === targetSheetName);
 
     const cumulativeRecords = allRecordsLocal.filter(r => {
-        if (!r.dateFull) return false;
-        const [y, m] = r.dateFull.split('-');
-        if (parseInt(y, 10) !== year) return false;
-        return parseInt(m, 10) <= (month + 1);
+        const parts = (r.sheetName || '').trim().split(' ');
+        const y = parseInt(parts[parts.length - 1], 10);
+        return y === year;
     });
 
     if (currentRecords.length === 0 && cumulativeRecords.length === 0) {
@@ -1726,30 +2368,33 @@ async function buildAndShowPrint(month, year) {
     const monthMap = aggregateByNature(currentRecords);
     const cumMap = aggregateByNature(cumulativeRecords);
 
+    const rawMonthTotal = rawTotal(currentRecords);
+    const rawCumTotal = rawTotal(cumulativeRecords);
+
+    let grandMonth = 0;
+    let grandCum = 0;
+
     let html = `
         <div class="report-page">
             <div class="rpt-header">
                 <div class="rpt-line1">DEPARTMENT OF HUMAN SETTLEMENTS &amp; URBAN DEVELOPMENT (DHSUD)</div>
-                <div class="rpt-line2">Region 6, Iloilo City</div>
-                <div class="rpt-line3">STATEMENT OF INCOME (NGAS)</div>
-                <div class="rpt-line4">For the period ${monthName} 1-${lastDay} , ${year}</div>
+                <div class="rpt-line2">STATEMENT OF INCOME (NGAS)</div>
+                <div class="rpt-line3">&nbsp;</div>
+                <div class="rpt-line4">For the period ${monthName} 1-${lastDay}, ${year}</div>
             </div>
             <table class="rpt">
                 <thead>
                     <tr>
                         <th style="width:60%;">PARTICULAR</th>
                         <th style="width:20%;">Month</th>
-                        <th style="width:20%;">Cummulative</th>
+                        <th style="width:20%;">Commulative</th>
                     </tr>
                 </thead>
                 <tbody>
     `;
 
-    let grandMonth = 0;
-    let grandCum = 0;
-
     REPORT_CATEGORIES.forEach(cat => {
-        html += `<tr class="section-hdr"><td colspan="3">   ${cat.label}</td></tr>`;
+        html += `<tr class="section-hdr"><td colspan="3">${cat.label}</td></tr>`;
 
         let catMonth = 0;
         let catCum = 0;
@@ -1770,15 +2415,15 @@ async function buildAndShowPrint(month, year) {
         grandMonth += catMonth;
         grandCum += catCum;
 
-        html += `<tr class="total-row">
-            <td class="lbl">TOTAL  ${cat.label.replace(/^[IVX]+\.\s*/, '').replace(/\s*\[.*$/, '')} </td>
+        html += `<tr class="total-row-special">
+            <td class="lbl">TOTAL  ${cat.label.replace(/^[IVX]+\.\s*/, '').replace(/\s*\[.*$/, '')}</td>
             <td class="num"> ${fmtMoney(catMonth)} </td>
             <td class="num"> ${fmtMoney(catCum)} </td>
         </tr>`;
     });
 
-    html += `<tr class="total-row"><td class="lbl">&nbsp;</td><td class="num">&nbsp;</td><td class="num">&nbsp;</td></tr>`;
-    html += `<tr class="total-row">
+    html += `<tr class="total-row-special"><td class="lbl">&nbsp;</td><td class="num">&nbsp;</td><td class="num">&nbsp;</td></tr>`;
+    html += `<tr class="total-row-special">
         <td class="lbl">      TOTAL INCOME</td>
         <td class="num"> ${fmtMoney(grandMonth)} </td>
         <td class="num"> ${fmtMoney(grandCum)} </td>
@@ -1796,25 +2441,25 @@ async function buildAndShowPrint(month, year) {
     const uplrfM = sumKeys(monthMap, ['UPLRF']);
     const uplrfC = sumKeys(cumMap, ['UPLRF']);
 
-    html += `<tr class="section-hdr"><td colspan="3">ADVANCES TO OFFICERS &amp; EMPLOYEES (1-99-01-040)</td></tr>`;
-    html += `<tr><td class="lbl">&nbsp;</td><td class="num"> ${fmtMoney(advOffM)} </td><td class="num"> ${fmtMoney(advOffC)} </td></tr>`;
-    html += `<tr class="section-hdr"><td colspan="3">ADVANCES TO SPECIAL DISBURSING OFFICER (1-99-01-030)</td></tr>`;
-    html += `<tr><td class="lbl">&nbsp;</td><td class="num"> ${fmtMoney(advSdoM)} </td><td class="num"> ${fmtMoney(advSdoC)} </td></tr>`;
-    html += `<tr class="section-hdr"><td colspan="3">TRUST LIABILITIES(Trust Receipts)(2-04-01-010)-Brokers/Salespersons Bond</td></tr>`;
-    html += `<tr><td class="lbl">&nbsp;</td><td class="num"> ${fmtMoney(bondM)} </td><td class="num"> ${fmtMoney(bondC)} </td></tr>`;
-    html += `<tr class="section-hdr"><td colspan="3">TRUST LIABILITIES (2-04-01-010)-Consignation - Appeal Bond</td></tr>`;
-    html += `<tr><td class="lbl">&nbsp;</td><td class="num"> ${fmtMoney(consigM)} </td><td class="num"> ${fmtMoney(consigC)} </td></tr>`;
-    html += `<tr class="section-hdr"><td colspan="3">DUE TO NGAs (UPLRF c/o Bureau of Treasury)(2-02-01-050)</td></tr>`;
-    html += `<tr><td class="lbl">&nbsp;</td><td class="num"> ${fmtMoney(uplrfM)} </td><td class="num"> ${fmtMoney(uplrfC)} </td></tr>`;
+    function trustLine(label, keyM, keyC) {
+        return `<tr>
+            <td class="lbl">${label}</td>
+            <td class="num"> ${fmtMoney(keyM)} </td>
+            <td class="num"> ${fmtMoney(keyC)} </td>
+        </tr>`;
+    }
 
-    const grandTotalMonth = grandMonth + advOffM + advSdoM + bondM + consigM + uplrfM;
-    const grandTotalCum = grandCum + advOffC + advSdoC + bondC + consigC + uplrfC;
+    html += trustLine('ADVANCES TO OFFICERS &amp; EMPLOYEES', advOffM, advOffC);
+    html += trustLine('ADVANCES TO SPECIAL DISBURSING OFFICER', advSdoM, advSdoC);
+    html += trustLine('TRUST LIABILITIES(Trust Receipts)(2-04-01-010)-Brokers/Salespersons Bond', bondM, bondC);
+    html += trustLine('TRUST LIABILITIES (2-04-01-010)-Consignation - Appeal Bond', consigM, consigC);
+    html += trustLine('DUE TO NGAs (UPLRF c/o Bureau of Treasury)(2-02-01-050)', uplrfM, uplrfC);
 
     html += `<tr><td colspan="3">&nbsp;</td></tr>`;
-    html += `<tr class="grand-row">
+    html += `<tr class="total-row-special">
         <td class="lbl">GRAND TOTAL COLLECTIONS</td>
-        <td class="num"> ${fmtMoney(grandTotalMonth)} </td>
-        <td class="num"> ${fmtMoney(grandTotalCum)} </td>
+        <td class="num"> ${fmtMoney(rawMonthTotal)} </td>
+        <td class="num"> ${fmtMoney(rawCumTotal)} </td>
     </tr>`;
 
     html += `
@@ -1852,15 +2497,10 @@ async function fetchAllRecordsOnce() {
         const json = await res.json();
         if (json.result !== 'success' || !Array.isArray(json.records)) return [];
 
-        const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-        return json.records.map(r => {
-            const parts = (r.sheetName || '').split(' ');
-            const mIdx = months.indexOf(parts[0]);
-            const y = parseInt(parts[1], 10);
-            const day = String(r.date || '').padStart(2, '0');
-            const dateFull = (mIdx >= 0 && !isNaN(y)) ? `${y}-${String(mIdx + 1).padStart(2, '0')}-${day}` : null;
-            return { ...r, dateFull };
-        }).filter(r => r.dateFull);
+        return json.records.map(r => ({
+            ...r,
+            sheetName: (r.sheetName || '').trim()
+        })).filter(r => r.sheetName);
     } catch (e) {
         return [];
     }
@@ -1885,6 +2525,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     createEntryRow('summaryEntries', 'summary');
     createEntryRow('orEntries', 'or');
+
+    document.getElementById('summaryButtons').style.display = 'flex';
 
     fetch(WEB_APP_URL + '?action=getCurrentSheet', { method: 'GET' })
         .then(r => r.json())
