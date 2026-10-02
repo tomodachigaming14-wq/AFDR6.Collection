@@ -576,7 +576,7 @@
     <!-- Toggle Buttons -->
     <div class="toggle-container">
         <button class="toggle-btn active" data-type="SUMMARY" id="toggleSummary">
-            <i class="fas fa-file-invoice-dollar"></i> Summary of Collection
+            <i class="fas fa-file-invoice-dollar"></i> Payment and Summary
         </button>
         <button class="toggle-btn" data-type="OR" id="toggleOR">
             <i class="fas fa-receipt"></i> Official Receipt
@@ -1172,7 +1172,7 @@ function switchForm(type) {
 
     document.getElementById('summaryButtons').style.display = (type === 'SUMMARY') ? 'flex' : 'none';
 
-    setStatus('📋 ' + (type === 'SUMMARY' ? 'Summary of Collection' : 'Official Receipt') + ' form selected', 'info');
+    setStatus('📋 ' + (type === 'SUMMARY' ? 'Payment and Summary' : 'Official Receipt') + ' form selected', 'info');
 
     if (type === 'OR') {
         populateLoadRecordDropdown();
@@ -2538,7 +2538,7 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .catch(() => {});
 
-    setStatus('📋 Ready · select Summary of Collection or Official Receipt', 'info');
+    setStatus('📋 Ready · select Payment and Summary or Official Receipt', 'info');
 });
 
 setTimeout(function() {
