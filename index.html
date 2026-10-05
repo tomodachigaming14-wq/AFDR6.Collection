@@ -316,9 +316,10 @@
     .summary-print-page table.sp-table td.center {
         text-align: center;
     }
+    /* Daily TOTAL row — yellow highlight */
     .summary-print-page table.sp-table tr.total-row td {
         font-weight: 800;
-        background: #f5f5f5;
+        background: #fff3b0;
         font-size: 7px;
         border-top: 1.5px solid #000;
         border-bottom: 1.5px solid #000;
@@ -326,17 +327,21 @@
     .summary-print-page table.sp-table tr.total-row td.num {
         text-align: right;
     }
+    /* TOTAL BROUGHT FORWARD row — stronger yellow */
     .summary-print-page table.sp-table tr.brought-forward td {
-        font-weight: 700;
-        background: #f9f9f9;
-        font-size: 7px;
-        border-bottom: 1px solid #000;
+        font-weight: 800;
+        background: #ffe066;
+        font-size: 7.5px;
+        border-top: 2px solid #000;
+        border-bottom: 2px solid #000;
     }
+    /* TOTAL CARRIED FORWARD row — slightly different yellow */
     .summary-print-page table.sp-table tr.carried-forward td {
-        font-weight: 700;
-        background: #f9f9f9;
-        font-size: 7px;
-        border-top: 1px solid #000;
+        font-weight: 800;
+        background: #ffd966;
+        font-size: 7.5px;
+        border-top: 2px solid #000;
+        border-bottom: 2px solid #000;
     }
     .summary-print-page table.sp-table .empty-cell {
         background: #fafafa;
@@ -2954,10 +2959,19 @@ async function buildSummaryPrintLandscape(weeks) {
         return map[nature] || null;
     }
 
-    function isTotalRow(r) {
+    // Detect TOTAL BROUGHT FORWARD and TOTAL CARRIED FORWARD rows from backend
+    function isTotalBroughtForwardRow(r) {
         const nature = (r.natureOfCollection || '').toUpperCase();
-        return nature.includes('TOTAL BROUGHT FORWARD') ||
-               nature.includes('TOTAL CARRIED FORWARD');
+        return nature.includes('TOTAL BROUGHT FORWARD');
+    }
+
+    function isTotalCarriedForwardRow(r) {
+        const nature = (r.natureOfCollection || '').toUpperCase();
+        return nature.includes('TOTAL CARRIED FORWARD');
+    }
+
+    function isTotalRow(r) {
+        return isTotalBroughtForwardRow(r) || isTotalCarriedForwardRow(r);
     }
 
     let allPagesHtml = '';
@@ -2994,25 +3008,28 @@ async function buildSummaryPrintLandscape(weeks) {
 
         const sortedDates = Object.keys(grouped).sort((a, b) => parseInt(a) - parseInt(b));
 
-        // Backend totals
-        const broughtForwardRow = totalRows.find(r =>
-            (r.natureOfCollection || '').toUpperCase().includes('TOTAL BROUGHT FORWARD')
-        );
-        const carriedForwardRow = totalRows.find(r =>
-            (r.natureOfCollection || '').toUpperCase().includes('TOTAL CARRIED FORWARD')
-        );
+        // Backend totals (may or may not exist)
+        const broughtForwardRow = totalRows.find(isTotalBroughtForwardRow);
+        const carriedForwardRow = totalRows.find(isTotalCarriedForwardRow);
 
-        const isFirstWeek = !broughtForwardRow;
+        // ===== COMPUTE THE WEEKLY GRAND TOTAL (sum of all daily totals) =====
+        const weekGrandTotal = weekRecords.reduce((s, r) => s + (parseFloat(r.total) || 0), 0);
+
+        // Compute per-column grand totals
+        const weekColumnTotals = {};
+        allColumns.forEach(c => { if (!identifierKeys.includes(c.key)) weekColumnTotals[c.key] = 0; });
+        weekRecords.forEach(r => {
+            const key = getColumnKey(r.natureOfCollection);
+            if (key && weekColumnTotals[key] !== undefined) {
+                weekColumnTotals[key] += parseFloat(r.total) || 0;
+            }
+        });
 
         for (let pageIdx = 0; pageIdx < pages.length; pageIdx++) {
             const pageCols = pages[pageIdx];
             let rowsHtml = '';
 
-            // ===== TOTAL BROUGHT FORWARD at top (only for pages after first page? Actually per request, show at end of each page) =====
-            // We'll show it at the bottom of every page per user's request.
-            // The user said: "don't forget to display the TOTAL BROUGHT FORWARD at every end of the page"
-
-            // Data rows grouped by date
+            // ===== Data rows grouped by date =====
             sortedDates.forEach(dateKey => {
                 const records = grouped[dateKey];
                 const dateLabel = String(dateKey).padStart(2, '0');
@@ -3060,32 +3077,33 @@ async function buildSummaryPrintLandscape(weeks) {
                 rowsHtml += `</tr>`;
             });
 
-            // ===== TOTAL BROUGHT FORWARD at bottom of every page =====
-            if (broughtForwardRow) {
-                rowsHtml += `<tr class="brought-forward">
-                    <td colspan="${identifierCols.length}" style="text-align:right; font-weight:700;">TOTAL BROUGHT FORWARD →</td>`;
-                pageCols.forEach(c => {
-                    if (identifierKeys.includes(c.key)) return;
-                    if (c.key === 'total') {
-                        rowsHtml += `<td class="num">${fmtMoney(broughtForwardRow.total)}</td>`;
-                    } else {
-                        rowsHtml += `<td class="num">-</td>`;
-                    }
-                });
-                rowsHtml += `</tr>`;
-            }
+            // ===== TOTAL BROUGHT FORWARD row at the very bottom =====
+            // FIX: render the identifier columns manually so we can place the weekly grand total
+            // in the TOTAL column (which is part of identifierCols).
+            rowsHtml += `<tr class="brought-forward">`;
+            // Render identifier columns
+            rowsHtml += `<td colspan="3" style="text-align:right; font-weight:800;">TOTAL BROUGHT FORWARD →</td>`;
+            // TOTAL column (the weekly grand total)
+            rowsHtml += `<td class="num" style="font-weight:800;">${fmtMoney(weekGrandTotal)}</td>`;
+            // Data columns (per-column weekly totals)
+            pageCols.forEach(c => {
+                if (identifierKeys.includes(c.key)) return;
+                const val = weekColumnTotals[c.key] || 0;
+                rowsHtml += `<td class="num">${val ? fmtMoney(val) : '-'}</td>`;
+            });
+            rowsHtml += `</tr>`;
 
-            // ===== TOTAL CARRIED FORWARD at bottom (only if not last week) =====
-            if (carriedForwardRow && !isLastWeekOfMonth(week)) {
-                rowsHtml += `<tr class="carried-forward">
-                    <td colspan="${identifierCols.length}" style="text-align:right; font-weight:700;">TOTAL CARRIED FORWARD →</td>`;
+            // ===== TOTAL CARRIED FORWARD row (if backend has it and not last week) =====
+            const lastDay = new Date(week.year, week.month + 1, 0);
+            const isLastWeek = week.end >= lastDay;
+
+            if (carriedForwardRow && !isLastWeek) {
+                rowsHtml += `<tr class="carried-forward">`;
+                rowsHtml += `<td colspan="3" style="text-align:right; font-weight:800;">TOTAL CARRIED FORWARD →</td>`;
+                rowsHtml += `<td class="num" style="font-weight:800;">${fmtMoney(carriedForwardRow.total)}</td>`;
                 pageCols.forEach(c => {
                     if (identifierKeys.includes(c.key)) return;
-                    if (c.key === 'total') {
-                        rowsHtml += `<td class="num">${fmtMoney(carriedForwardRow.total)}</td>`;
-                    } else {
-                        rowsHtml += `<td class="num">-</td>`;
-                    }
+                    rowsHtml += `<td class="num">-</td>`;
                 });
                 rowsHtml += `</tr>`;
             }
@@ -3119,11 +3137,6 @@ async function buildSummaryPrintLandscape(weeks) {
 
     document.getElementById('printArea').innerHTML = allPagesHtml;
     setTimeout(() => { window.print(); }, 300);
-}
-
-function isLastWeekOfMonth(week) {
-    const lastDay = new Date(week.year, week.month + 1, 0);
-    return week.end >= lastDay;
 }
 
 // ============================================
