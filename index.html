@@ -346,7 +346,7 @@
            OFFICIAL RECEIPT — PORTRAIT (LEFT-ALIGNED) - DOT MATRIX OPTIMIZED
            ============================================================ */
         .or-page {
-            font-family: "Courier New", Courier, monospace;
+            font-family: Arial, Helvetica, sans-serif;
             padding: 0;
             color: #000;
             background: white;
@@ -366,19 +366,19 @@
         .or-page .or-header .or-logo-left,
         .or-page .or-header .or-logo-right { width: 45px; height: 45px; object-fit: contain; display: block; flex-shrink: 0; }
         .or-page .or-header .or-title-block { text-align: center; padding: 0 2px; }
-        .or-page .or-header .or-title-1 { font-family: "Times New Roman", serif; font-weight: 700; font-size: 14px; letter-spacing: 0.4px; line-height: 1.1; white-space: nowrap; }
-        .or-page .or-header .or-title-2 { font-family: "Times New Roman", serif; font-weight: 600; font-size: 8px; margin-top: 1px; white-space: nowrap; }
-        .or-page .or-header .or-title-3 { font-family: "Times New Roman", serif; font-weight: 700; font-size: 7px; margin-top: 1px; letter-spacing: 0.2px; white-space: nowrap; }
-        .or-page .or-header .or-title-4 { font-family: "Times New Roman", serif; font-weight: 700; font-size: 7px; letter-spacing: 0.2px; white-space: nowrap; }
+        .or-page .or-header .or-title-1 { font-family: Arial, Helvetica, sans-serif; font-weight: 700; font-size: 14px; letter-spacing: 0.4px; line-height: 1.1; white-space: nowrap; }
+        .or-page .or-header .or-title-2 { font-family: Arial, Helvetica, sans-serif; font-weight: 600; font-size: 8px; margin-top: 1px; white-space: nowrap; }
+        .or-page .or-header .or-title-3 { font-family: Arial, Helvetica, sans-serif; font-weight: 700; font-size: 7px; margin-top: 1px; letter-spacing: 0.2px; white-space: nowrap; }
+        .or-page .or-header .or-title-4 { font-family: Arial, Helvetica, sans-serif; font-weight: 700; font-size: 7px; letter-spacing: 0.2px; white-space: nowrap; }
 
         .or-page .or-info-box { border: 1.6px solid #000; border-radius: 4px; margin-bottom: 4px; overflow: hidden; display: grid; grid-template-columns: 1.5fr 1fr; grid-template-rows: auto auto; }
         .or-page .or-info-box .or-info-cell { padding: 4px 6px; line-height: 1.2; border-right: 1.6px solid #000; border-bottom: 1.6px solid #000; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; min-height: 32px; }
         .or-page .or-info-box .or-info-cell:nth-child(2n) { border-right: none; }
         .or-page .or-info-box .or-info-cell:nth-child(n+3) { border-bottom: none; }
-        .or-page .or-info-box .or-info-cell .or-form-label { font-size: 7.5px; font-style: italic; font-weight: 700; line-height: 1.3; text-align: center; width: 100%; }
-        .or-page .or-info-box .or-info-cell .or-original { font-family: "Times New Roman", serif; font-weight: 700; font-size: 14px; letter-spacing: 1px; }
+        .or-page .or-info-box .or-info-cell .or-form-label { font-size: 12px; font-style: italic; font-weight: 700; line-height: 1.3; text-align: center; width: 100%; }
+        .or-page .or-info-box .or-info-cell .or-original { font-family: Arial, Helvetica, sans-serif; font-weight: 700; font-size: 14px; letter-spacing: 1px; }
         .or-page .or-info-box .or-info-cell .or-cell-label { font-size: 7.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.2px; text-align: left; width: 100%; }
-        .or-page .or-info-box .or-info-cell .or-cell-value { font-size: 11px; font-weight: 600; margin-top: 2px; text-align: left; width: 100%; }
+        .or-page .or-info-box .or-info-cell .or-cell-value { font-size: 12px; font-weight: 600; margin-top: 2px; text-align: left; width: 100%; }
 
         .or-page .or-payor-box { border: 1.6px solid #000; border-radius: 4px; margin-bottom: 4px; overflow: hidden; }
         .or-page .or-payor-top { padding: 4px 6px; border-bottom: 1.6px solid #000; }
@@ -411,7 +411,7 @@
 
         .or-page .or-words-inline { padding: 4px 6px; border-top: 1.6px solid #000; line-height: 1.2; }
         .or-page .or-words-inline .or-words-label { font-size: 7.5px; font-weight: 700; text-transform: uppercase; }
-        .or-page .or-words-inline .or-words-value { font-size: 10px; font-weight: 700; margin-top: 2px; text-transform: uppercase; }
+        .or-page .or-words-inline .or-words-value { font-size: 10px; font-weight: 400; margin-top: 2px; text-transform: uppercase; }
 
         .or-page .or-payment-box { border: 1.6px solid #000; border-radius: 4px; margin-bottom: 4px; overflow: hidden; }
         .or-page .or-payment-main { display: flex; border-bottom: 1.6px solid #000; }
@@ -528,6 +528,21 @@
         }
         .or-page.or-details-overlay .or-footer-note {
             opacity: 0;
+        }
+
+        /* ===== DETAILS ONLY PRINT OVERRIDES (Re-applied per user request) ===== */
+        .or-page.or-details-overlay {
+            font-family: "Courier New", Courier, monospace;
+        }
+        .or-page.or-details-overlay .or-header .or-title-1,
+        .or-page.or-details-overlay .or-header .or-title-2,
+        .or-page.or-details-overlay .or-header .or-title-3,
+        .or-page.or-details-overlay .or-header .or-title-4,
+        .or-page.or-details-overlay .or-original {
+            font-family: "Courier New", Courier, monospace;
+        }
+        .or-page.or-details-overlay .or-words-inline .or-words-value {
+            font-weight: 400; /* Revert bold for details only */
         }
     </style>
 </head>
@@ -1933,7 +1948,7 @@ function buildAndShowORPrint(date, orNo, opNo, name, entries, isBlank, detailsOn
             rowsHtml += `<tr class="or-data-row">
                 <td class="or-col-nature"><div class="or-row-spacer">${escapeHtml(e.nature)}</div></td>
                 <td class="or-col-code"><div class="or-row-spacer">${escapeHtml(e.accounts)}</div></td>
-                <td class="or-col-amount"><div class="or-row-spacer"><span class="or-peso">₱</span>${fmtORAmount(e.amount)}</div></td>
+                <td class="or-col-amount"><div class="or-row-spacer">${fmtORAmount(e.amount)}</div></td>
             </tr>`;
         } else {
             rowsHtml += `<tr class="or-empty-row">
@@ -1947,7 +1962,7 @@ function buildAndShowORPrint(date, orNo, opNo, name, entries, isBlank, detailsOn
     rowsHtml += `<tr class="or-total-row">
         <td class="or-col-nature">TOTAL</td>
         <td class="or-col-code"></td>
-        <td class="or-col-amount"><span class="or-peso">₱</span>${isBlank ? '' : fmtORAmount(total)}</td>
+        <td class="or-col-amount">${isBlank ? '' : fmtORAmount(total)}</td>
     </tr>`;
 
     const base = (typeof window !== 'undefined' && window.location)
@@ -1985,11 +2000,11 @@ function buildAndShowORPrint(date, orNo, opNo, name, entries, isBlank, detailsOn
                         </div>
                         <div class="or-info-cell">
                             <div class="or-cell-label">DATE</div>
-                            <div class="or-cell-value">${escapeHtml(dateLong)}</div>
+                            <div class="or-cell-value" style="text-align:center;">${escapeHtml(dateLong)}</div>
                         </div>
                         <div class="or-info-cell">
                             <div class="or-cell-label">NO.</div>
-                            <div class="or-cell-value">&nbsp;</div>
+                            <div class="or-cell-value" style="font-size:12px;">&nbsp;</div>
                         </div>
                     </div>
 
@@ -2097,11 +2112,11 @@ function buildAndShowORPrint(date, orNo, opNo, name, entries, isBlank, detailsOn
                     </div>
                     <div class="or-info-cell">
                         <div class="or-cell-label">DATE</div>
-                        <div class="or-cell-value">${isBlank ? '&nbsp;' : escapeHtml(dateLong)}</div>
+                        <div class="or-cell-value" style="text-align:center;">${isBlank ? '&nbsp;' : escapeHtml(dateLong)}</div>
                     </div>
                     <div class="or-info-cell">
                         <div class="or-cell-label">NO.</div>
-                        <div class="or-cell-value">&nbsp;</div>
+                        <div class="or-cell-value" style="font-size:12px;">&nbsp;</div>
                     </div>
                 </div>
 
@@ -2524,7 +2539,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('summary_date').value = today;
     document.getElementById('or_date').value = today;
 
-    createEntryRow('summaryEntries', 'summary');
+createEntryRow('summaryEntries', 'summary');
     createEntryRow('orEntries', 'or');
 
     document.getElementById('summaryButtons').style.display = 'flex';
