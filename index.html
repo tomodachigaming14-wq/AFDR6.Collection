@@ -2674,12 +2674,69 @@ function updateWeekOptions() {
 
     if (isNaN(month) || isNaN(year)) return;
 
-    const weeks = getWeeksOfMonth(year, month);
-    weeks.forEach((w, idx) => {
-        const o = document.createElement('option');
-        o.value = idx;
-        o.textContent = w.label;
-        weekSel.appendChild(o);
+    // Fetch records to check which weeks have data
+    fetchAllRecordsOnce().then(allRecords => {
+        const monthName = ['January','February','March','April','May','June','July','August','September','October','November','December'][month];
+        const sheetName = `${monthName} ${year}`;
+        const monthRecords = allRecords.filter(r => (r.sheetName || '').trim() === sheetName);
+
+        // Filter out TOTAL rows
+        const normalRecords = monthRecords.filter(r => {
+            const nature = (r.natureOfCollection || '').toUpperCase();
+            return !nature.includes('TOTAL BROUGHT FORWARD') && !nature.includes('TOTAL CARRIED FORWARD');
+        });
+
+        // Get all dates with data
+        const datesWithData = new Set();
+        normalRecords.forEach(r => {
+            const d = parseInt(r.date, 10);
+            if (!isNaN(d)) datesWithData.add(d);
+        });
+
+        if (datesWithData.size === 0) {
+            const o = document.createElement('option');
+            o.value = '';
+            o.textContent = 'No data available for this month';
+            weekSel.appendChild(o);
+            return;
+        }
+
+        // Get weeks of the month
+        const weeks = getWeeksOfMonth(year, month);
+
+        // Filter weeks that contain at least one date with data
+        const validWeeks = weeks.filter(w => {
+            for (let d = 1; d <= 31; d++) {
+                if (!datesWithData.has(d)) continue;
+                const dateObj = new Date(year, month, d);
+                if (dateObj >= w.start && dateObj <= w.end) return true;
+            }
+            return false;
+        });
+
+        if (validWeeks.length === 0) {
+            const o = document.createElement('option');
+            o.value = '';
+            o.textContent = 'No data available for this month';
+            weekSel.appendChild(o);
+            return;
+        }
+
+        validWeeks.forEach((w, idx) => {
+            const o = document.createElement('option');
+            o.value = idx;
+            o.textContent = w.label;
+            weekSel.appendChild(o);
+        });
+    }).catch(() => {
+        // Fallback: show all weeks if fetch fails
+        const weeks = getWeeksOfMonth(year, month);
+        weeks.forEach((w, idx) => {
+            const o = document.createElement('option');
+            o.value = idx;
+            o.textContent = w.label;
+            weekSel.appendChild(o);
+        });
     });
 }
 
@@ -2959,32 +3016,32 @@ async function buildSummaryPrintLandscape(weeks) {
         return map[nature] || null;
     }
 
-    // Detect TOTAL BROUGHT FORWARD and TOTAL CARRIED FORWARD rows from backend
-    function isTotalBroughtForwardRow(r) {
-        const nature = (r.natureOfCollection || '').toUpperCase();
-        return nature.includes('TOTAL BROUGHT FORWARD');
-    }
+    // ============================================================
+    // NEW: Carried/Brought Forward logic per week
+    // ============================================================
+    // Sort weeks chronologically
+    const sortedWeeks = [...weeks].sort((a, b) => {
+        if (a.year !== b.year) return a.year - b.year;
+        if (a.month !== b.month) return a.month - b.month;
+        return a.start - b.start;
+    });
 
-    function isTotalCarriedForwardRow(r) {
-        const nature = (r.natureOfCollection || '').toUpperCase();
-        return nature.includes('TOTAL CARRIED FORWARD');
-    }
+    // Calculate per-week totals (excluding any pre-existing TOTAL rows)
+    const weeklyData = []; // { week, records, grandTotal, columnTotals }
 
-    function isTotalRow(r) {
-        return isTotalBroughtForwardRow(r) || isTotalCarriedForwardRow(r);
-    }
-
-    let allPagesHtml = '';
-
-    for (const week of weeks) {
+    for (const week of sortedWeeks) {
         const monthName = months[week.month];
         const sheetName = `${monthName} ${week.year}`;
 
         const monthRecords = allRecords.filter(r => (r.sheetName || '').trim() === sheetName);
 
-        const normalRecords = monthRecords.filter(r => !isTotalRow(r));
-        const totalRows = monthRecords.filter(r => isTotalRow(r));
+        // Filter out TOTAL BROUGHT/CARRIED FORWARD rows from the sheet
+        const normalRecords = monthRecords.filter(r => {
+            const nature = (r.natureOfCollection || '').toUpperCase();
+            return !nature.includes('TOTAL BROUGHT FORWARD') && !nature.includes('TOTAL CARRIED FORWARD');
+        });
 
+        // Filter by week date range
         const weekRecords = normalRecords.filter(r => {
             const d = parseInt(r.date, 10);
             if (isNaN(d)) return false;
@@ -2999,23 +3056,8 @@ async function buildSummaryPrintLandscape(weeks) {
             return (a.rowNumber || 0) - (b.rowNumber || 0);
         });
 
-        const grouped = {};
-        weekRecords.forEach(r => {
-            const d = r.date;
-            if (!grouped[d]) grouped[d] = [];
-            grouped[d].push(r);
-        });
-
-        const sortedDates = Object.keys(grouped).sort((a, b) => parseInt(a) - parseInt(b));
-
-        // Backend totals (may or may not exist)
-        const broughtForwardRow = totalRows.find(isTotalBroughtForwardRow);
-        const carriedForwardRow = totalRows.find(isTotalCarriedForwardRow);
-
-        // ===== COMPUTE THE WEEKLY GRAND TOTAL (sum of all daily totals) =====
         const weekGrandTotal = weekRecords.reduce((s, r) => s + (parseFloat(r.total) || 0), 0);
 
-        // Compute per-column grand totals
         const weekColumnTotals = {};
         allColumns.forEach(c => { if (!identifierKeys.includes(c.key)) weekColumnTotals[c.key] = 0; });
         weekRecords.forEach(r => {
@@ -3025,9 +3067,71 @@ async function buildSummaryPrintLandscape(weeks) {
             }
         });
 
+        weeklyData.push({
+            week,
+            records: weekRecords,
+            grandTotal: weekGrandTotal,
+            columnTotals: weekColumnTotals
+        });
+    }
+
+    // Compute running totals
+    let allPagesHtml = '';
+
+    for (let wIdx = 0; wIdx < weeklyData.length; wIdx++) {
+        const wd = weeklyData[wIdx];
+        const week = wd.week;
+
+        // Carried Forward = sum of all PREVIOUS weeks
+        const carriedForwardTotal = weeklyData.slice(0, wIdx).reduce((s, x) => s + x.grandTotal, 0);
+        // Brought Forward = Carried Forward + current week total
+        const broughtForwardTotal = carriedForwardTotal + wd.grandTotal;
+
+        // Carried Forward per-column
+        const carriedForwardCols = {};
+        allColumns.forEach(c => { if (!identifierKeys.includes(c.key)) carriedForwardCols[c.key] = 0; });
+        for (let j = 0; j < wIdx; j++) {
+            const prev = weeklyData[j];
+            Object.keys(prev.columnTotals).forEach(k => {
+                if (carriedForwardCols[k] !== undefined) carriedForwardCols[k] += prev.columnTotals[k];
+            });
+        }
+
+        // Brought Forward per-column
+        const broughtForwardCols = {};
+        Object.keys(carriedForwardCols).forEach(k => {
+            broughtForwardCols[k] = carriedForwardCols[k] + (wd.columnTotals[k] || 0);
+        });
+
+        // Group records by date
+        const grouped = {};
+        wd.records.forEach(r => {
+            const d = r.date;
+            if (!grouped[d]) grouped[d] = [];
+            grouped[d].push(r);
+        });
+        const sortedDates = Object.keys(grouped).sort((a, b) => parseInt(a) - parseInt(b));
+
+        // Is this the last week of the month? (Only for display purposes — no longer used for OVERALL)
+        const lastDay = new Date(week.year, week.month + 1, 0);
+        const isLastWeekOfMonth = week.end >= lastDay;
+
         for (let pageIdx = 0; pageIdx < pages.length; pageIdx++) {
             const pageCols = pages[pageIdx];
             let rowsHtml = '';
+
+            // ===== TOTAL CARRIED FORWARD row — placed FIRST (only if not first week) =====
+            if (wIdx > 0) {
+                rowsHtml += `<tr class="carried-forward">`;
+                rowsHtml += `<td colspan="3" style="text-align:right; font-weight:800;">TOTAL CARRIED FORWARD →</td>`;
+                rowsHtml += `<td class="num" style="font-weight:800;">${fmtMoney(carriedForwardTotal)}</td>`;
+                pageCols.forEach(c => {
+                    if (identifierKeys.includes(c.key)) return;
+                    const val = carriedForwardCols[c.key] || 0;
+                    rowsHtml += `<td class="num">${val ? fmtMoney(val) : '-'}</td>`;
+                });
+                rowsHtml += `</tr>`;
+            }
 
             // ===== Data rows grouped by date =====
             sortedDates.forEach(dateKey => {
@@ -3066,9 +3170,10 @@ async function buildSummaryPrintLandscape(weeks) {
                 });
 
                 // Day subtotal
+                const dayTotal = records.reduce((s, r) => s + (parseFloat(r.total) || 0), 0);
                 rowsHtml += `<tr class="total-row">
                     <td colspan="3" style="text-align:right;">TOTAL</td>
-                    <td class="num">${fmtMoney(records.reduce((s, r) => s + (parseFloat(r.total) || 0), 0))}</td>`;
+                    <td class="num">${fmtMoney(dayTotal)}</td>`;
                 pageCols.forEach(c => {
                     if (identifierKeys.includes(c.key)) return;
                     const val = dayTotals[c.key] || 0;
@@ -3077,33 +3182,35 @@ async function buildSummaryPrintLandscape(weeks) {
                 rowsHtml += `</tr>`;
             });
 
-            // ===== TOTAL BROUGHT FORWARD row at the very bottom =====
-            // FIX: render the identifier columns manually so we can place the weekly grand total
-            // in the TOTAL column (which is part of identifierCols).
+            // ===== TOTAL BROUGHT FORWARD row — placed at the bottom =====
             rowsHtml += `<tr class="brought-forward">`;
-            // Render identifier columns
             rowsHtml += `<td colspan="3" style="text-align:right; font-weight:800;">TOTAL BROUGHT FORWARD →</td>`;
-            // TOTAL column (the weekly grand total)
-            rowsHtml += `<td class="num" style="font-weight:800;">${fmtMoney(weekGrandTotal)}</td>`;
-            // Data columns (per-column weekly totals)
+            rowsHtml += `<td class="num" style="font-weight:800;">${fmtMoney(broughtForwardTotal)}</td>`;
             pageCols.forEach(c => {
                 if (identifierKeys.includes(c.key)) return;
-                const val = weekColumnTotals[c.key] || 0;
+                const val = broughtForwardCols[c.key] || 0;
                 rowsHtml += `<td class="num">${val ? fmtMoney(val) : '-'}</td>`;
             });
             rowsHtml += `</tr>`;
 
-            // ===== TOTAL CARRIED FORWARD row (if backend has it and not last week) =====
-            const lastDay = new Date(week.year, week.month + 1, 0);
-            const isLastWeek = week.end >= lastDay;
+            // ===== OVERALL TOTAL BROUGHT FORWARD (only on last week of month) =====
+            if (isLastWeekOfMonth) {
+                const overallTotal = weeklyData.reduce((s, x) => s + x.grandTotal, 0);
+                const overallCols = {};
+                allColumns.forEach(c => { if (!identifierKeys.includes(c.key)) overallCols[c.key] = 0; });
+                weeklyData.forEach(x => {
+                    Object.keys(x.columnTotals).forEach(k => {
+                        if (overallCols[k] !== undefined) overallCols[k] += x.columnTotals[k];
+                    });
+                });
 
-            if (carriedForwardRow && !isLastWeek) {
-                rowsHtml += `<tr class="carried-forward">`;
-                rowsHtml += `<td colspan="3" style="text-align:right; font-weight:800;">TOTAL CARRIED FORWARD →</td>`;
-                rowsHtml += `<td class="num" style="font-weight:800;">${fmtMoney(carriedForwardRow.total)}</td>`;
+                rowsHtml += `<tr class="brought-forward" style="background: #ffd966;">`;
+                rowsHtml += `<td colspan="3" style="text-align:right; font-weight:800;">OVERALL TOTAL BROUGHT FORWARD →</td>`;
+                rowsHtml += `<td class="num" style="font-weight:800;">${fmtMoney(overallTotal)}</td>`;
                 pageCols.forEach(c => {
                     if (identifierKeys.includes(c.key)) return;
-                    rowsHtml += `<td class="num">-</td>`;
+                    const val = overallCols[c.key] || 0;
+                    rowsHtml += `<td class="num">${val ? fmtMoney(val) : '-'}</td>`;
                 });
                 rowsHtml += `</tr>`;
             }
@@ -3119,7 +3226,7 @@ async function buildSummaryPrintLandscape(weeks) {
                         <div class="sp-line1">DEPARTMENT OF HUMAN SETTLEMENTS &amp; URBAN DEVELOPMENT (DHSUD)</div>
                         <div class="sp-line2">Region VI, Iloilo City</div>
                         <div class="sp-line3">SUMMARY OF COLLECTIONS</div>
-                        <div class="sp-line4">${monthName} ${week.start.getDate()} - ${week.end.getDate()}, ${week.year}</div>
+                        <div class="sp-line4">${months[week.month]} ${week.start.getDate()} - ${week.end.getDate()}, ${week.year}</div>
                         <div class="sp-page-info">Page ${pageIdx + 1} of ${pages.length} (Columns ${pageIdx * COLS_PER_PAGE + 1}–${Math.min((pageIdx + 1) * COLS_PER_PAGE, dataCols.length)} of ${dataCols.length})</div>
                     </div>
                     <table class="sp-table">
