@@ -244,131 +244,270 @@
         .week-selector-row { flex-direction: column; } .week-selector-row .field-group { min-width: 100%; }
     }
 
+   /* ============================================================
+   PRINT OUTPUT — SCOPED PER DOCUMENT TYPE
+   ============================================================ */
+#printArea {
+    display: none;
+}
+
+@media print {
+    body * {
+        visibility: hidden;
+    }
+    #printArea,
+    #printArea * {
+        visibility: visible;
+    }
+    #printArea {
+        display: block;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        background: white;
+    }
+    .no-print {
+        display: none !important;
+    }
+}
+
+ /* ============================================================
+   SUMMARY OF COLLECTION — 8.5" × 13" LANDSCAPE
+   ============================================================ */
+.summary-print-page {
+    font-family: "Inter", "Segoe UI", Roboto, sans-serif;
+    padding: 0.25in 0 0.35in 0;
+    color: #000;
+    background: white;
+    font-size: 7px;
+    line-height: 1.15;
+    width: 12.4in;                    /* ← was 12.2in — fills more of the 13in page */
+    max-width: 12.4in;
+    margin: 0 auto;
+    box-sizing: border-box;
+    page-break-after: always;
+    page-break-inside: avoid;
+    overflow: hidden;
+}
+
+.summary-print-page:last-child {
+    page-break-after: auto;
+}
+
+.summary-print-page .sp-header {
+    text-align: left;
+    margin-bottom: 2px;
+    line-height: 1.15;
+}
+.summary-print-page .sp-header .sp-line1 { font-weight: 800; font-size: 10px; letter-spacing: 0.2px; }
+.summary-print-page .sp-header .sp-line2 { font-weight: 700; font-size: 10px; letter-spacing: 0.2px; }
+.summary-print-page .sp-header .sp-line3 { font-weight: 800; font-size: 10px; letter-spacing: 0.4px; margin-top: 1px; }
+.summary-print-page .sp-header .sp-line4 { font-weight: 700; font-size: 10px; margin-top: 1px; }
+.summary-print-page .sp-header .sp-page-info { font-weight: 600; font-size: 8px; color: #555; margin-top: 1px; font-style: italic; }
+
+.summary-print-page table.sp-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    margin-top: 2px;
+}
+
+.summary-print-page table.sp-table th,
+.summary-print-page table.sp-table td {
+    border: 0.5px solid #000;
+    padding: 1px 1.5px;                /* ← tighter padding */
+    font-size: 5.5px;                  /* ← smaller data font */
+    vertical-align: middle;
+    line-height: 1.05;                 /* ← tighter line height */
+    word-wrap: break-word;
+    overflow: hidden;
+}
+
+.summary-print-page table.sp-table th {
+    background: #f0f0f0;
+    text-align: center;
+    font-weight: 700;
+    font-size: 5px;                    /* ← smaller header font */
+    padding: 2px 1px;
+    word-break: break-word;
+    line-height: 1.05;
+}
+
+.summary-print-page table.sp-table td.num {
+    text-align: right;
+    padding-right: 1.5px;
+    white-space: nowrap;
+    font-size: 5.5px;
+}
+.summary-print-page table.sp-table td.center {
+    text-align: center;
+}
+.summary-print-page table.sp-table tr.total-row td {
+    font-weight: 800;
+    background: #fff3b0;
+    font-size: 6px;
+    border-top: 1.2px solid #000;
+    border-bottom: 1.2px solid #000;
+}
+.summary-print-page table.sp-table tr.total-row td.num {
+    text-align: right;
+}
+.summary-print-page table.sp-table tr.brought-forward td {
+    font-weight: 800;
+    background: #ffe066;
+    font-size: 6.5px;
+    border-top: 1.5px solid #000;
+    border-bottom: 1.5px solid #000;
+}
+.summary-print-page table.sp-table tr.carried-forward td {
+    font-weight: 800;
+    background: #ffd966;
+    font-size: 6.5px;
+    border-top: 1.5px solid #000;
+    border-bottom: 1.5px solid #000;
+}
+.summary-print-page table.sp-table .empty-cell {
+    background: #fafafa;
+}
+
+/* ===== PRINT RULE FOR SUMMARY ===== */
+@media print {
+    body:has(.summary-print-page) @page {
+        size: 13in 8.5in landscape;
+        margin: 0.4in 0.25in 0.5in 0.25in;
+    }
+    html:has(.summary-print-page),
+    body:has(.summary-print-page) {
+        width: 13in !important;
+        height: 8.5in !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: visible !important;
+    }
+    body:has(.summary-print-page) #printArea {
+        display: block !important;
+        width: 13in !important;
+        height: auto !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
+    }
+}
+
     /* ============================================================
-           PRINT OUTPUT
-           ============================================================ */
-    #printArea { display: none; }
+   STATEMENT OF INCOME — 8.5" × 13" PORTRAIT (FOLIO/LEGAL)
+   ============================================================ */
+.report-page {
+    font-family: "Copperplate Gothic Light", "Copperplate Gothic Bold", "Copperplate", Arial, sans-serif;
+    padding: 0;
+    color: #000;
+    background: white;
+    font-size: 8px;
+    line-height: 1.1;
+    width: 8in;
+    max-width: 8in;
+    margin: 0 auto;
+}
 
-    @media print {
-        body * { visibility: hidden; }
-        #printArea, #printArea * { visibility: visible; }
-        #printArea { display: block; position: absolute; left: 0; top: 0; width: 100%; background: white; }
-        .no-print { display: none !important; }
-    }
+.report-page .rpt-header {
+    text-align: center;
+    margin-bottom: 4px;
+    border: 1.3px solid #000;
+    padding: 4px 6px 5px 6px;
+    line-height: 1.15;
+}
+.report-page .rpt-header .rpt-line1 { font-weight: 700; font-size: 13px; letter-spacing: 0.2px; }
+.report-page .rpt-header .rpt-line2 { font-weight: 700; font-size: 13px; letter-spacing: 0.2px; }
+.report-page .rpt-header .rpt-line3 { font-weight: 800; font-size: 11px; letter-spacing: 0.4px; margin-top: 0; }
+.report-page .rpt-header .rpt-line4 { font-weight: 600; font-size: 10px; margin-top: 1px; font-style: italic; }
 
-    /* ============================================================
-           SUMMARY OF COLLECTION — LANDSCAPE PRINT (MULTI-PAGE)
-           ============================================================ */
-    .summary-print-page {
-        font-family: "Inter", "Segoe UI", Roboto, sans-serif;
-        padding: 0; color: #000; background: white;
-        font-size: 7px; line-height: 1.2;
-        width: 100%; max-width: 12.5in;
-        margin: 0 auto;
-    }
+.report-page table.rpt {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 0;
+    table-layout: fixed;
+}
+.report-page table.rpt th,
+.report-page table.rpt td {
+    border: 0.9px solid #000;
+    padding: 1px 3px;
+    font-size: 8px;
+    vertical-align: middle;
+    line-height: 1.15;
+}
+.report-page table.rpt th {
+    background: #ffffff;
+    text-align: center;
+    font-weight: 700;
+    font-size: 9.5px;
+    padding: 4px 3px;
+}
+.report-page table.rpt td.lbl { text-align: left; padding-left: 5px; font-size: 9px; }
+.report-page table.rpt td.num { text-align: right; white-space: nowrap; padding-right: 5px; font-size: 9px; }
+.report-page table.rpt tr.section-hdr td { font-weight: 700; background: #ffffff; font-size: 9px; }
+.report-page table.rpt tr.total-row-special td {
+    font-weight: 700;
+    background: #ffffff;
+    font-size: 9px;
+    border-bottom: 3px double #000;
+}
+.report-page table.rpt tr.total-row-special td.lbl { text-align: center; }
+.report-page table.rpt tr.total-row-special td.num { text-align: right; }
+.report-page table.rpt tr.grand-row td {
+    font-weight: 800;
+    background: #ffffff;
+    font-size: 10px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    text-align: center;
+    border-bottom: 3px double #000;
+}
 
-    @media print {
-        body:has(.summary-print-page) @page {
-            size: 13in 8.5in landscape;
-            margin: 0.15in 0.15in 0.15in 0.15in;
-        }
-    }
+.report-page .rpt-sign {
+    margin-top: auto;
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: 9px;
+    page-break-inside: avoid;
+	padding-top: 20px;
+}
 
-    .summary-print-page .sp-header {
-        text-align: left; margin-bottom: 3px; line-height: 1.2;
-    }
-    .summary-print-page .sp-header .sp-line1 { font-weight: 800; font-size: 10px; letter-spacing: 0.2px; }
-    .summary-print-page .sp-header .sp-line2 { font-weight: 700; font-size: 10px; letter-spacing: 0.2px; }
-    .summary-print-page .sp-header .sp-line3 { font-weight: 800; font-size: 10px; letter-spacing: 0.4px; margin-top: 1px; }
-    .summary-print-page .sp-header .sp-line4 { font-weight: 700; font-size: 10px; margin-top: 1px; }
-    .summary-print-page .sp-header .sp-page-info { font-weight: 600; font-size: 8px; color: #555; margin-top: 2px; font-style: italic; }
+.report-page {
+    display: flex;
+    flex-direction: column;
+    min-height: 12.4in;  /* 13in - 0.3in top/bottom margins */
+}
 
-    .summary-print-page table.sp-table {
-        width: 100%; border-collapse: collapse;
-        table-layout: fixed; margin-top: 2px;
-    }
-    .summary-print-page table.sp-table th,
-    .summary-print-page table.sp-table td {
-        border: 0.6px solid #000;
-        padding: 2px 3px;
-        font-size: 6.5px;
-        vertical-align: middle;
-        line-height: 1.15;
-        word-wrap: break-word;
-    }
-    .summary-print-page table.sp-table th {
-        background: #f0f0f0;
-        text-align: center;
-        font-weight: 700;
-        font-size: 6px;
-        padding: 3px 2px;
-    }
-    .summary-print-page table.sp-table td.num {
-        text-align: right;
-        padding-right: 3px;
-        white-space: nowrap;
-        font-size: 6.5px;
-    }
-    .summary-print-page table.sp-table td.center {
-        text-align: center;
-    }
-    .summary-print-page table.sp-table tr.total-row td {
-        font-weight: 800;
-        background: #fff3b0;
-        font-size: 7px;
-        border-top: 1.5px solid #000;
-        border-bottom: 1.5px solid #000;
-    }
-    .summary-print-page table.sp-table tr.total-row td.num {
-        text-align: right;
-    }
-    .summary-print-page table.sp-table tr.brought-forward td {
-        font-weight: 800;
-        background: #ffe066;
-        font-size: 7.5px;
-        border-top: 2px solid #000;
-        border-bottom: 2px solid #000;
-    }
-    .summary-print-page table.sp-table tr.carried-forward td {
-        font-weight: 800;
-        background: #ffd966;
-        font-size: 7.5px;
-        border-top: 2px solid #000;
-        border-bottom: 2px solid #000;
-    }
-    .summary-print-page table.sp-table .empty-cell {
-        background: #fafafa;
-    }
+.report-page .rpt-sign .sign-block { flex: 1; text-align: center; }
+.report-page .rpt-sign .sign-role { font-weight: 700; font-size: 9px; margin-bottom: 2px; text-align: left; }
+.report-page .rpt-sign .sign-name { font-weight: 700; margin-top: 14px; text-decoration: underline; font-size: 12px; }
+.report-page .rpt-sign .sign-title { font-size: 10px; margin-top: 0; }
 
-    /* ============================================================
-           STATEMENT OF INCOME
-           ============================================================ */
-    .report-page {
-        font-family: "Copperplate Gothic Light", "Copperplate Gothic Bold", "Copperplate", Arial, sans-serif;
-        padding: 0; color: #000; background: white;
-        font-size: 8px; line-height: 1.15;
-        width: 100%; max-width: 7.9in; margin: 0 auto;
+@media print {
+    html:has(.report-page),
+    body:has(.report-page) {
+        width: 8.5in !important;
+        height: 13in !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: visible !important;
     }
-    .report-page .rpt-header { text-align: center; margin-bottom: 4px; border: 1.3px solid #000; padding: 4px 6px 5px 6px; line-height: 1.15; }
-    .report-page .rpt-header .rpt-line1 { font-weight: 700; font-size: 12px; letter-spacing: 0.2px; }
-    .report-page .rpt-header .rpt-line2 { font-weight: 700; font-size: 12px; letter-spacing: 0.2px; }
-    .report-page .rpt-header .rpt-line3 { font-weight: 800; font-size: 12px; letter-spacing: 0.4px; margin-top: 0; }
-    .report-page .rpt-header .rpt-line4 { font-weight: 600; font-size: 11px; margin-top: 1px; font-style: italic; }
-    .report-page table.rpt { width: 100%; border-collapse: collapse; margin-top: 0; table-layout: fixed; }
-    .report-page table.rpt th, .report-page table.rpt td { border: 0.9px solid #000; padding: 1.1px 3px; font-size: 8px; vertical-align: middle; line-height: 1.15; }
-    .report-page table.rpt th { background: #ffffff; text-align: center; font-weight: 700; font-size: 8.5px; padding: 3px 3px; }
-    .report-page table.rpt td.lbl { text-align: left; padding-left: 4px; font-size: 8px; }
-    .report-page table.rpt td.num { text-align: right; white-space: nowrap; padding-right: 4px; font-size: 8px; }
-    .report-page table.rpt tr.section-hdr td { font-weight: 700; background: #ffffff; font-size: 9px; }
-    .report-page table.rpt tr.total-row-special td { font-weight: 700; background: #ffffff; font-size: 9px; border-bottom: 3px double #000; }
-    .report-page table.rpt tr.total-row-special td.lbl { text-align: center; }
-    .report-page table.rpt tr.total-row-special td.num { text-align: right; }
-    .report-page table.rpt tr.grand-row td { font-weight: 800; background: #ffffff; font-size: 9px; padding-top: 2px; padding-bottom: 2px; text-align: center; border-bottom: 3px double #000; }
-    .report-page .rpt-sign { margin-top: 12px; display: flex; justify-content: space-between; gap: 8px; font-size: 8px; page-break-inside: avoid; }
-    .report-page .rpt-sign .sign-block { flex: 1; text-align: center; }
-    .report-page .rpt-sign .sign-role { font-weight: 700; font-size: 8px; margin-bottom: 2px; text-align: left; }
-    .report-page .rpt-sign .sign-name { font-weight: 700; margin-top: 12px; text-decoration: underline; font-size: 11px; }
-    .report-page .rpt-sign .sign-title { font-size: 9px; margin-top: 0; }
+    body:has(.report-page) @page {
+        size: 8.5in 13in portrait;
+        margin: 0.25in;
+    }
+    body:has(.report-page) #printArea {
+        width: 8.5in !important;
+        height: 13in !important;
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
+    }
+}
 
     /* ============================================================
            OFFICIAL RECEIPT — TEMPLATE BACKGROUND + DATA OVERLAY
@@ -428,7 +567,7 @@
 }
 
     /* ===== TEMPLATE BACKGROUND IMAGE ===== */
- .or-page .or-template-bg {
+.or-page .or-template-bg {
     position: absolute;
     top: 0;
     left: 0;
@@ -450,7 +589,7 @@
     border: none;
 }
 
-   @media print {
+@media print {
     @page {
         size: 4.25in 8.50in portrait;
         margin: 0;
@@ -506,6 +645,94 @@
         position: absolute;
         left: 0;
         top: 0;
+    }
+}
+
+/* ===== PRINT: OFFICIAL RECEIPT (4.25" × 8.50") ===== */
+@media print {
+    body:has(.or-page) @page {
+        size: 4.25in 8.50in portrait;
+        margin: 0;
+    }
+    html:has(.or-page),
+    body:has(.or-page) {
+        width: 4.25in !important;
+        height: 8.50in !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+    }
+    body:has(.or-page) #printArea {
+        display: block !important;
+        width: 4.25in !important;
+        height: 8.50in !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
+    }
+    body:has(.or-page) .or-page {
+        width: 4.25in;
+        height: 8.50in;
+        min-width: 4.25in;
+        max-width: 4.25in;
+        min-height: 8.50in;
+        max-height: 8.50in;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+    }
+    body:has(.or-page) .or-page .or-template-bg {
+        width: 4.25in;
+        height: 8.50in;
+        min-width: 4.25in;
+        max-width: 4.25in;
+        min-height: 8.50in;
+        max-height: 8.50in;
+        object-fit: fill;
+        top: 0;
+        left: 0;
+        margin: 0;
+        padding: 0;
+    }
+}
+
+/* ===== PRINT: STATEMENT OF INCOME (8.5" × 13" PORTRAIT) ===== */
+@media print {
+    body:has(.report-page) @page {
+        size: 8.5in 13in portrait;
+        margin: 0.25in;
+    }
+    html:has(.report-page),
+    body:has(.report-page) {
+        width: 8.5in !important;
+        height: 13in !important;
+        overflow: visible !important;
+    }
+    body:has(.report-page) #printArea {
+        width: 8.5in !important;
+        height: 13in !important;
+    }
+}
+
+
+
+/* ===== PRINT: SUMMARY OF COLLECTION (8.5" × 13" LANDSCAPE) ===== */
+@media print {
+    body:has(.summary-print-page) @page {
+        size: 13in 8.5in landscape;
+        margin: 0.15in;
+    }
+    html:has(.summary-print-page),
+    body:has(.summary-print-page) {
+        width: 13in !important;
+        height: 8.5in !important;
+        overflow: visible !important;
+    }
+    body:has(.summary-print-page) #printArea {
+        width: 13in !important;
+        height: 8.5in !important;
     }
 }
 
@@ -2580,19 +2807,41 @@ summaryPrintModal.addEventListener('click', (e) => { if (e.target === summaryPri
 document.getElementById('summaryPrintMonth').addEventListener('change', updateWeekOptions);
 document.getElementById('summaryPrintYear').addEventListener('change', updateWeekOptions);
 
+// ============================================================
+// ✅ FIX: Race-condition guard for updateWeekOptions
+//    Prevents stale async responses from overwriting
+//    the dropdown when the user changes month/year rapidly.
+// ============================================================
+let weekOptionsRequestId = 0;
+
 function updateWeekOptions() {
+    // Increment request id — any older response will be ignored
+    const myRequestId = ++weekOptionsRequestId;
+
     const month = parseInt(document.getElementById('summaryPrintMonth').value, 10);
     const year = parseInt(document.getElementById('summaryPrintYear').value, 10);
     const weekSel = document.getElementById('summaryPrintWeek');
 
+    // Immediately clear the dropdown so stale options never remain
     weekSel.innerHTML = '<option value="">Select a week...</option>';
 
     if (isNaN(month) || isNaN(year)) return;
 
+    const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    const monthName = monthNames[month];
+    const sheetName = `${monthName} ${year}`;
+
+    console.log('[WeekOptions] req#' + myRequestId + ' →', sheetName, '| month:', month, '| year:', year);
+
     fetchAllRecordsOnce().then(allRecords => {
-        const monthName = ['January','February','March','April','May','June','July','August','September','October','November','December'][month];
-        const sheetName = `${monthName} ${year}`;
+        // ✅ Ignore if a newer request has been issued
+        if (myRequestId !== weekOptionsRequestId) {
+            console.log('[WeekOptions] req#' + myRequestId + ' discarded (stale)');
+            return;
+        }
+
         const monthRecords = allRecords.filter(r => (r.sheetName || '').trim() === sheetName);
+        console.log('[WeekOptions] req#' + myRequestId + ' records:', monthRecords.length);
 
         const normalRecords = monthRecords.filter(r => {
             const nature = (r.natureOfCollection || '').toUpperCase();
@@ -2605,41 +2854,47 @@ function updateWeekOptions() {
             if (!isNaN(d)) datesWithData.add(d);
         });
 
-        if (datesWithData.size === 0) {
-            const o = document.createElement('option');
-            o.value = '';
-            o.textContent = 'No data available for this month';
-            weekSel.appendChild(o);
-            return;
+        // Always generate the canonical weeks for the selected month
+        const weeks = getWeeksOfMonth(year, month);
+
+        // Helper to populate using ORIGINAL indices
+        function populate(optionsList, suffix) {
+            weekSel.innerHTML = '<option value="">Select a week...</option>';
+            optionsList.forEach((w) => {
+                const originalIndex = weeks.findIndex(orig => orig.start.getTime() === w.start.getTime());
+                if (originalIndex === -1) return;
+                const o = document.createElement('option');
+                o.value = originalIndex;
+                o.textContent = suffix ? `${w.label} ${suffix}` : w.label;
+                weekSel.appendChild(o);
+            });
         }
 
-        const weeks = getWeeksOfMonth(year, month);
+        if (datesWithData.size === 0) {
+            populate(weeks, '(no data)');
+            return;
+        }
 
         const validWeeks = weeks.filter(w => {
             for (let d = 1; d <= 31; d++) {
                 if (!datesWithData.has(d)) continue;
-                const dateObj = new Date(year, month, d);
+                const dateObj = new Date(year, month, d, 12, 0, 0);
                 if (dateObj >= w.start && dateObj <= w.end) return true;
             }
             return false;
         });
 
         if (validWeeks.length === 0) {
-            const o = document.createElement('option');
-            o.value = '';
-            o.textContent = 'No data available for this month';
-            weekSel.appendChild(o);
+            populate(weeks, '(no data)');
             return;
         }
 
-        validWeeks.forEach((w, idx) => {
-            const o = document.createElement('option');
-            o.value = idx;
-            o.textContent = w.label;
-            weekSel.appendChild(o);
-        });
-    }).catch(() => {
+        populate(validWeeks, '');
+    }).catch(err => {
+        if (myRequestId !== weekOptionsRequestId) return;
+        console.error('[WeekOptions] req#' + myRequestId + ' failed:', err);
         const weeks = getWeeksOfMonth(year, month);
+        weekSel.innerHTML = '<option value="">Select a week...</option>';
         weeks.forEach((w, idx) => {
             const o = document.createElement('option');
             o.value = idx;
@@ -2651,36 +2906,54 @@ function updateWeekOptions() {
 
 function getWeeksOfMonth(year, month) {
     const weeks = [];
-    const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
+    const lastDay = new Date(year, month + 1, 0, 12, 0, 0);
 
-    let current = new Date(firstDay);
-    while (current.getDay() !== 1 && current <= lastDay) {
-        current.setDate(current.getDate() + 1);
-    }
+    // Start at the 1st of the month
+    let cursor = new Date(year, month, 1, 12, 0, 0);
 
-    while (current <= lastDay) {
-        const weekStart = new Date(current);
-        let weekEnd = new Date(current);
-        for (let i = 0; i < 4; i++) {
-            if (weekEnd < lastDay) {
+    while (cursor <= lastDay) {
+        let weekStart = new Date(cursor);
+        let weekEnd = new Date(cursor);
+
+        if (weeks.length === 0) {
+            // FIRST WEEK: from the 1st up to the first Friday of the month
+            // (so Sept 1–4 is included even if the 1st is a Tuesday)
+            while (weekEnd.getDay() !== 5 && weekEnd < lastDay) {
                 weekEnd.setDate(weekEnd.getDate() + 1);
             }
-        }
-        while (weekEnd.getDay() !== 5 && weekEnd < lastDay) {
-            weekEnd.setDate(weekEnd.getDate() + 1);
-        }
-        if (weekEnd > lastDay) weekEnd = new Date(lastDay);
+            // If the 1st is already Sat/Sun, roll forward to next Friday
+            if (weekEnd.getDay() !== 5) {
+                while (weekEnd.getDay() !== 5 && weekEnd < lastDay) {
+                    weekEnd.setDate(weekEnd.getDate() + 1);
+                }
+            }
+        } else {
+            // SUBSEQUENT WEEKS: Monday → Friday
+            // Move start to Monday
+            while (weekStart.getDay() !== 1 && weekStart <= lastDay) {
+                weekStart.setDate(weekStart.getDate() + 1);
+            }
+            if (weekStart > lastDay) break;
 
-        if (weekStart.getDay() >= 1 && weekStart.getDay() <= 5) {
-            const label = `${weekStart.toLocaleString('en-US', { month: 'short' })} ${weekStart.getDate()} - ${weekEnd.toLocaleString('en-US', { month: 'short' })} ${weekEnd.getDate()}`;
-            weeks.push({ start: new Date(weekStart), end: new Date(weekEnd), label });
+            weekEnd = new Date(weekStart);
+            weekEnd.setDate(weekEnd.getDate() + 4); // Monday + 4 = Friday
+            if (weekEnd > lastDay) weekEnd = new Date(lastDay);
         }
 
-        current = new Date(weekEnd);
-        current.setDate(current.getDate() + 1);
-        while (current.getDay() !== 1 && current <= lastDay) {
-            current.setDate(current.getDate() + 1);
+        if (weekStart > lastDay) break;
+
+        const monthShortStart = weekStart.toLocaleString('en-US', { month: 'short' });
+        const monthShortEnd   = weekEnd.toLocaleString('en-US', { month: 'short' });
+        const label = `${monthShortStart} ${weekStart.getDate()} - ${monthShortEnd} ${weekEnd.getDate()}`;
+
+        weeks.push({ start: new Date(weekStart), end: new Date(weekEnd), label });
+
+        // Advance cursor to the day after this week's end
+        cursor = new Date(weekEnd);
+        cursor.setDate(cursor.getDate() + 1);
+        // Skip weekend (Sat=6, Sun=0) so next week starts on Monday
+        while (cursor.getDay() === 0 || cursor.getDay() === 6) {
+            cursor.setDate(cursor.getDate() + 1);
         }
     }
 
