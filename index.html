@@ -1292,7 +1292,7 @@
 // ============================================
 // ⚠️ WEB APP URL
 // ============================================
-const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwdszoGcMLYpMrURNT1lXaXIos4XWX_BqrmTxii1cYB7AeQE7H-4_KQhx2CDF4zFPUH/exec';
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxjK3fqXjKpb7M98CQoGKs-kTssQ1MZ7_OjvJo3gnanRjSm7kHjZTHTd30oW-QVjSws/exec';
 const GOOGLE_SHEET_URL = 'https://docs.google.com/spreadsheets/d/1CzOpsrOlC1eO97WQsLMSaUIxIK8qtVs7G2aKM6kizuM/edit';
 
 // ============================================
@@ -2483,7 +2483,7 @@ function buildAndShowORPrintWithTemplate(date, orNo, opNo, name, entries) {
 }
 
 // ============================================
-// PRINT MODAL + STATEMENT OF INCOME
+// PRINT MODAL + STATEMENT OF INCOME (UPDATED v8.0)
 // ============================================
 const printModal = document.getElementById('printModal');
 
@@ -2521,7 +2521,7 @@ document.getElementById('printGoBtn').addEventListener('click', async () => {
     document.getElementById('printGoBtn').innerHTML = '<span class="spinner"></span> Preparing...';
 
     try {
-        const ok = await buildAndShowPrint(month, year);
+        const ok = await buildAndShowPrintFromSOI(month, year);
         if (!ok) {
             showToast('⚠️ No Data', 'No records found for that month/year.', 'warning');
         }
@@ -2536,13 +2536,13 @@ document.getElementById('printGoBtn').addEventListener('click', async () => {
 
 const REPORT_CATEGORIES = [
     { code: '4020102000', label: 'I.  REGISTRATION FEES [4020102000]', items: [
-        { key: 'Registration of Business Firm', label: 'I.1  Registration Fees for Business Firms' },
+        { key: 'Registration of Business Firm', label: 'I.1  Registration Fees for Business Firms', extraKeys: ['Renewal of Business Firm 2026'] },
         { key: 'Registration of Broker 2026', label: 'I.3  Registration Fees for Brokers', extraKeys: ['Renewal of Broker (2026)'] },
         { key: 'Registration of Salesperson (2026)', label: 'I.2  Registration Fees for Salesperson', extraKeys: ['Renewal of Salesperson (2026)'] }
     ]},
     { code: '4020104001', label: 'II. CLEARANCE FEES [4020104001]', items: [
         { key: 'Clearance to Mortgage', label: 'II.1 Clearance to Mortgage' },
-        { key: 'Lifting of Cease and Desist Order', label: 'II.2 Lifting of Cease and Desist Order' },
+        { key: 'Lifting of Cease and Desist Order', label: 'II.2 Lifting of Cease and Desist Order', extraKeys: ['Lifting of Suspended LS'] },
         { key: 'Locational Clearance', label: 'II.3 Locational Clearance (LC) / Temporary Use Permit (TUP)', extraKeys: ['Temporary Use Permit (TUP)'] }
     ]},
     { code: '4020104002', label: 'III. CERTIFICATION FEES [4020104002]', items: [
@@ -2597,7 +2597,7 @@ const REPORT_CATEGORIES = [
     { code: '4020199099', label: 'VIII. OTHER SERVICE INCOME [4020199099]', items: [
         { key: 'Stamping of HOA Books', label: '        VIII.1 Registration of Books for Homeowners Ass\'n (stamping only)' },
         { key: 'Photocopy', label: '        VIII.2 Photocopy/ Sale of Forms/ Publications' },
-        { key: 'Sale of Books', label: '        VIII.3 Sale of Books (BP220 / PD957/ etc.)' },
+        { key: 'Sale of Books', label: '        VIII.3 Sale of Books (BP220 / PD957/ etc.)', extraKeys: ['Sale of Bid Documents'] },
         { key: 'Proceeds From Disposal of PPE', label: '        VIII.4 Unservisable Properties & Equipment' },
         { key: 'CRLS Forms', label: '        VIII.5 CR/LS Forms; Amendment; Upgrading of Selling Price; Amended Master Deed' },
         { key: 'Miscellaneous Fees', label: '        VIII.6 Miscellaneous Fees' }
@@ -2610,55 +2610,41 @@ function fmtMoney(n) {
     return v.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
-function aggregateByNature(records) {
-    const map = {};
-    records.forEach(r => {
-        const key = r.natureOfCollection || 'Unknown';
-        const amt = parseFloat(r.total) || 0;
-        if (!map[key]) map[key] = 0;
-        map[key] += amt;
-    });
-    return map;
-}
-
 function sumKeys(map, keys) {
     let sum = 0;
     keys.forEach(k => { sum += (map[k] || 0); });
     return sum;
 }
 
-function rawTotal(records) {
-    let sum = 0;
-    records.forEach(r => { sum += parseFloat(r.total) || 0; });
-    return sum;
-}
-
-async function buildAndShowPrint(month, year) {
-    const allRecordsLocal = await fetchAllRecordsOnce();
-
+/**
+ * NEW v8.0: Build Statement of Income from the SOI sheet data
+ * returned by the backend's getSOIData action.
+ */
+async function buildAndShowPrintFromSOI(month, year) {
     const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-    const targetSheetName = `${months[month]} ${year}`;
+    const monthName = months[month];
+    const sheetName = `${monthName} ${year}`;
 
-    const currentRecords = allRecordsLocal.filter(r => (r.sheetName || '').trim() === targetSheetName);
+    // Fetch SOI data from backend
+    const url = WEB_APP_URL + '?action=getSOIData&sheetName=' + encodeURIComponent(sheetName);
+    const res = await fetch(url, { method: 'GET' });
+    const json = await res.json();
 
-    const cumulativeRecords = allRecordsLocal.filter(r => {
-        const parts = (r.sheetName || '').trim().split(' ');
-        const y = parseInt(parts[parts.length - 1], 10);
-        return y === year;
-    });
-
-    if (currentRecords.length === 0 && cumulativeRecords.length === 0) {
+    if (json.result !== 'success') {
         return false;
     }
 
-    const monthName = months[month];
+    const monthMap = json.monthData || {};
+    const cumMap = json.cumulativeData || {};
+
+    // Check if there's any data
+    const hasMonth = Object.values(monthMap).some(v => v > 0);
+    const hasCum = Object.values(cumMap).some(v => v > 0);
+    if (!hasMonth && !hasCum) {
+        return false;
+    }
+
     const lastDay = new Date(year, month + 1, 0).getDate();
-
-    const monthMap = aggregateByNature(currentRecords);
-    const cumMap = aggregateByNature(cumulativeRecords);
-
-    const rawMonthTotal = rawTotal(currentRecords);
-    const rawCumTotal = rawTotal(cumulativeRecords);
 
     let grandMonth = 0;
     let grandCum = 0;
@@ -2747,8 +2733,8 @@ async function buildAndShowPrint(month, year) {
     html += `<tr><td colspan="3">&nbsp;</td></tr>`;
     html += `<tr class="total-row-special">
         <td class="lbl">GRAND TOTAL COLLECTIONS</td>
-        <td class="num"> ${fmtMoney(rawMonthTotal)} </td>
-        <td class="num"> ${fmtMoney(rawCumTotal)} </td>
+        <td class="num"> ${fmtMoney(json.monthTotal)} </td>
+        <td class="num"> ${fmtMoney(json.cumulativeTotal)} </td>
     </tr>`;
 
     html += `
