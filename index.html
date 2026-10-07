@@ -256,10 +256,6 @@
         .no-print { display: none !important; }
     }
 
-    @media print {
-        body:has(.report-page) @page { size: 8.5in 13in portrait; margin: 0.2in 0.2in 0.2in 0.2in; }
-    }
-
     /* ============================================================
            SUMMARY OF COLLECTION — LANDSCAPE PRINT (MULTI-PAGE)
            ============================================================ */
@@ -316,7 +312,6 @@
     .summary-print-page table.sp-table td.center {
         text-align: center;
     }
-    /* Daily TOTAL row — yellow highlight */
     .summary-print-page table.sp-table tr.total-row td {
         font-weight: 800;
         background: #fff3b0;
@@ -327,7 +322,6 @@
     .summary-print-page table.sp-table tr.total-row td.num {
         text-align: right;
     }
-    /* TOTAL BROUGHT FORWARD row — stronger yellow */
     .summary-print-page table.sp-table tr.brought-forward td {
         font-weight: 800;
         background: #ffe066;
@@ -335,7 +329,6 @@
         border-top: 2px solid #000;
         border-bottom: 2px solid #000;
     }
-    /* TOTAL CARRIED FORWARD row — slightly different yellow */
     .summary-print-page table.sp-table tr.carried-forward td {
         font-weight: 800;
         background: #ffd966;
@@ -378,114 +371,287 @@
     .report-page .rpt-sign .sign-title { font-size: 9px; margin-top: 0; }
 
     /* ============================================================
-           OFFICIAL RECEIPT — PORTRAIT (LEFT-ALIGNED)
+           OFFICIAL RECEIPT — TEMPLATE BACKGROUND + DATA OVERLAY
            ============================================================ */
+
+    :root {
+        /* ===== DATE ROW ===== */
+        --date-top: 2.30in;
+        --date-left: 0.45in;
+
+        /* ===== OR NO. ROW ===== */
+        --or-no-top: 0.93in;
+        --or-no-left: 2.20in;
+
+        /* ===== PAYOR NAME ===== */
+        --payor-top: 2.75in;
+        --payor-left: 0.70in;
+
+        /* ===== ORDER OF PAYMENT NO. ===== */
+        --op-no-top: 3.02in;
+        --op-no-left: 0.70in;
+
+        /* ===== TABLE — 8 data rows ===== */
+        --table-row-1-top: 3.68in;
+        --table-row-height: 0.27in;
+
+        /* ===== TOTAL ROW ===== */
+        --total-top: 5.83in;
+
+        /* ===== AMOUNT IN WORDS ===== */
+        --words-top: 6.30in;
+        --words-left: 0.50in;
+
+        /* ===== Font settings ===== */
+        --or-font: "Courier New", "Courier", "Consolas", "Lucida Console", monospace;
+        --or-font-size: 9pt;
+    }
+
     .or-page {
-        font-family: "Copperplate Gothic Light", "Copperplate Gothic Bold", "Copperplate", Arial, sans-serif;
-        padding: 0; color: #000; background: white;
-        width: 3.7in; margin: 0;
+    position: relative;
+    width: 4.25in;
+    height: 8.50in;
+    min-width: 4.25in;
+    min-height: 8.50in;
+    max-width: 4.25in;
+    max-height: 8.50in;
+    background: white;
+    color: #000;
+    font-family: var(--or-font);
+    font-size: var(--or-font-size);
+    line-height: 1.15;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    overflow: hidden;
+    transform: none;
+}
+
+    /* ===== TEMPLATE BACKGROUND IMAGE ===== */
+ .or-page .or-template-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 4.25in;
+    height: 8.50in;
+    min-width: 4.25in;
+    min-height: 8.50in;
+    max-width: 4.25in;
+    max-height: 8.50in;
+    object-fit: fill;
+    object-position: top left;
+    z-index: 0;
+    pointer-events: none;
+    display: block;
+    margin: 0;
+    padding: 0;
+    border: none;
+	display: none;
+}
+
+   @media print {
+    @page {
+        size: 4.25in 8.50in portrait;
+        margin: 0;
     }
-
-    @media print {
-        body:has(.or-page) @page {
-            size: 8.5in 13in portrait;
-            margin: 0in;
-        }
+    
+    html, body {
+        width: 4.25in;
+        height: 8.50in;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
     }
+    
+    body:has(.or-page) {
+        width: 4.25in;
+        height: 8.50in;
+        margin: 0;
+        padding: 0;
+    }
+    
+    .or-page {
+        width: 4.25in;
+        height: 8.50in;
+        min-width: 4.25in;
+        max-width: 4.25in;
+        min-height: 8.50in;
+        max-height: 8.50in;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+    }
+    
+    .or-page .or-template-bg {
+        width: 4.25in;
+        height: 8.50in;
+        min-width: 4.25in;
+        max-width: 4.25in;
+        min-height: 8.50in;
+        max-height: 8.50in;
+        object-fit: fill;
+        top: 0;
+        left: 0;
+        margin: 0;
+        padding: 0;
+    }
+    
+    #printArea {
+        display: block !important;
+        width: 4.25in;
+        height: 8.50in;
+        margin: 0;
+        padding: 0;
+        position: absolute;
+        left: 0;
+        top: 0;
+    }
+}
 
-    .or-page .or-outer { border: 1.6px solid #000; border-radius: 6px; padding: 8px 10px; display: flex; flex-direction: column; }
-    .or-page .or-header { display: flex; align-items: center; justify-content: center; gap: 2px; padding-bottom: 6px; margin-bottom: 6px; border-bottom: 1.6px solid #000; }
-    .or-page .or-header .or-logo-left, .or-page .or-header .or-logo-right { width: 55px; height: 55px; object-fit: contain; display: block; flex-shrink: 0; }
-    .or-page .or-header .or-title-block { text-align: center; padding: 0 2px; }
-    .or-page .or-header .or-title-1 { font-family: "Copperplate Gothic Light", "Copperplate Gothic Bold", "Copperplate", Arial, sans-serif; font-weight: 700; font-size: 18px; letter-spacing: 3px; line-height: 1.1; white-space: nowrap; }
-    .or-page .or-header .or-title-2 { font-family: "Copperplate Gothic Light", "Copperplate Gothic Bold", "Copperplate", Arial, sans-serif; font-weight: 400; font-size: 8px; margin-top: 1px; white-space: nowrap; }
-    .or-page .or-header .or-title-3 { font-family: "Copperplate Gothic Light", "Copperplate Gothic Bold", "Copperplate", Arial, sans-serif; font-weight: 400; font-size: 9px; margin-top: 1px; letter-spacing: 0.2px; white-space: nowrap; }
-    .or-page .or-header .or-title-4 { font-family: "Copperplate Gothic Light", "Copperplate Gothic Bold", "Copperplate", Arial, sans-serif; font-weight: 400; font-size: 9px; letter-spacing: 0.2px; white-space: nowrap; }
-    .or-page .or-info-box { border: 1.6px solid #000; border-radius: 4px; margin-bottom: 4px; overflow: hidden; display: grid; grid-template-columns: 1.5fr 1fr; grid-template-rows: 1fr 1fr; }
-    .or-page .or-info-box .or-info-cell { padding: 4px 6px; line-height: 1.2; border-right: 1.6px solid #000; border-bottom: 1.6px solid #000; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; min-height: 32px; }
-    .or-page .or-info-box .or-info-cell:nth-child(2n) { border-right: none; }
-    .or-page .or-info-box .or-info-cell:nth-child(n + 3) { border-bottom: none; }
-    .or-page .or-info-box .or-info-cell .or-form-label { font-family: "Copperplate Gothic Light", "Copperplate Gothic Bold", "Copperplate", Arial, sans-serif; font-size: 12px; font-style: italic; font-weight: 700; line-height: 1.3; text-align: center; width: 100%; }
-    .or-page .or-info-box .or-info-cell .or-original { font-family: "Copperplate Gothic Light", "Copperplate Gothic Bold", "Copperplate", Arial, sans-serif; font-weight: 700; font-size: 14px; letter-spacing: 1px; }
-    .or-page .or-info-box .or-info-cell .or-cell-label { font-family: "Copperplate Gothic Light", "Copperplate Gothic Bold", "Copperplate", Arial, sans-serif; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.2px; text-align: left; width: 100%; }
-    .or-page .or-info-box .or-info-cell .or-cell-value { font-family: "Copperplate Gothic Light", "Copperplate Gothic Bold", "Copperplate", Arial, sans-serif; font-size: 12px; font-weight: 600; margin-top: 2px; text-align: left; width: 100%; }
-    .or-page .or-info-box .or-info-cell:nth-child(3) .or-cell-label { font-size: 10px; }
-    .or-page .or-info-box .or-info-cell:nth-child(3) .or-cell-value { font-size: 12px; }
-    .or-page .or-info-box .or-info-cell.or-cell-no { justify-content: flex-start; align-items: flex-start; text-align: left; }
-    .or-page .or-info-box .or-info-cell.or-cell-no .or-cell-label { margin-top: auto; text-align: left; width: 100%; font-size: 12px; }
-    .or-page .or-info-box .or-info-cell.or-cell-no .or-cell-value { text-align: left; width: 100%; font-size: 12px; }
+    /* ===== DATA FIELDS (overlay on top of template) ===== */
+    .or-field {
+    position: absolute;
+    white-space: nowrap;
+    font-family: var(--or-font);
+    font-size: var(--or-font-size);
+    color: #000;
+    z-index: 10;
+}
 
-    .or-page .or-payor-box { border: 1.6px solid #000; border-radius: 4px; margin-bottom: 4px; overflow: hidden; }
-    .or-page .or-payor-top { padding: 4px 6px; border-bottom: 1.6px solid #000; }
-    .or-page .or-payor-top .or-payor-label { font-family: "Copperplate Gothic Light", "Copperplate Gothic Bold", "Copperplate", Arial, sans-serif; font-size: 7.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.2px; }
-    .or-page .or-payor-top .or-payor-value { font-family: "Copperplate Gothic Light", "Copperplate Gothic Bold", "Copperplate", Arial, sans-serif; font-size: 11px; font-weight: 700; margin-top: 2px; }
-    .or-page .or-payor-bottom { display: flex; }
-    .or-page .or-payor-bottom .or-op-left { flex: 1.5; padding: 4px 6px; border-right: 1.6px solid #000; }
-    .or-page .or-payor-bottom .or-op-right { flex: 1; padding: 4px 6px; }
-    .or-page .or-payor-bottom .or-op-label { font-family: "Copperplate Gothic Light", "Copperplate Gothic Bold", "Copperplate", Arial, sans-serif; font-size: 7.5px; font-weight: 700; text-transform: uppercase; }
-    .or-page .or-payor-bottom .or-op-value { font-family: "Copperplate Gothic Light", "Copperplate Gothic Bold", "Copperplate", Arial, sans-serif; font-size: 11px; font-weight: 600; margin-top: 2px; }
+.or-field.or-date {
+    top: var(--date-top);
+    left: var(--date-left);
+}
 
-    .or-page .or-table-box { border: 1.6px solid #000; border-radius: 4px; margin-bottom: 4px; overflow: hidden; display: flex; flex-direction: column; }
-    .or-page table.or-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-    .or-page table.or-table th { font-family: "Copperplate Gothic Light", "Copperplate Gothic Bold", "Copperplate", Arial, sans-serif; background: #ffffff; border-bottom: 1.6px solid #000; border-right: 1.6px solid #000; font-size: 10px; font-weight: 700; text-align: center; padding: 4px 4px; text-transform: uppercase; letter-spacing: 0.3px; line-height: 1.15; }
-    .or-page table.or-table th:last-child { border-right: none; }
-    .or-page table.or-table td { font-family: "Copperplate Gothic Light", "Copperplate Gothic Bold", "Copperplate", Arial, sans-serif; border-bottom: 1.2px solid #000; border-right: 1.6px solid #000; font-size: 9px; padding: 4px; vertical-align: middle; line-height: 1.15; }
-    .or-page table.or-table td:last-child { border-right: none; }
-    .or-page table.or-table tr:last-child td { border-bottom: none; }
-    .or-page table.or-table td.or-col-nature { text-align: left; padding-left: 5px; }
-    .or-page table.or-table td.or-col-code { text-align: left; padding-left: 5px; font-size: 8px; }
-    .or-page table.or-table td.or-col-amount { text-align: left; padding-right: 6px; font-weight: 600; }
-    .or-page table.or-table tr.or-data-row td, .or-page table.or-table tr.or-empty-row td { height: 34px; min-height: 25px; max-height: 25px; padding-top: 0; padding-bottom: 0; vertical-align: middle; line-height: 1.15; box-sizing: border-box; }
-    .or-page table.or-table tr.or-data-row td .or-row-spacer, .or-page table.or-table tr.or-empty-row td .or-row-spacer { height: 25px; min-height: 25px; display: block; }
-    .or-page table.or-table tr.or-total-row td { font-family: "Copperplate Gothic Light", "Copperplate Gothic Bold", "Copperplate", Arial, sans-serif; font-weight: 700; font-size: 12px; border-top: 1.6px solid #000; border-bottom: 4px double #000; padding-top: 4px; padding-bottom: 4px; }
-    .or-page .or-words-inline { padding: 4px 10px; border-top: 1.6px solid #000; line-height: 1.2; display: flex; flex-direction: column; justify-content: flex-start; align-items: flex-start; }
-    .or-page .or-words-inline .or-words-label { font-family: "Copperplate Gothic Light", "Copperplate Gothic Bold", "Copperplate", Arial, sans-serif; font-size: 10px; font-weight: 700; text-transform: uppercase; text-align: left; width: 100%; margin: 0; flex: 0 0 auto; }
-    .or-page .or-words-inline .or-words-value { font-family: "Copperplate Gothic Light", "Copperplate Gothic Bold", "Copperplate", Arial, sans-serif; font-size: 10px; font-weight: 400; margin-top: 2px; text-transform: uppercase; text-align: left; width: 100%; flex: 0 0 auto; }
+.or-field.or-no {
+    top: var(--or-no-top);
+    left: var(--or-no-left);
+	display: none;
+}
 
-    .or-page .or-payment-box { border: 1.6px solid #000; border-radius: 4px; margin-bottom: 4px; overflow: hidden; }
-    .or-page .or-payment-main { display: flex; border-bottom: 1.6px solid #000; }
-    .or-page .or-payment-main .or-pay-left { flex: 1; padding: 6px 8px; border-right: 1.6px solid #000; display: flex; flex-direction: column; justify-content: space-between; }
-    .or-page .or-payment-main .or-pay-left .or-checkbox-row { font-family: "Copperplate Gothic Light", "Copperplate Gothic Bold", "Copperplate", Arial, sans-serif; display: flex; align-items: center; gap: 6px; font-size: 9px; margin: 4px 0; font-weight: 600; height: 15px; }
-    .or-page .or-payment-main .or-pay-left .or-checkbox { display: inline-block; width: 10px; height: 10px; border: 1.2px solid #000; border-radius: 2px; flex-shrink: 0; }
-    .or-page .or-payment-main .or-pay-right { flex: 2; display: flex; flex-direction: column; }
-    .or-page .or-payment-main .or-pay-right .or-pay-head { display: flex; border-bottom: 1.2px solid #000; }
-    .or-page .or-payment-main .or-pay-right .or-pay-head div { font-family: "Copperplate Gothic Light", "Copperplate Gothic Bold", "Copperplate", Arial, sans-serif; flex: 1; text-align: center; font-size: 7.5px; font-weight: 700; padding: 4px 2px; border-right: 1.2px solid #000; line-height: 1.15; }
-    .or-page .or-payment-main .or-pay-right .or-pay-head div:last-child { border-right: none; }
-    .or-page .or-payment-main .or-pay-right .or-pay-body { display: flex; flex: 1; min-height: 22px; }
-    .or-page .or-payment-main .or-pay-right .or-pay-body div { flex: 1; border-right: 1.2px solid #000; }
-    .or-page .or-payment-main .or-pay-right .or-pay-body div:last-child { border-right: none; }
+.or-field.or-payor {
+    top: var(--payor-top);
+    left: var(--payor-left);
+}
 
-    .or-page .or-received-row { padding: 6px 8px 8px 8px; position: relative; min-height: 55px; }
-    .or-page .or-received-row .or-received-text { font-family: "Copperplate Gothic Light", "Copperplate Gothic Bold", "Copperplate", Arial, sans-serif; font-size: 9px; font-weight: 500; }
-    .or-page .or-received-row .or-by-line { font-family: "Copperplate Gothic Light", "Copperplate Gothic Bold", "Copperplate", Arial, sans-serif; position: absolute; bottom: 18px; left: 47%; transform: translateX(-50%); font-size: 9px; font-weight: 600; }
-    .or-page .or-received-row .or-sign-line { position: absolute; bottom: 5px; right: 8px; width: 160px; text-align: center; }
-    .or-page .or-received-row .or-sign-line .or-sign-bar { border-top: 1.2px solid #000; padding-top: 2px; }
-    .or-page .or-received-row .or-sign-line .or-sign-label { font-family: "Copperplate Gothic Light", "Copperplate Gothic Bold", "Copperplate", Arial, sans-serif; font-size: 7.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.2px; }
-    .or-page .or-footer-note { font-family: "Copperplate Gothic Light", "Copperplate Gothic Bold", "Copperplate", Arial, sans-serif; font-size: 6.5px; font-style: italic; text-align: justify; margin-top: 4px; line-height: 1.2; padding: 0 2px 0 8px; }
+.or-field.or-op-no {
+    top: var(--op-no-top);
+    left: var(--op-no-left);
+}
 
-    /* ===== DETAILS-ONLY OVERLAY ===== */
-    .or-page.or-details-overlay { width: 3.8in; margin: 0; padding: 0; }
-    .or-page.or-details-overlay .or-outer { border: 1.6px solid transparent; border-radius: 6px; padding: 8px 10px; display: flex; flex-direction: column; }
-    .or-page.or-details-overlay .or-header { opacity: 0; }
-    .or-page.or-details-overlay .or-info-box { border-color: transparent; }
-    .or-page.or-details-overlay .or-info-box .or-info-cell { border-color: transparent; }
-    .or-page.or-details-overlay .or-info-box .or-info-cell .or-form-label, .or-page.or-details-overlay .or-info-box .or-info-cell .or-original, .or-page.or-details-overlay .or-info-box .or-info-cell .or-cell-label { opacity: 0; }
-    .or-page.or-details-overlay .or-payor-box { border-color: transparent; }
-    .or-page.or-details-overlay .or-payor-box .or-payor-top { border-color: transparent; }
-    .or-page.or-details-overlay .or-payor-box .or-payor-bottom .or-op-left { border-color: transparent; }
-    .or-page.or-details-overlay .or-payor-box .or-payor-label, .or-page.or-details-overlay .or-payor-box .or-op-label { opacity: 0; }
-    .or-page.or-details-overlay .or-table-box { border-color: transparent; }
-    .or-page.or-details-overlay table.or-table th { border-color: transparent; opacity: 0; }
-    .or-page.or-details-overlay table.or-table td { border-color: transparent; }
-    .or-page.or-details-overlay table.or-table tr.or-total-row td { border-color: transparent; }
-    .or-page.or-details-overlay table.or-table tr.or-total-row td:first-child { opacity: 0; }
-    .or-page.or-details-overlay .or-words-inline { border-color: transparent; }
-    .or-page.or-details-overlay .or-words-inline .or-words-label { opacity: 0; }
-    .or-page.or-details-overlay .or-payment-box { border-color: transparent; }
-    .or-page.or-details-overlay .or-payment-box * { opacity: 0; }
-    .or-page.or-details-overlay .or-footer-note { opacity: 0; }
-    .or-page.or-details-overlay, .or-page.or-details-overlay .or-header .or-title-1, .or-page.or-details-overlay .or-header .or-title-2, .or-page.or-details-overlay .or-header .or-title-3, .or-page.or-details-overlay .or-header .or-title-4, .or-page.or-details-overlay .or-original, .or-page.or-details-overlay table.or-table th, .or-page.or-details-overlay table.or-table td, .or-page.or-details-overlay .or-words-inline .or-words-value, .or-page.or-details-overlay .or-words-inline .or-words-label, .or-page.or-details-overlay .or-payor-label, .or-page.or-details-overlay .or-payor-value, .or-page.or-details-overlay .or-op-label, .or-page.or-details-overlay .or-op-value, .or-page.or-details-overlay .or-cell-label, .or-page.or-details-overlay .or-cell-value, .or-page.or-details-overlay .or-received-text, .or-page.or-details-overlay .or-sign-label, .or-page.or-details-overlay .or-footer-note { font-family: "Copperplate Gothic Light", "Copperplate Gothic Bold", "Copperplate", Arial, sans-serif; }
-    .or-page.or-details-overlay .or-words-inline .or-words-value { font-weight: 400; }
+/* Nature of Collection Column */
+.or-field.or-nature {
+    left: 0.45in; /* Aligned to the left edge of the box */
+    width: 1.95in;
+    white-space: normal;
+    word-wrap: break-word;
+    overflow: hidden;
+    font-size: 6pt;
+    line-height: 1.0;
+}
+
+/* Account Code Column */
+.or-field.or-acct-code {
+    left: 2.15in; /* Centered in the Account Code column */
+    width: 0.75in;
+    white-space: normal;
+    word-wrap: break-word;
+    overflow: hidden;
+    font-size: 7pt;
+    line-height: 1.0;
+}
+
+/* Amount Column */
+.or-field.or-amount {
+    left: 2.95in; /* Aligned to the right edge of the amount box */
+    width: 1.20in;
+    text-align: right;
+    white-space: normal;
+    word-wrap: break-word;
+    overflow: hidden;
+    font-size: 8pt;
+    line-height: 1.0;
+    padding-right: 0.40in;
+}
+
+/* Total Row */
+.or-field.or-total {
+    top: var(--total-top);
+    left: 2.95in; /* Match the amount column left position */
+    width: 1.20in;
+    text-align: right;
+    font-weight: 700;
+    padding-right: 0.40in;
+}
+
+/* Amount in Words */
+.or-field.or-words {
+    top: var(--words-top);
+    left: var(--words-left);
+    width: 4.00in;
+    white-space: normal;
+    word-wrap: break-word;
+    overflow: hidden;
+    font-size: 8pt;
+    line-height: 1.0;
+    text-transform: uppercase;
+}
+
+    /* ===== ALIGNMENT GUIDE (for testing only) ===== */
+    .or-page .or-alignment-guide {
+        display: none;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4.25in;
+        height: 8.50in;
+        border: 2px dashed #ff0000;
+        z-index: 9999;
+        pointer-events: none;
+        box-sizing: border-box;
+    }
+    .or-page.show-guide .or-alignment-guide {
+        display: block;
+    }
+    .or-page .or-alignment-guide .ag-corner {
+        position: absolute;
+        width: 22px; height: 22px;
+        border: 2px solid #ff0000;
+        background: rgba(255, 0, 0, 0.25);
+        font-size: 6pt; color: #ff0000;
+        font-family: "Courier New", monospace;
+        font-weight: 700;
+        display: flex; align-items: center; justify-content: center;
+        line-height: 1;
+    }
+    .or-page .or-alignment-guide .ag-tl { top: -2px; left: -2px; }
+    .or-page .or-alignment-guide .ag-tr { top: -2px; right: -2px; }
+    .or-page .or-alignment-guide .ag-bl { bottom: -2px; left: -2px; }
+    .or-page .or-alignment-guide .ag-br { bottom: -2px; right: -2px; }
+    .or-page .or-alignment-guide .ag-center {
+        position: absolute;
+        top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 7pt;
+        color: rgba(255, 0, 0, 0.35);
+        font-family: "Courier New", monospace;
+        font-weight: 700;
+        letter-spacing: 3px;
+        text-align: center;
+        line-height: 1.5;
+    }
+    .or-page .or-alignment-guide .ag-ruler-x {
+        position: absolute; top: 50%; left: 0;
+        width: 100%; height: 1px;
+        background: rgba(255, 0, 0, 0.35);
+    }
+    .or-page .or-alignment-guide .ag-ruler-y {
+        position: absolute; top: 0; left: 50%;
+        width: 1px; height: 100%;
+        background: rgba(255, 0, 0, 0.35);
+    }
 </style>
 </head>
 <body>
@@ -656,14 +822,8 @@
             </div>
 
             <div class="btn-group" style="margin-top: 1.2rem;">
-                <button type="button" class="btn-test btn-print-or" id="or_printBtn" style="flex: 1;">
-                    <i class="fas fa-print"></i> Print OR (with Details)
-                </button>
-                <button type="button" class="btn-test btn-print-blank" id="or_printBlankBtn" style="flex: 1;">
-                    <i class="fas fa-print"></i> Print Blank OR
-                </button>
-                <button type="button" class="btn-test btn-print-details" id="or_printDetailsOnlyBtn" style="flex: 1;">
-                    <i class="fas fa-file-alt"></i> Print Details Only
+                <button type="button" class="btn-test btn-print-or" id="or_printTemplateBtn" style="flex: 2;">
+                    <i class="fas fa-print"></i> Print OR Template with Details
                 </button>
                 <button type="button" class="btn-test btn-sheet" id="or_sheetBtn" style="flex: 1;">
                     <i class="fas fa-external-link-alt"></i> View Google Sheet
@@ -816,7 +976,6 @@
             <button class="close-btn" id="closeSummaryPrintBtn"><i class="fas fa-times"></i></button>
         </div>
         <div class="modal-body">
-            <!-- Week selector -->
             <div class="week-selector-row">
                 <div class="field-group">
                     <label><i class="fas fa-calendar-alt"></i> Month</label>
@@ -847,12 +1006,10 @@
                 </div>
             </div>
 
-            <!-- Add week button -->
             <button type="button" class="btn-add-week" id="addWeekBtn">
                 <i class="fas fa-plus"></i> Add Week to Print
             </button>
 
-            <!-- List of selected weeks -->
             <div class="week-list-container" id="weekListContainer">
                 <div style="text-align:center; color:#64748b; font-size:0.75rem; padding:0.5rem;">
                     No weeks selected yet. Choose a month, week, and year, then click "Add Week to Print".
@@ -1435,7 +1592,6 @@ function applyDateFilterToRecordDropdown() {
     const year = document.getElementById('filterYearOr').value;
 
     if (!day && !month && !year) {
-        // No filter, show all
         filteredOrRecordsCache = allOrRecordsCache.slice();
     } else {
         filteredOrRecordsCache = allOrRecordsCache.filter(r => {
@@ -1483,7 +1639,6 @@ document.getElementById('loadRecordBtn').addEventListener('click', () => {
         return;
     }
 
-    // Use the full cache to get all entries for this OR group
     const group = allOrRecordsCache.filter(x =>
         x.orNo === r.orNo &&
         x.sheetName === r.sheetName &&
@@ -1960,16 +2115,9 @@ window.deleteRecord = async function(rowNumber, sheetName) {
 };
 
 // ============================================
-// PRINT OFFICIAL RECEIPT - BLANK
+// PRINT OR TEMPLATE WITH DETAILS (Background Image)
 // ============================================
-document.getElementById('or_printBlankBtn').addEventListener('click', () => {
-    buildAndShowORPrint(null, null, null, null, null, true);
-});
-
-// ============================================
-// PRINT OFFICIAL RECEIPT - WITH DETAILS
-// ============================================
-document.getElementById('or_printBtn').addEventListener('click', () => {
+document.getElementById('or_printTemplateBtn').addEventListener('click', () => {
     const date = document.getElementById('or_date').value;
     const orNo = document.getElementById('or_orNo').value.trim();
     const opNo = document.getElementById('or_opNo').value.trim();
@@ -1998,42 +2146,7 @@ document.getElementById('or_printBtn').addEventListener('click', () => {
         return;
     }
 
-    buildAndShowORPrint(date, orNo, opNo, name, entries, false);
-});
-
-// ============================================
-// PRINT OFFICIAL RECEIPT - DETAILS ONLY
-// ============================================
-document.getElementById('or_printDetailsOnlyBtn').addEventListener('click', () => {
-    const date = document.getElementById('or_date').value;
-    const orNo = document.getElementById('or_orNo').value.trim();
-    const opNo = document.getElementById('or_opNo').value.trim();
-    const name = document.getElementById('or_name').value.trim();
-
-    if (!date || !orNo || !opNo || !name) {
-        showToast('❌ Validation', 'Please fill in Date, O.R. No., O.P. No., and Name before printing.', 'error');
-        return;
-    }
-
-    const rows = document.querySelectorAll('#orEntries .entry-row');
-    const entries = [];
-
-    rows.forEach(row => {
-        const nature = row.querySelector('.entry-nature').value;
-        const acctSel = row.querySelector('.entry-accounts');
-        const accounts = acctSel.value;
-        const amount = parseFloat(row.querySelector('.entry-amount').value) || 0;
-        if (nature && accounts && amount > 0) {
-            entries.push({ nature, accounts, amount });
-        }
-    });
-
-    if (entries.length === 0) {
-        showToast('❌ Validation', 'Please add at least one entry with an amount.', 'error');
-        return;
-    }
-
-    buildAndShowORPrint(date, orNo, opNo, name, entries, false, true);
+    buildAndShowORPrintWithTemplate(date, orNo, opNo, name, entries);
 });
 
 document.getElementById('or_sheetBtn').addEventListener('click', () => {
@@ -2054,257 +2167,65 @@ function fmtORAmount(n) {
     return v.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
-function buildAndShowORPrint(date, orNo, opNo, name, entries, isBlank, detailsOnly = false) {
-    const total = isBlank ? 0 : entries.reduce((s, e) => s + (parseFloat(e.amount) || 0), 0);
-    const words = isBlank ? '' : (amountToWords(total) === '— auto —' ? '' : amountToWords(total));
-    const dateLong = isBlank ? '' : formatDateLong(date);
+function buildAndShowORPrintWithTemplate(date, orNo, opNo, name, entries) {
+    const total = entries.reduce((s, e) => s + (parseFloat(e.amount) || 0), 0);
+    const words = amountToWords(total) === '— auto —' ? '' : amountToWords(total);
+    const dateLong = formatDateLong(date);
 
-    const MAX_ROWS = 8;
-    const realCount = isBlank ? 0 : entries.length;
-    const emptyCount = Math.max(0, MAX_ROWS - realCount);
-    const totalRowsToRender = realCount + emptyCount;
-
+    // Build 8 data rows (filled + blank)
     let rowsHtml = '';
-    for (let i = 0; i < totalRowsToRender; i++) {
-        const e = (i < realCount) ? entries[i] : null;
+    const MAX_ROWS = 8;
+    for (let i = 0; i < MAX_ROWS; i++) {
+        const e = (i < entries.length) ? entries[i] : null;
+        const topValue = `calc(var(--table-row-1-top) + ${i} * var(--table-row-height))`;
+
         if (e) {
-            rowsHtml += `<tr class="or-data-row">
-                <td class="or-col-nature"><div class="or-row-spacer">${escapeHtml(e.nature)}</div></td>
-                <td class="or-col-code"><div class="or-row-spacer">${escapeHtml(e.accounts)}</div></td>
-                <td class="or-col-amount"><div class="or-row-spacer">${fmtORAmount(e.amount)}</div></td>
-            </tr>`;
-        } else {
-            rowsHtml += `<tr class="or-empty-row">
-                <td class="or-col-nature"><div class="or-row-spacer"></div></td>
-                <td class="or-col-code"></td>
-                <td class="or-col-amount"></td>
-            </tr>`;
+            rowsHtml += `
+                <div class="or-field or-nature" style="top: ${topValue};">${escapeHtml(e.nature)}</div>
+                <div class="or-field or-acct-code" style="top: ${topValue};">${escapeHtml(e.accounts)}</div>
+                <div class="or-field or-amount" style="top: ${topValue};">${fmtORAmount(e.amount)}</div>
+            `;
         }
     }
 
-    rowsHtml += `<tr class="or-total-row">
-        <td class="or-col-nature">TOTAL</td>
-        <td class="or-col-code"></td>
-        <td class="or-col-amount">${isBlank ? '' : fmtORAmount(total)}</td>
-    </tr>`;
+    // Determine whether to show the red guide
+    const showGuide = (typeof window !== 'undefined' && window.SHOW_OR_GUIDE === true);
+    const guideClass = showGuide ? 'show-guide' : '';
 
+    const guideHtml = `
+        <div class="or-alignment-guide">
+            <div class="ag-corner ag-tl">TL</div>
+            <div class="ag-corner ag-tr">TR</div>
+            <div class="ag-corner ag-bl">BL</div>
+            <div class="ag-corner ag-br">BR</div>
+            <div class="ag-center">4.25" × 8.50"<br>ALIGNMENT GUIDE</div>
+            <div class="ag-ruler-x"></div>
+            <div class="ag-ruler-y"></div>
+        </div>
+    `;
+
+    // Path to OR template background
     const base = (typeof window !== 'undefined' && window.location)
         ? window.location.href.split('?')[0].replace(/[^\/]*$/, '')
         : '';
-    const rnpUrl = base + 'RNP_LOGO.png';
-    const dhsudUrl = base + 'DHSUD_LOGO.png';
-
-    if (detailsOnly) {
-        const detailsOnlyHtml = `
-            <div class="or-page or-details-overlay">
-                <div class="or-outer">
-                    <div class="or-header">
-                        <img class="or-logo-left" src="${rnpUrl}" alt="" onerror="this.style.display='none'">
-                        <div class="or-title-block">
-                            <div class="or-title-1">OFFICIAL RECEIPT</div>
-                            <div class="or-title-2">Republic of the Philippines</div>
-                            <div class="or-title-3">DEPARTMENT OF HUMAN SETTLEMENTS</div>
-                            <div class="or-title-4">AND URBAN DEVELOPMENT</div>
-                        </div>
-                        <img class="or-logo-right" src="${dhsudUrl}" alt="" onerror="this.style.display='none'">
-                    </div>
-                    <div class="or-info-box">
-                        <div class="or-info-cell">
-                            <div class="or-form-label">Accountable Form No. 51</div>
-                            <div class="or-form-label">Revised January, 1992</div>
-                        </div>
-                        <div class="or-info-cell">
-                            <div class="or-original">ORIGINAL</div>
-                        </div>
-                        <div class="or-info-cell">
-                            <div class="or-cell-label">DATE</div>
-                            <div class="or-cell-value" style="text-align:center;">${escapeHtml(dateLong)}</div>
-                        </div>
-                        <div class="or-info-cell or-cell-no">
-                            <div class="or-cell-label">NO.</div>
-                            <div class="or-cell-value" style="font-size:12px;">&nbsp;</div>
-                        </div>
-                    </div>
-                    <div class="or-payor-box">
-                        <div class="or-payor-top">
-                            <div class="or-payor-label">PAYOR</div>
-                            <div class="or-payor-value">${escapeHtml(name)}</div>
-                        </div>
-                        <div class="or-payor-bottom">
-                            <div class="or-op-left">
-                                <div class="or-op-label">ORDER OF PAYMENT NO.:</div>
-                                <div class="or-op-value">${escapeHtml(opNo)}</div>
-                            </div>
-                            <div class="or-op-right">
-                                <div class="or-op-label">FUND:</div>
-                                <div class="or-op-value">&nbsp;</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="or-table-box">
-                        <table class="or-table">
-                            <thead>
-                                <tr>
-                                    <th style="width:60%;">NATURE OF COLLECTION</th>
-                                    <th style="width:20%;">ACCOUNT CODE</th>
-                                    <th style="width:20%;">AMOUNT</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${rowsHtml}
-                            </tbody>
-                        </table>
-                        <div class="or-words-inline">
-                            <div class="or-words-label">AMOUNT IN WORDS</div>
-                            <div class="or-words-value">${escapeHtml(words || '&nbsp;')}</div>
-                        </div>
-                    </div>
-                    <div class="or-payment-box">
-                        <div class="or-payment-main">
-                            <div class="or-pay-left">
-                                <div class="or-checkbox-row"><span class="or-checkbox"></span> Cash</div>
-                                <div class="or-checkbox-row"><span class="or-checkbox"></span> Check</div>
-                                <div class="or-checkbox-row"><span class="or-checkbox"></span> Money Order</div>
-                            </div>
-                            <div class="or-pay-right">
-                                <div class="or-pay-head">
-                                    <div>Drawee Bank</div>
-                                    <div>Number</div>
-                                    <div>Date</div>
-                                </div>
-                                <div class="or-pay-body"><div></div><div></div><div></div></div>
-                                <div class="or-pay-body"><div></div><div></div><div></div></div>
-                            </div>
-                        </div>
-                        <div class="or-received-row">
-                            <div class="or-received-text">Received the amount stated above</div>
-                            <div class="or-by-line">By:</div>
-                            <div class="or-sign-line">
-                                <div class="or-sign-bar"></div>
-                                <div class="or-sign-label">COLLECTING OFFICER</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="or-footer-note">
-                    Note: Write the number and date of this receipt at the back of check or money order received.<br>
-                    Printed by APO Production Unit, Inc.
-                </div>
-            </div>
-        `;
-        document.getElementById('printArea').innerHTML = detailsOnlyHtml;
-        setTimeout(() => { window.print(); }, 250);
-        return;
-    }
+    const orTemplateUrl = base + 'OR_Template.png';
 
     const html = `
-        <div class="or-page">
-            <div class="or-outer">
-                <div class="or-header">
-                    <img class="or-logo-left" src="${rnpUrl}" alt="RNP" onerror="this.style.display='none'">
-                    <div class="or-title-block">
-                        <div class="or-title-1">OFFICIAL RECEIPT</div>
-                        <div class="or-title-2">Republic of the Philippines</div>
-                        <div class="or-title-3">DEPARTMENT OF HUMAN SETTLEMENTS</div>
-                        <div class="or-title-4">AND URBAN DEVELOPMENT</div>
-                    </div>
-                    <img class="or-logo-right" src="${dhsudUrl}" alt="DHSUD" onerror="this.style.display='none'">
-                </div>
-                <div class="or-info-box">
-                    <div class="or-info-cell">
-                        <div class="or-form-label">Accountable Form No. 51</div>
-                        <div class="or-form-label">Revised January, 1992</div>
-                    </div>
-                    <div class="or-info-cell">
-                        <div class="or-original">ORIGINAL</div>
-                    </div>
-                    <div class="or-info-cell">
-                        <div class="or-cell-label">DATE</div>
-                        <div class="or-cell-value" style="text-align:center;">${isBlank ? '&nbsp;' : escapeHtml(dateLong)}</div>
-                    </div>
-                    <div class="or-info-cell or-cell-no">
-                        <div class="or-cell-label">NO.</div>
-                        <div class="or-cell-value" style="font-size:12px;">&nbsp;</div>
-                    </div>
-                </div>
-                <div class="or-payor-box">
-                    <div class="or-payor-top">
-                        <div class="or-payor-label">PAYOR</div>
-                        <div class="or-payor-value">${isBlank ? '&nbsp;' : escapeHtml(name)}</div>
-                    </div>
-                    <div class="or-payor-bottom">
-                        <div class="or-op-left">
-                            <div class="or-op-label">ORDER OF PAYMENT NO.:</div>
-                            <div class="or-op-value">${isBlank ? '&nbsp;' : escapeHtml(opNo)}</div>
-                        </div>
-                        <div class="or-op-right">
-                            <div class="or-op-label">FUND:</div>
-                            <div class="or-op-value">&nbsp;</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="or-table-box">
-                    <table class="or-table">
-                        <thead>
-                            <tr>
-                                <th style="width:60%;">NATURE OF COLLECTION</th>
-                                <th style="width:20%;">ACCOUNT CODE</th>
-                                <th style="width:20%;">AMOUNT</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${rowsHtml}
-                        </tbody>
-                    </table>
-                    <div class="or-words-inline">
-                        <div class="or-words-label">AMOUNT IN WORDS</div>
-                        <div class="or-words-value">${isBlank ? '&nbsp;' : escapeHtml(words || '&nbsp;')}</div>
-                    </div>
-                </div>
-                <div class="or-payment-box">
-                    <div class="or-payment-main">
-                        <div class="or-pay-left">
-                            <div class="or-checkbox-row"><span class="or-checkbox"></span> Cash</div>
-                            <div class="or-checkbox-row"><span class="or-checkbox"></span> Check</div>
-                            <div class="or-checkbox-row"><span class="or-checkbox"></span> Money Order</div>
-                        </div>
-                        <div class="or-pay-right">
-                            <div class="or-pay-head">
-                                <div>Drawee Bank</div>
-                                <div>Number</div>
-                                <div>Date</div>
-                            </div>
-                            <div class="or-pay-body">
-                                <div></div>
-                                <div></div>
-                                <div></div>
-                            </div>
-                            <div class="or-pay-body">
-                                <div></div>
-                                <div></div>
-                                <div></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="or-received-row">
-                        <div class="or-received-text">Received the amount stated above</div>
-                        <div class="or-by-line">By:</div>
-                        <div class="or-sign-line">
-                            <div class="or-sign-bar"></div>
-                            <div class="or-sign-label">COLLECTING OFFICER</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="or-footer-note">
-                Note: Write the number and date of this receipt at the back of check or money order received.<br>
-                Printed by APO Production Unit, Inc.
-            </div>
+        <div class="or-page ${guideClass}">
+            <img class="or-template-bg" src="${orTemplateUrl}" alt="" onerror="this.style.display='none'">
+            ${guideHtml}
+            <div class="or-field or-date">${escapeHtml(dateLong)}</div>
+            <div class="or-field or-no">${escapeHtml(orNo)}</div>
+            <div class="or-field or-payor">${escapeHtml(name)}</div>
+            <div class="or-field or-op-no">${escapeHtml(opNo)}</div>
+            ${rowsHtml}
+            <div class="or-field or-total">${fmtORAmount(total)}</div>
+            <div class="or-field or-words">${escapeHtml(words)}</div>
         </div>
     `;
 
     document.getElementById('printArea').innerHTML = html;
-    setTimeout(() => { window.print(); }, 250);
+    setTimeout(() => { window.print(); }, 400);
 }
 
 // ============================================
@@ -2623,7 +2544,6 @@ async function fetchAllRecordsOnce() {
 // ============================================
 // PRINT SUMMARY OF COLLECTION (MULTI-PAGE LANDSCAPE)
 // ============================================
-
 const summaryPrintModal = document.getElementById('summaryPrintModal');
 
 function openSummaryPrintModal() {
@@ -2631,7 +2551,6 @@ function openSummaryPrintModal() {
     const weekSel = document.getElementById('summaryPrintWeek');
     const yearSel = document.getElementById('summaryPrintYear');
 
-    // Populate years
     const currentYear = new Date().getFullYear();
     yearSel.innerHTML = '';
     for (let y = currentYear + 1; y >= currentYear - 5; y--) {
@@ -2641,11 +2560,8 @@ function openSummaryPrintModal() {
     }
     yearSel.value = currentYear;
 
-    // Reset week list
     selectedWeeks = [];
     renderWeekList();
-
-    // Auto-populate weeks when month/year changes
     updateWeekOptions();
 
     summaryPrintModal.classList.add('active');
@@ -2674,19 +2590,16 @@ function updateWeekOptions() {
 
     if (isNaN(month) || isNaN(year)) return;
 
-    // Fetch records to check which weeks have data
     fetchAllRecordsOnce().then(allRecords => {
         const monthName = ['January','February','March','April','May','June','July','August','September','October','November','December'][month];
         const sheetName = `${monthName} ${year}`;
         const monthRecords = allRecords.filter(r => (r.sheetName || '').trim() === sheetName);
 
-        // Filter out TOTAL rows
         const normalRecords = monthRecords.filter(r => {
             const nature = (r.natureOfCollection || '').toUpperCase();
             return !nature.includes('TOTAL BROUGHT FORWARD') && !nature.includes('TOTAL CARRIED FORWARD');
         });
 
-        // Get all dates with data
         const datesWithData = new Set();
         normalRecords.forEach(r => {
             const d = parseInt(r.date, 10);
@@ -2701,10 +2614,8 @@ function updateWeekOptions() {
             return;
         }
 
-        // Get weeks of the month
         const weeks = getWeeksOfMonth(year, month);
 
-        // Filter weeks that contain at least one date with data
         const validWeeks = weeks.filter(w => {
             for (let d = 1; d <= 31; d++) {
                 if (!datesWithData.has(d)) continue;
@@ -2729,7 +2640,6 @@ function updateWeekOptions() {
             weekSel.appendChild(o);
         });
     }).catch(() => {
-        // Fallback: show all weeks if fetch fails
         const weeks = getWeeksOfMonth(year, month);
         weeks.forEach((w, idx) => {
             const o = document.createElement('option');
@@ -3016,18 +2926,13 @@ async function buildSummaryPrintLandscape(weeks) {
         return map[nature] || null;
     }
 
-    // ============================================================
-    // NEW: Carried/Brought Forward logic per week
-    // ============================================================
-    // Sort weeks chronologically
     const sortedWeeks = [...weeks].sort((a, b) => {
         if (a.year !== b.year) return a.year - b.year;
         if (a.month !== b.month) return a.month - b.month;
         return a.start - b.start;
     });
 
-    // Calculate per-week totals (excluding any pre-existing TOTAL rows)
-    const weeklyData = []; // { week, records, grandTotal, columnTotals }
+    const weeklyData = [];
 
     for (const week of sortedWeeks) {
         const monthName = months[week.month];
@@ -3035,13 +2940,11 @@ async function buildSummaryPrintLandscape(weeks) {
 
         const monthRecords = allRecords.filter(r => (r.sheetName || '').trim() === sheetName);
 
-        // Filter out TOTAL BROUGHT/CARRIED FORWARD rows from the sheet
         const normalRecords = monthRecords.filter(r => {
             const nature = (r.natureOfCollection || '').toUpperCase();
             return !nature.includes('TOTAL BROUGHT FORWARD') && !nature.includes('TOTAL CARRIED FORWARD');
         });
 
-        // Filter by week date range
         const weekRecords = normalRecords.filter(r => {
             const d = parseInt(r.date, 10);
             if (isNaN(d)) return false;
@@ -3075,19 +2978,15 @@ async function buildSummaryPrintLandscape(weeks) {
         });
     }
 
-    // Compute running totals
     let allPagesHtml = '';
 
     for (let wIdx = 0; wIdx < weeklyData.length; wIdx++) {
         const wd = weeklyData[wIdx];
         const week = wd.week;
 
-        // Carried Forward = sum of all PREVIOUS weeks
         const carriedForwardTotal = weeklyData.slice(0, wIdx).reduce((s, x) => s + x.grandTotal, 0);
-        // Brought Forward = Carried Forward + current week total
         const broughtForwardTotal = carriedForwardTotal + wd.grandTotal;
 
-        // Carried Forward per-column
         const carriedForwardCols = {};
         allColumns.forEach(c => { if (!identifierKeys.includes(c.key)) carriedForwardCols[c.key] = 0; });
         for (let j = 0; j < wIdx; j++) {
@@ -3097,13 +2996,11 @@ async function buildSummaryPrintLandscape(weeks) {
             });
         }
 
-        // Brought Forward per-column
         const broughtForwardCols = {};
         Object.keys(carriedForwardCols).forEach(k => {
             broughtForwardCols[k] = carriedForwardCols[k] + (wd.columnTotals[k] || 0);
         });
 
-        // Group records by date
         const grouped = {};
         wd.records.forEach(r => {
             const d = r.date;
@@ -3112,7 +3009,6 @@ async function buildSummaryPrintLandscape(weeks) {
         });
         const sortedDates = Object.keys(grouped).sort((a, b) => parseInt(a) - parseInt(b));
 
-        // Is this the last week of the month? (Only for display purposes — no longer used for OVERALL)
         const lastDay = new Date(week.year, week.month + 1, 0);
         const isLastWeekOfMonth = week.end >= lastDay;
 
@@ -3120,7 +3016,6 @@ async function buildSummaryPrintLandscape(weeks) {
             const pageCols = pages[pageIdx];
             let rowsHtml = '';
 
-            // ===== TOTAL CARRIED FORWARD row — placed FIRST (only if not first week) =====
             if (wIdx > 0) {
                 rowsHtml += `<tr class="carried-forward">`;
                 rowsHtml += `<td colspan="3" style="text-align:right; font-weight:800;">TOTAL CARRIED FORWARD →</td>`;
@@ -3133,7 +3028,6 @@ async function buildSummaryPrintLandscape(weeks) {
                 rowsHtml += `</tr>`;
             }
 
-            // ===== Data rows grouped by date =====
             sortedDates.forEach(dateKey => {
                 const records = grouped[dateKey];
                 const dateLabel = String(dateKey).padStart(2, '0');
@@ -3169,7 +3063,6 @@ async function buildSummaryPrintLandscape(weeks) {
                     rowsHtml += `</tr>`;
                 });
 
-                // Day subtotal
                 const dayTotal = records.reduce((s, r) => s + (parseFloat(r.total) || 0), 0);
                 rowsHtml += `<tr class="total-row">
                     <td colspan="3" style="text-align:right;">TOTAL</td>
@@ -3182,7 +3075,6 @@ async function buildSummaryPrintLandscape(weeks) {
                 rowsHtml += `</tr>`;
             });
 
-            // ===== TOTAL BROUGHT FORWARD row — placed at the bottom =====
             rowsHtml += `<tr class="brought-forward">`;
             rowsHtml += `<td colspan="3" style="text-align:right; font-weight:800;">TOTAL BROUGHT FORWARD →</td>`;
             rowsHtml += `<td class="num" style="font-weight:800;">${fmtMoney(broughtForwardTotal)}</td>`;
@@ -3193,7 +3085,6 @@ async function buildSummaryPrintLandscape(weeks) {
             });
             rowsHtml += `</tr>`;
 
-            // ===== OVERALL TOTAL BROUGHT FORWARD (only on last week of month) =====
             if (isLastWeekOfMonth) {
                 const overallTotal = weeklyData.reduce((s, x) => s + x.grandTotal, 0);
                 const overallCols = {};
