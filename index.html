@@ -282,7 +282,7 @@
     background: white;
     font-size: 7px;
     line-height: 1.15;
-    width: 12.4in;                    /* ← was 12.2in — fills more of the 13in page */
+    width: 12.4in;
     max-width: 12.4in;
     margin: 0 auto;
     box-sizing: border-box;
@@ -316,10 +316,10 @@
 .summary-print-page table.sp-table th,
 .summary-print-page table.sp-table td {
     border: 0.5px solid #000;
-    padding: 1px 1.5px;                /* ← tighter padding */
-    font-size: 5.5px;                  /* ← smaller data font */
+    padding: 1px 1.5px;
+    font-size: 5.5px;
     vertical-align: middle;
-    line-height: 1.05;                 /* ← tighter line height */
+    line-height: 1.05;
     word-wrap: break-word;
     overflow: hidden;
 }
@@ -328,7 +328,7 @@
     background: #f0f0f0;
     text-align: center;
     font-weight: 700;
-    font-size: 5px;                    /* ← smaller header font */
+    font-size: 5px;
     padding: 2px 1px;
     word-break: break-word;
     line-height: 1.05;
@@ -371,7 +371,6 @@
     background: #fafafa;
 }
 
-/* ===== PRINT RULE FOR SUMMARY ===== */
 @media print {
     body:has(.summary-print-page) @page {
         size: 13in 8.5in landscape;
@@ -402,7 +401,7 @@
    ============================================================ */
 .report-page {
     font-family: "Copperplate Gothic Light", "Copperplate Gothic Bold", "Copperplate", Arial, sans-serif;
-    padding: 0.30in 0 0.30in 0;          /* top + bottom breathing room */
+    padding: 0.30in 0 0.30in 0;
     color: #000;
     background: white;
     font-size: 7.5px;
@@ -414,7 +413,7 @@
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    min-height: 12.4in;                  /* fill the page (13in - 0.6in margins) */
+    min-height: 12.4in;
     max-height: 12.4in;
 }
 
@@ -431,7 +430,6 @@
 .report-page .rpt-header .rpt-line3 { font-weight: 800; font-size: 10.5px; letter-spacing: 0.4px; margin-top: 0; }
 .report-page .rpt-header .rpt-line4 { font-weight: 600; font-size: 9.5px; margin-top: 1px; font-style: italic; }
 
-/* ✅ Table now STRETCHES to fill all remaining vertical space */
 .report-page table.rpt {
     width: 100%;
     border-collapse: collapse;
@@ -440,7 +438,6 @@
     flex: 1 1 auto;
 }
 .report-page table.rpt tbody {
-    /* let rows distribute so the table fills the page */
     height: 100%;
 }
 .report-page table.rpt th,
@@ -479,7 +476,6 @@
     border-bottom: 3px double #000;
 }
 
-/* ✅ Signature block anchored to bottom */
 .report-page .rpt-sign {
     margin-top: auto;
     display: flex;
@@ -540,35 +536,35 @@
            ============================================================ */
 
     :root {
-        /* ===== DATE ROW ===== */
+	/* ===== DATE ROW ===== */
         --date-top: 2.30in;
         --date-left: 0.45in;
 
-        /* ===== OR NO. ROW ===== */
+/* ===== OR NO. ROW ===== */
         --or-no-top: 0.93in;
         --or-no-left: 2.20in;
 
-        /* ===== PAYOR NAME ===== */
+ /* ===== PAYOR NAME ===== */
         --payor-top: 2.75in;
         --payor-left: 0.70in;
-
-        /* ===== ORDER OF PAYMENT NO. ===== */
+		
+ /* ===== ORDER OF PAYMENT NO. ===== */
         --op-no-top: 3.02in;
         --op-no-left: 0.70in;
 
-        /* ===== TABLE — 8 data rows ===== */
+ /* ===== TABLE — 8 data rows ===== */
         --table-row-1-top: 3.68in;
         --table-row-height: 0.27in;
 
-        /* ===== TOTAL ROW ===== */
-        --total-top: 5.83in;
+   /* ===== TOTAL ROW ===== */
+        --total-top: 6.15in;
 
-        /* ===== AMOUNT IN WORDS ===== */
+ /* ===== AMOUNT IN WORDS ===== */
         --words-top: 6.30in;
         --words-left: 0.50in;
 
-        /* ===== Font settings ===== */
-        --or-font: "Courier New", "Courier", "Consolas", "Lucida Console", monospace;
+ /* ===== Font settings ===== */
+        --or-font: "Calibri", "Carlito", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
         --or-font-size: 9pt;
     }
 
@@ -592,7 +588,6 @@
     transform: none;
 }
 
-    /* ===== TEMPLATE BACKGROUND IMAGE ===== */
 .or-page .or-template-bg {
     position: absolute;
     top: 0;
@@ -620,7 +615,7 @@
         size: 4.25in 8.50in portrait;
         margin: 0;
     }
-    
+
     html, body {
         width: 4.25in;
         height: 8.50in;
@@ -628,14 +623,14 @@
         padding: 0;
         overflow: hidden;
     }
-    
+
     body:has(.or-page) {
         width: 4.25in;
         height: 8.50in;
         margin: 0;
         padding: 0;
     }
-    
+
     .or-page {
         width: 4.25in;
         height: 8.50in;
@@ -647,7 +642,7 @@
         padding: 0;
         overflow: hidden;
     }
-    
+
     .or-page .or-template-bg {
         width: 4.25in;
         height: 8.50in;
@@ -661,7 +656,7 @@
         margin: 0;
         padding: 0;
     }
-    
+
     #printArea {
         display: block !important;
         width: 4.25in;
@@ -674,7 +669,6 @@
     }
 }
 
-/* ===== PRINT: OFFICIAL RECEIPT (4.25" × 8.50") ===== */
 @media print {
     body:has(.or-page) @page {
         size: 4.25in 8.50in portrait;
@@ -721,11 +715,10 @@
         left: 0;
         margin: 0;
         padding: 0;
-		display: none !important;   /* <-- ADD THIS */
+		display: none !important;
     }
 }
 
-/* ===== PRINT: STATEMENT OF INCOME (8.5" × 13" PORTRAIT) ===== */
 @media print {
     body:has(.report-page) @page {
         size: 8.5in 13in portrait;
@@ -744,9 +737,6 @@
     }
 }
 
-
-
-/* ===== PRINT: SUMMARY OF COLLECTION (8.5" × 13" LANDSCAPE) ===== */
 @media print {
     body:has(.summary-print-page) @page {
         size: 13in 8.5in landscape;
@@ -763,97 +753,124 @@
         height: 8.5in !important;
     }
 }
-
-    /* ===== DATA FIELDS (overlay on top of template) ===== */
-    .or-field {
+/* ===== DATA FIELDS (overlay on top of template) ===== */
+.or-field {
     position: absolute;
-    white-space: nowrap;
+    white-space: normal;         /* ✅ default to wrapping everywhere */
+    word-wrap: break-word;
+    word-break: break-word;
+    overflow-wrap: break-word;
     font-family: var(--or-font);
     font-size: var(--or-font-size);
     color: #000;
     z-index: 10;
+    line-height: 1.05;
 }
 
+/* ===== DATE ===== */
 .or-field.or-date {
     top: var(--date-top);
     left: var(--date-left);
+    white-space: nowrap;         /* dates stay on one line */
 }
 
+/* ===== O.R. No. — hidden ===== */
 .or-field.or-no {
     top: var(--or-no-top);
     left: var(--or-no-left);
-	display: none;
+    display: none;
 }
 
+/* ===== PAYOR NAME — wraps and stays within the receipt ===== */
 .or-field.or-payor {
     top: var(--payor-top);
     left: var(--payor-left);
+    width: 3.60in;
+    max-width: 3.60in;
+    white-space: normal;
+    word-wrap: break-word;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    overflow: hidden;
+    line-height: 1.05;
+    font-size: 8pt;
 }
 
+/* ===== O.P. No. ===== */
 .or-field.or-op-no {
     top: var(--op-no-top);
     left: var(--op-no-left);
+    white-space: nowrap;
 }
 
-/* Nature of Collection Column */
+/* ===== NATURE OF COLLECTION — wraps, stays clear of Account Code ===== */
 .or-field.or-nature {
-    left: 0.45in; /* Aligned to the left edge of the box */
-    width: 1.95in;
+    left: 0.45in;
+    width: 1.60in;
+    max-width: 1.60in;
     white-space: normal;
     word-wrap: break-word;
+    word-break: break-word;
+    overflow-wrap: break-word;
     overflow: hidden;
-    font-size: 6pt;
+    font-size: 5.5pt;
     line-height: 1.0;
+	font-weight: bold; 
 }
 
-/* Account Code Column */
+/* ===== ACCOUNT CODE ===== */
 .or-field.or-acct-code {
-    left: 2.15in; /* Centered in the Account Code column */
+    left: 2.15in;
     width: 0.75in;
     white-space: normal;
     word-wrap: break-word;
+    word-break: break-word;
+    overflow-wrap: break-word;
     overflow: hidden;
     font-size: 7pt;
     line-height: 1.0;
 }
 
-/* Amount Column */
+/* ===== AMOUNT (numeric) ===== */
 .or-field.or-amount {
-    left: 2.95in; /* Aligned to the right edge of the amount box */
+    left: 2.95in;
     width: 1.20in;
     text-align: right;
-    white-space: normal;
-    word-wrap: break-word;
+    white-space: nowrap;         /* numbers don't need to wrap */
     overflow: hidden;
     font-size: 8pt;
     line-height: 1.0;
     padding-right: 0.40in;
 }
 
-/* Total Row */
+/* ===== TOTAL ===== */
 .or-field.or-total {
     top: var(--total-top);
-    left: 2.95in; /* Match the amount column left position */
+    left: 2.95in;
     width: 1.20in;
     text-align: right;
+    white-space: nowrap;
     font-weight: 700;
     padding-right: 0.40in;
 }
 
-/* Amount in Words */
+/* ===== AMOUNT IN WORDS — wraps for long amounts ===== */
 .or-field.or-words {
     top: var(--words-top);
     left: var(--words-left);
-    width: 4.00in;
+    width: 2.80in;                 /* ← narrower: forces wrapping */
+    max-width: 2.80in;
+	font-family: "Courier New", "Courier", "Consolas", "Lucida Console", monospace;  /* ← keeps old look */
     white-space: normal;
     word-wrap: break-word;
+    word-break: break-word;        /* ← breaks unbroken strings too */
+    overflow-wrap: break-word;
     overflow: hidden;
     font-size: 8pt;
-    line-height: 1.0;
+    line-height: 1.05;
     text-transform: uppercase;
+	font-weight: bold; 
 }
-
-    /* ===== ALIGNMENT GUIDE (for testing only) ===== */
     .or-page .or-alignment-guide {
         display: none;
         position: absolute;
@@ -977,8 +994,8 @@
                     <input type="text" id="summary_opNo" placeholder="e.g. 0214708" required>
                 </div>
                 <div class="field-group">
-                    <label><i class="fas fa-receipt"></i> O.R. No. (Serial)</label>
-                    <input type="text" id="summary_orNo" placeholder="e.g. 0017561">
+                    <label><i class="fas fa-receipt"></i> O.R. No. (Serial) <span class="required">*</span></label>
+                    <input type="text" id="summary_orNo" placeholder="e.g. 0017561" required>
                 </div>
             </div>
 
@@ -1278,7 +1295,7 @@
             <div class="summary-print-actions">
                 <button type="button" class="btn-print-cancel" id="summaryPrintCancelBtn">Cancel</button>
                 <button type="button" class="btn-print-go" id="summaryPrintGoBtn">
-                    <i class="fas fa-print"></i> Print All Selected Weeks
+                    <i class="fas fa-print"></i> Print All Selected Weekss
                 </button>
             </div>
         </div>
@@ -1292,7 +1309,7 @@
 // ============================================
 // ⚠️ WEB APP URL
 // ============================================
-const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxjK3fqXjKpb7M98CQoGKs-kTssQ1MZ7_OjvJo3gnanRjSm7kHjZTHTd30oW-QVjSws/exec';
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzix3TOer0NOBJk8sQIrLLhfIvTaivm_IiBx86uRWwQeHIPzqUE_eMLFbuEDB-oWKE/exec';
 const GOOGLE_SHEET_URL = 'https://docs.google.com/spreadsheets/d/1CzOpsrOlC1eO97WQsLMSaUIxIK8qtVs7G2aKM6kizuM/edit';
 
 // ============================================
@@ -1704,8 +1721,8 @@ document.getElementById('summaryForm').addEventListener('submit', async (e) => {
     const orNo = document.getElementById('summary_orNo').value.trim();
     const remarks = document.getElementById('summary_remarks').value.trim() || 'N/A';
 
-    if (!date || !name || !opNo) {
-        showToast('❌ Validation', 'Please fill in Date, Name, and O.P. No.', 'error');
+    if (!date || !name || !opNo || !orNo) {
+        showToast('❌ Validation', 'Please fill in Date, Name, O.R. No., and O.P. No.', 'error');
         return;
     }
 
@@ -1763,6 +1780,7 @@ function resetForm(type) {
 // ============================================
 let allOrRecordsCache = [];
 let filteredOrRecordsCache = [];
+let allNamesCache = [];  // NAME sheet cache: { date (MM/DD/YYYY), name, orNo }
 
 async function populateLoadRecordDropdown() {
     const sel = document.getElementById('loadRecordSelect');
@@ -1770,9 +1788,16 @@ async function populateLoadRecordDropdown() {
     sel.innerHTML = '<option value="">Loading records...</option>';
 
     try {
-        const url = WEB_APP_URL + '?action=records&type=OR&listAll=1';
-        const res = await fetch(url, { method: 'GET' });
-        const json = await res.json();
+        // Fetch BOTH records and NAME sheet log in parallel
+        const [recordsRes, namesRes] = await Promise.all([
+            fetch(WEB_APP_URL + '?action=records&type=OR&listAll=1', { method: 'GET' }),
+            fetch(WEB_APP_URL + '?action=getNames', { method: 'GET' })
+        ]);
+
+        const json = await recordsRes.json();
+        let namesJson = { result: 'success', names: [] };
+        try { namesJson = await namesRes.json(); } catch (e) { /* ignore */ }
+
         if (json.result !== 'success' || !Array.isArray(json.records)) {
             sel.innerHTML = '<option value="">— No records available —</option>';
             return;
@@ -1780,6 +1805,7 @@ async function populateLoadRecordDropdown() {
 
         allOrRecordsCache = json.records;
         filteredOrRecordsCache = json.records.slice();
+        allNamesCache = (namesJson && Array.isArray(namesJson.names)) ? namesJson.names : [];
 
         // Populate date filter dropdowns
         populateDateFilterDropdowns(json.records);
@@ -1789,6 +1815,47 @@ async function populateLoadRecordDropdown() {
     } catch (e) {
         sel.innerHTML = '<option value="">— Failed to load —</option>';
     }
+}
+
+/**
+ * Look up a payor name from the NAME cache.
+ * @param {string} sheetName  e.g. "January 2026"
+ * @param {string} day        e.g. "05"
+ * @param {string} orNo       e.g. "0017561"
+ * @returns {string}  matched payor name, or '' if not found
+ */
+function lookupNameFromCache(sheetName, day, orNo) {
+    if (!allNamesCache || allNamesCache.length === 0) return '';
+    if (!orNo) return '';
+
+    // Parse "January 2026" → MM/YYYY
+    const parts = String(sheetName || '').split(' ');
+    if (parts.length < 2) return '';
+    const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    const mIdx = months.indexOf(parts[0]);
+    const year = parseInt(parts[1], 10);
+    if (mIdx < 0 || isNaN(year)) return '';
+
+    const mm = String(mIdx + 1).padStart(2, '0');
+    const dd = String(day || '').padStart(2, '0');
+    const targetDate = `${mm}/${dd}/${year}`;
+
+    // First pass: exact date + orNo match
+    let hit = allNamesCache.find(n =>
+        String(n.orNo || '').trim() === String(orNo).trim() &&
+        String(n.date || '').trim() === targetDate
+    );
+    if (hit) return hit.name || '';
+
+    // Fallback: match by orNo only (returns latest)
+    hit = null;
+    for (let i = allNamesCache.length - 1; i >= 0; i--) {
+        if (String(allNamesCache[i].orNo || '').trim() === String(orNo).trim()) {
+            hit = allNamesCache[i];
+            break;
+        }
+    }
+    return hit ? (hit.name || '') : '';
 }
 
 function populateDateFilterDropdowns(records) {
@@ -1832,7 +1899,11 @@ function renderRecordDropdown(records) {
         if (seen.has(key)) return;
         seen.add(key);
 
-        const label = `${r.orNo} · ${r.sheetName} · ${r.date} · ${r.opNo}`;
+        // Try to display payor name too (if we can find it)
+        const payor = lookupNameFromCache(r.sheetName, r.date, r.orNo);
+        const payorPart = payor ? ` · ${payor}` : '';
+        const label = `${r.orNo} · ${r.sheetName} · Day ${r.date} · O.P. ${r.opNo}${payorPart}`;
+
         const opt = document.createElement('option');
         opt.value = idx;
         opt.textContent = label;
@@ -1893,6 +1964,7 @@ document.getElementById('loadRecordBtn').addEventListener('click', () => {
         return;
     }
 
+    // Find ALL entries that share the same group key (date + orNo + opNo + sheet)
     const group = allOrRecordsCache.filter(x =>
         x.orNo === r.orNo &&
         x.sheetName === r.sheetName &&
@@ -1900,6 +1972,7 @@ document.getElementById('loadRecordBtn').addEventListener('click', () => {
         x.opNo === r.opNo
     );
 
+    // Parse sheet name → month/year
     const parts = (r.sheetName || '').split(' ');
     const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
     const mIdx = months.indexOf(parts[0]);
@@ -1909,11 +1982,16 @@ document.getElementById('loadRecordBtn').addEventListener('click', () => {
         ? `${y}-${String(mIdx + 1).padStart(2, '0')}-${String(r.date).padStart(2, '0')}`
         : new Date().toISOString().split('T')[0];
 
+    // ✅ Fill in the header fields
     document.getElementById('or_date').value = dateStr;
     document.getElementById('or_orNo').value = r.orNo || '';
     document.getElementById('or_opNo').value = r.opNo || '';
-    document.getElementById('or_name').value = r.orNo || '';
 
+    // ✅ Load the payor name from the NAME sheet (not from column B anymore)
+    const payorName = lookupNameFromCache(r.sheetName, r.date, r.orNo);
+    document.getElementById('or_name').value = payorName || '';
+
+    // ✅ Fill in all entry rows
     const container = document.getElementById('orEntries');
     container.innerHTML = '';
     entryCounters.or = 0;
@@ -1953,8 +2031,9 @@ document.getElementById('loadRecordBtn').addEventListener('click', () => {
         }
     });
 
-    setStatus('✅ Record loaded into OR form', 'success');
-    showToast('✅ Loaded', 'Record successfully loaded.', 'success');
+    const nameStatus = payorName ? `Payor: ${payorName}` : 'Payor name not found in NAME log';
+    setStatus(`✅ Record loaded (${group.length} entr${group.length === 1 ? 'y' : 'ies'}) · ${nameStatus}`, 'success');
+    showToast('✅ Loaded', `${group.length} entr${group.length === 1 ? 'y' : 'ies'} loaded. ${payorName ? 'Payor: ' + payorName : ''}`, 'success');
 });
 
 // ============================================
@@ -2139,7 +2218,7 @@ function renderTable(records) {
     }
 
     if (!records || records.length === 0) {
-        modalBodyContent.innerHTML = `<table><thead><tr><th>#</th><th>Month</th><th class="${dayClass}" onclick="toggleDaySort()">Day ${dayIcon}</th><th>Name (O.R. No.)</th><th>O.P. No.</th><th>Nature of Collection</th><th>Accounts</th><th>Total</th><th>Actions</th></tr></thead><tbody><tr class="no-records"><td colspan="9">📭 No records found.</td></tr></tbody></table>`;
+        modalBodyContent.innerHTML = `<table><thead><tr><th>#</th><th>Month</th><th class="${dayClass}" onclick="toggleDaySort()">Day ${dayIcon}</th><th>O.R. No.</th><th>O.P. No.</th><th>Nature of Collection</th><th>Accounts</th><th>Total</th><th>Actions</th></tr></thead><tbody><tr class="no-records"><td colspan="9">📭 No records found.</td></tr></tbody></table>`;
         return;
     }
 
@@ -2147,7 +2226,7 @@ function renderTable(records) {
         <th>#</th>
         <th>Month</th>
         <th class="${dayClass}" onclick="toggleDaySort()" title="Click to sort by Day">Day ${dayIcon}</th>
-        <th>Name (O.R. No.)</th>
+        <th>O.R. No.</th>
         <th>O.P. No.</th>
         <th>Nature of Collection</th>
         <th>Accounts</th>
@@ -2187,7 +2266,7 @@ function renderTable(records) {
                 <td>${rowNum}</td>
                 <td><span class="month-badge">${escapeHtml(monthLabel)}</span></td>
                 <td>${escapeHtml(r.date || '-')}</td>
-                <td>${escapeHtml((r.orNo || '-').toString().substring(0, 28))}</td>
+                <td>${escapeHtml(r.orNo || '-')}</td>
                 <td>${escapeHtml(r.opNo || '-')}</td>
                 <td style="max-width:220px;">${escapeHtml(r.natureOfCollection || '—')}</td>
                 <td><span class="accounts-badge">${escapeHtml(acctDisplay)}</span></td>
@@ -2238,7 +2317,7 @@ window.saveEdit = async function(rowNumber) {
     const totalVal = parseFloat(row.querySelector('input[data-field="total"]').value);
 
     if (!dateVal || !orNoVal || !opNoVal || isNaN(totalVal)) {
-        showToast('❌ Validation', 'Please fill Day, Name, O.P. No., and Total.', 'error');
+        showToast('❌ Validation', 'Please fill Day, O.R. No., O.P. No., and Total.', 'error');
         return;
     }
 
@@ -2292,10 +2371,13 @@ window.openDetails = function(encodedRecord) {
             ? r.amountInWords
             : amountToWords(total);
 
+        // Try to fetch the payor name from the NAME log
+        const payorName = lookupNameFromCache(r.sheetName, r.date, r.orNo);
+
         const hero = `
             <div class="details-hero">
                 <div class="dh-label">Payor / Client</div>
-                <div class="dh-name">${escapeHtml(r.orNo || '—')}</div>
+                <div class="dh-name">${escapeHtml(payorName || r.orNo || '—')}</div>
                 <div class="dh-amount">${formatCurrency(total)} <small>${words}</small></div>
             </div>
         `;
@@ -2309,6 +2391,14 @@ window.openDetails = function(encodedRecord) {
                 <div class="detail-item">
                     <div class="detail-label"><i class="fas fa-hashtag"></i> O.P. No.</div>
                     <div class="detail-value">${escapeHtml(r.opNo || '—')}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label"><i class="fas fa-receipt"></i> O.R. No.</div>
+                    <div class="detail-value">${escapeHtml(r.orNo || '—')}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label"><i class="fas fa-user"></i> Payor Name</div>
+                    <div class="detail-value">${escapeHtml(payorName || '—')}</div>
                 </div>
                 <div class="detail-item full">
                     <div class="detail-label"><i class="fas fa-tags"></i> Nature of Collection</div>
@@ -2442,7 +2532,6 @@ function buildAndShowORPrintWithTemplate(date, orNo, opNo, name, entries) {
         }
     }
 
-    // Determine whether to show the red guide
     const showGuide = (typeof window !== 'undefined' && window.SHOW_OR_GUIDE === true);
     const guideClass = showGuide ? 'show-guide' : '';
 
@@ -2458,18 +2547,19 @@ function buildAndShowORPrintWithTemplate(date, orNo, opNo, name, entries) {
         </div>
     `;
 
-    // Path to OR template background
     const base = (typeof window !== 'undefined' && window.location)
         ? window.location.href.split('?')[0].replace(/[^\/]*$/, '')
         : '';
     const orTemplateUrl = base + 'OR_Template.png';
 
+    // ✅ The .or-no div is included for reference but hidden via CSS (display: none)
+    //    so the O.R. No. does NOT appear on the printed receipt.
     const html = `
         <div class="or-page ${guideClass}">
             <img class="or-template-bg" src="${orTemplateUrl}" alt="" onerror="this.style.display='none'">
             ${guideHtml}
             <div class="or-field or-date">${escapeHtml(dateLong)}</div>
-            <div class="or-field or-no">${escapeHtml(orNo)}</div>
+            <div class="or-field or-no" style="display:none !important;">${escapeHtml(orNo)}</div>
             <div class="or-field or-payor">${escapeHtml(name)}</div>
             <div class="or-field or-op-no">${escapeHtml(opNo)}</div>
             ${rowsHtml}
@@ -2616,16 +2706,11 @@ function sumKeys(map, keys) {
     return sum;
 }
 
-/**
- * NEW v8.0: Build Statement of Income from the SOI sheet data
- * returned by the backend's getSOIData action.
- */
 async function buildAndShowPrintFromSOI(month, year) {
     const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
     const monthName = months[month];
     const sheetName = `${monthName} ${year}`;
 
-    // Fetch SOI data from backend
     const url = WEB_APP_URL + '?action=getSOIData&sheetName=' + encodeURIComponent(sheetName);
     const res = await fetch(url, { method: 'GET' });
     const json = await res.json();
@@ -2637,7 +2722,6 @@ async function buildAndShowPrintFromSOI(month, year) {
     const monthMap = json.monthData || {};
     const cumMap = json.cumulativeData || {};
 
-    // Check if there's any data
     const hasMonth = Object.values(monthMap).some(v => v > 0);
     const hasCum = Object.values(cumMap).some(v => v > 0);
     if (!hasMonth && !hasCum) {
@@ -2821,22 +2905,15 @@ summaryPrintModal.addEventListener('click', (e) => { if (e.target === summaryPri
 document.getElementById('summaryPrintMonth').addEventListener('change', updateWeekOptions);
 document.getElementById('summaryPrintYear').addEventListener('change', updateWeekOptions);
 
-// ============================================================
-// ✅ FIX: Race-condition guard for updateWeekOptions
-//    Prevents stale async responses from overwriting
-//    the dropdown when the user changes month/year rapidly.
-// ============================================================
 let weekOptionsRequestId = 0;
 
 function updateWeekOptions() {
-    // Increment request id — any older response will be ignored
     const myRequestId = ++weekOptionsRequestId;
 
     const month = parseInt(document.getElementById('summaryPrintMonth').value, 10);
     const year = parseInt(document.getElementById('summaryPrintYear').value, 10);
     const weekSel = document.getElementById('summaryPrintWeek');
 
-    // Immediately clear the dropdown so stale options never remain
     weekSel.innerHTML = '<option value="">Select a week...</option>';
 
     if (isNaN(month) || isNaN(year)) return;
@@ -2845,17 +2922,10 @@ function updateWeekOptions() {
     const monthName = monthNames[month];
     const sheetName = `${monthName} ${year}`;
 
-    console.log('[WeekOptions] req#' + myRequestId + ' →', sheetName, '| month:', month, '| year:', year);
-
     fetchAllRecordsOnce().then(allRecords => {
-        // ✅ Ignore if a newer request has been issued
-        if (myRequestId !== weekOptionsRequestId) {
-            console.log('[WeekOptions] req#' + myRequestId + ' discarded (stale)');
-            return;
-        }
+        if (myRequestId !== weekOptionsRequestId) return;
 
         const monthRecords = allRecords.filter(r => (r.sheetName || '').trim() === sheetName);
-        console.log('[WeekOptions] req#' + myRequestId + ' records:', monthRecords.length);
 
         const normalRecords = monthRecords.filter(r => {
             const nature = (r.natureOfCollection || '').toUpperCase();
@@ -2868,10 +2938,8 @@ function updateWeekOptions() {
             if (!isNaN(d)) datesWithData.add(d);
         });
 
-        // Always generate the canonical weeks for the selected month
         const weeks = getWeeksOfMonth(year, month);
 
-        // Helper to populate using ORIGINAL indices
         function populate(optionsList, suffix) {
             weekSel.innerHTML = '<option value="">Select a week...</option>';
             optionsList.forEach((w) => {
@@ -2890,13 +2958,15 @@ function updateWeekOptions() {
         }
 
         const validWeeks = weeks.filter(w => {
-            for (let d = 1; d <= 31; d++) {
-                if (!datesWithData.has(d)) continue;
-                const dateObj = new Date(year, month, d, 12, 0, 0);
-                if (dateObj >= w.start && dateObj <= w.end) return true;
-            }
-            return false;
-        });
+    const wkStart = new Date(w.start.getFullYear(), w.start.getMonth(), w.start.getDate(), 0, 0, 0, 0);
+    const wkEnd   = new Date(w.end.getFullYear(),   w.end.getMonth(),   w.end.getDate(),   0, 0, 0, 0);
+    for (let d = 1; d <= 31; d++) {
+        if (!datesWithData.has(d)) continue;
+        const dateObj = new Date(year, month, d, 0, 0, 0, 0);
+        if (dateObj >= wkStart && dateObj <= wkEnd) return true;
+    }
+    return false;
+});
 
         if (validWeeks.length === 0) {
             populate(weeks, '(no data)');
@@ -2906,7 +2976,6 @@ function updateWeekOptions() {
         populate(validWeeks, '');
     }).catch(err => {
         if (myRequestId !== weekOptionsRequestId) return;
-        console.error('[WeekOptions] req#' + myRequestId + ' failed:', err);
         const weeks = getWeeksOfMonth(year, month);
         weekSel.innerHTML = '<option value="">Select a week...</option>';
         weeks.forEach((w, idx) => {
@@ -2918,16 +2987,10 @@ function updateWeekOptions() {
     });
 }
 
-// ============================================================
-// ✅ FIX: Include the FIRST partial week (1st → first Friday)
-//    so data on the 1st–6th is not dropped when the 1st is
-//    not a Monday.
-// ============================================================
 function getWeeksOfMonth(year, month) {
     const weeks = [];
     const lastDay = new Date(year, month + 1, 0, 12, 0, 0);
 
-    // Start at the 1st of the month
     let cursor = new Date(year, month, 1, 12, 0, 0);
 
     while (cursor <= lastDay) {
@@ -2935,12 +2998,10 @@ function getWeeksOfMonth(year, month) {
         let weekEnd = new Date(cursor);
 
         if (weeks.length === 0) {
-            // FIRST WEEK: from the 1st up to the first Friday of the month
             while (weekEnd.getDay() !== 5 && weekEnd < lastDay) {
                 weekEnd.setDate(weekEnd.getDate() + 1);
             }
         } else {
-            // SUBSEQUENT WEEKS: Monday → Friday
             while (weekStart.getDay() !== 1 && weekStart <= lastDay) {
                 weekStart.setDate(weekStart.getDate() + 1);
             }
@@ -2959,7 +3020,6 @@ function getWeeksOfMonth(year, month) {
 
         weeks.push({ start: new Date(weekStart), end: new Date(weekEnd), label });
 
-        // Advance cursor to the day after this week's end, skipping weekend
         cursor = new Date(weekEnd);
         cursor.setDate(cursor.getDate() + 1);
         while (cursor.getDay() === 0 || cursor.getDay() === 6) {
@@ -3228,11 +3288,14 @@ async function buildSummaryPrintLandscape(weeks) {
         });
 
         const weekRecords = normalRecords.filter(r => {
-            const d = parseInt(r.date, 10);
-            if (isNaN(d)) return false;
-            const dateObj = new Date(week.year, week.month, d);
-            return dateObj >= week.start && dateObj <= week.end;
-        });
+    const d = parseInt(r.date, 10);
+    if (isNaN(d)) return false;
+    // ✅ Normalize both sides to midnight so time-of-day never affects the comparison
+    const dateObj = new Date(week.year, week.month, d, 0, 0, 0, 0);
+    const wkStart = new Date(week.start.getFullYear(), week.start.getMonth(), week.start.getDate(), 0, 0, 0, 0);
+    const wkEnd   = new Date(week.end.getFullYear(),   week.end.getMonth(),   week.end.getDate(),   0, 0, 0, 0);
+    return dateObj >= wkStart && dateObj <= wkEnd;
+});
 
         weekRecords.sort((a, b) => {
             const da = parseInt(a.date, 10) || 0;
