@@ -1009,11 +1009,6 @@
                 <div id="summaryEntries"></div>
             </div>
 
-            <div class="field-group full-width" style="margin-top: 1rem;">
-                <label><i class="fas fa-pencil-alt"></i> Remarks</label>
-                <input type="text" id="summary_remarks" placeholder="N/A or additional notes">
-            </div>
-
             <button type="submit" class="btn-submit" id="summary_submitBtn">
                 <i class="fas fa-cloud-upload-alt"></i>
                 <span>Save to Google Sheet (Summary)</span>
@@ -1309,7 +1304,7 @@
 // ============================================
 // ⚠️ WEB APP URL
 // ============================================
-const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzix3TOer0NOBJk8sQIrLLhfIvTaivm_IiBx86uRWwQeHIPzqUE_eMLFbuEDB-oWKE/exec';
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwSAhBNpa8VMW4x0bVkBKjsRZ5G_ozDsx2w3s4QyWIpJFu-ZyeYO_GAOnzQgGBE_Klh/exec';
 const GOOGLE_SHEET_URL = 'https://docs.google.com/spreadsheets/d/1CzOpsrOlC1eO97WQsLMSaUIxIK8qtVs7G2aKM6kizuM/edit';
 
 // ============================================
@@ -1490,6 +1485,7 @@ function numberToWords(num) {
     num = Math.floor(Number(num));
     if (isNaN(num) || num === 0) return 'ZERO';
     if (num < 0) return 'NEGATIVE ' + numberToWords(Math.abs(num));
+    
     let words = '';
     if (Math.floor(num / 1000000) > 0) {
         words += numberToWords(Math.floor(num / 1000000)) + ' MILLION ';
@@ -1503,12 +1499,16 @@ function numberToWords(num) {
         words += ONES[Math.floor(num / 100)] + ' HUNDRED ';
         num %= 100;
     }
+    
+    // ✅ Removed the "AND" insertion logic completely
     if (num > 0) {
-        // ❌ REMOVED: if (words !== '') words += 'AND ';  <-- This was adding the "AND"
-        if (num < 20) words += ONES[num];
-        else {
+        if (num < 20) {
+            words += ONES[num];
+        } else {
             words += TENS[Math.floor(num / 10)];
-            if (num % 10 > 0) words += '-' + ONES[num % 10];
+            if (num % 10 > 0) {
+                words += '-' + ONES[num % 10];
+            }
         }
     }
     return words.trim();
@@ -1518,11 +1518,22 @@ function amountToWords(amount) {
     if (!amount && amount !== 0) return '— auto —';
     const num = parseFloat(amount);
     if (isNaN(num) || num === 0) return '— auto —';
+    
     const whole = Math.floor(num);
     const cents = Math.round((num - whole) * 100);
+    
+    // 1. Convert the whole Peso amount
     let result = numberToWords(whole) + ' PESOS';
-    if (cents > 0) result += ' AND ' + numberToWords(cents) + ' CENTAVOS';
-    result += ' ONLY';
+    
+    // 2. Check if there are centavos
+    if (cents > 0) {
+        // If there are centavos, add them and DO NOT add "ONLY"
+        result += ' AND ' + numberToWords(cents) + ' CENTAVOS';
+    } else {
+        // If there are NO centavos, add "ONLY"
+        result += ' ONLY';
+    }
+    
     return result;
 }
 
