@@ -557,7 +557,7 @@
         --table-row-height: 0.27in;
 
    /* ===== TOTAL ROW ===== */
-        --total-top: 6.15in;
+        --total-top: 5.96in;
 
  /* ===== AMOUNT IN WORDS ===== */
         --words-top: 6.30in;
@@ -813,7 +813,7 @@
     word-break: break-word;
     overflow-wrap: break-word;
     overflow: hidden;
-    font-size: 5.5pt;
+    font-size: 9pt;
     line-height: 1.0;
 	font-weight: bold; 
 }
@@ -1504,7 +1504,7 @@ function numberToWords(num) {
         num %= 100;
     }
     if (num > 0) {
-        if (words !== '') words += 'AND ';
+        // ❌ REMOVED: if (words !== '') words += 'AND ';  <-- This was adding the "AND"
         if (num < 20) words += ONES[num];
         else {
             words += TENS[Math.floor(num / 10)];
