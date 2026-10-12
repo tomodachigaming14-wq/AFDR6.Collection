@@ -1503,7 +1503,6 @@ function numberToWords(num) {
         num %= 100;
     }
     
-    // ✅ Removed the "AND" insertion logic completely
     if (num > 0) {
         if (num < 20) {
             words += ONES[num];
@@ -1525,15 +1524,11 @@ function amountToWords(amount) {
     const whole = Math.floor(num);
     const cents = Math.round((num - whole) * 100);
     
-    // 1. Convert the whole Peso amount
     let result = numberToWords(whole) + ' PESOS';
     
-    // 2. Check if there are centavos
     if (cents > 0) {
-        // If there are centavos, add them and DO NOT add "ONLY"
         result += ' AND ' + numberToWords(cents) + ' CENTAVOS';
     } else {
-        // If there are NO centavos, add "ONLY"
         result += ' ONLY';
     }
     
@@ -1725,15 +1720,16 @@ function collectEntries(containerId, formType, commonFields) {
 }
 
 // ============================================
-// SUBMIT: SUMMARY
+// SUBMIT: SUMMARY — FIXED: proper JSON payload
 // ============================================
 document.getElementById('summaryForm').addEventListener('submit', async (e) => {
     e.preventDefault();
+
     const date = document.getElementById('summary_date').value;
     const name = document.getElementById('summary_name').value.trim();
     const opNo = document.getElementById('summary_opNo').value.trim();
     const orNo = document.getElementById('summary_orNo').value.trim();
-    const remarks = document.getElementById('summary_remarks').value.trim() || 'N/A';
+    const remarks = document.getElementById('summary_remarks')?.value.trim() || 'N/A';
 
     if (!date || !name || !opNo || !orNo) {
         showToast('❌ Validation', 'Please fill in Date, Name, O.R. No., and O.P. No.', 'error');
@@ -1751,17 +1747,28 @@ document.getElementById('summaryForm').addEventListener('submit', async (e) => {
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner"></span> Saving...';
 
+    // ✅ FIX: Send proper JSON payload with action
+    const payload = {
+        action: 'saveSummary',
+        entries: entries
+    };
+
+    console.log('📤 Sending payload:', JSON.stringify(payload, null, 2));
+
     try {
-        await fetch(WEB_APP_URL, {
+        const response = await fetch(WEB_APP_URL, {
             method: 'POST',
             mode: 'no-cors',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ entries })
+            body: JSON.stringify(payload)
         });
-        showToast('✅ Success', `${entries.length} entries saved!`, 'success');
+
+        // With no-cors, response is opaque — we can't read status, so we assume success.
+        showToast('✅ Success', `${entries.length} entr${entries.length === 1 ? 'y' : 'ies'} saved!`, 'success');
         setStatus(`✅ Saved ${entries.length} entries to Google Sheet`, 'success');
         resetForm('SUMMARY');
     } catch (err) {
+        console.error('❌ Save error:', err);
         showToast('❌ Error', 'Failed: ' + err.message, 'error');
     } finally {
         btn.disabled = false;
@@ -1794,7 +1801,7 @@ function resetForm(type) {
 // ============================================
 let allOrRecordsCache = [];
 let filteredOrRecordsCache = [];
-let allNamesCache = [];  // NAME sheet cache: { date (MM/DD/YYYY), name, orNo }
+let allNamesCache = [];
 
 async function populateLoadRecordDropdown() {
     const sel = document.getElementById('loadRecordSelect');
@@ -1802,7 +1809,6 @@ async function populateLoadRecordDropdown() {
     sel.innerHTML = '<option value="">Loading records...</option>';
 
     try {
-        // Fetch BOTH records and NAME sheet log in parallel
         const [recordsRes, namesRes] = await Promise.all([
             fetch(WEB_APP_URL + '?action=records&type=OR&listAll=1', { method: 'GET' }),
             fetch(WEB_APP_URL + '?action=getNames', { method: 'GET' })
@@ -1821,28 +1827,17 @@ async function populateLoadRecordDropdown() {
         filteredOrRecordsCache = json.records.slice();
         allNamesCache = (namesJson && Array.isArray(namesJson.names)) ? namesJson.names : [];
 
-        // Populate date filter dropdowns
         populateDateFilterDropdowns(json.records);
-
-        // Populate main dropdown (all records initially)
         renderRecordDropdown(json.records);
     } catch (e) {
         sel.innerHTML = '<option value="">— Failed to load —</option>';
     }
 }
 
-/**
- * Look up a payor name from the NAME cache.
- * @param {string} sheetName  e.g. "January 2026"
- * @param {string} day        e.g. "05"
- * @param {string} orNo       e.g. "0017561"
- * @returns {string}  matched payor name, or '' if not found
- */
 function lookupNameFromCache(sheetName, day, orNo) {
     if (!allNamesCache || allNamesCache.length === 0) return '';
     if (!orNo) return '';
 
-    // Parse "January 2026" → MM/YYYY
     const parts = String(sheetName || '').split(' ');
     if (parts.length < 2) return '';
     const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -1854,14 +1849,12 @@ function lookupNameFromCache(sheetName, day, orNo) {
     const dd = String(day || '').padStart(2, '0');
     const targetDate = `${mm}/${dd}/${year}`;
 
-    // First pass: exact date + orNo match
     let hit = allNamesCache.find(n =>
         String(n.orNo || '').trim() === String(orNo).trim() &&
         String(n.date || '').trim() === targetDate
     );
     if (hit) return hit.name || '';
 
-    // Fallback: match by orNo only (returns latest)
     hit = null;
     for (let i = allNamesCache.length - 1; i >= 0; i--) {
         if (String(allNamesCache[i].orNo || '').trim() === String(orNo).trim()) {
@@ -1873,7 +1866,6 @@ function lookupNameFromCache(sheetName, day, orNo) {
 }
 
 function populateDateFilterDropdowns(records) {
-    // Day
     const daySel = document.getElementById('filterDay');
     daySel.innerHTML = '<option value="">Day</option>';
     const days = new Set();
@@ -1887,7 +1879,6 @@ function populateDateFilterDropdowns(records) {
         daySel.appendChild(o);
     });
 
-    // Year
     const yearSel = document.getElementById('filterYearOr');
     yearSel.innerHTML = '<option value="">Year</option>';
     const years = new Set();
@@ -1913,7 +1904,6 @@ function renderRecordDropdown(records) {
         if (seen.has(key)) return;
         seen.add(key);
 
-        // Try to display payor name too (if we can find it)
         const payor = lookupNameFromCache(r.sheetName, r.date, r.orNo);
         const payorPart = payor ? ` · ${payor}` : '';
         const label = `${r.orNo} · ${r.sheetName} · Day ${r.date} · O.P. ${r.opNo}${payorPart}`;
@@ -1950,7 +1940,6 @@ function applyDateFilterToRecordDropdown() {
     renderRecordDropdown(filteredOrRecordsCache);
 }
 
-// Attach filter listeners
 document.getElementById('filterDay').addEventListener('change', applyDateFilterToRecordDropdown);
 document.getElementById('filterMonthOr').addEventListener('change', applyDateFilterToRecordDropdown);
 document.getElementById('filterYearOr').addEventListener('change', applyDateFilterToRecordDropdown);
@@ -1978,7 +1967,6 @@ document.getElementById('loadRecordBtn').addEventListener('click', () => {
         return;
     }
 
-    // Find ALL entries that share the same group key (date + orNo + opNo + sheet)
     const group = allOrRecordsCache.filter(x =>
         x.orNo === r.orNo &&
         x.sheetName === r.sheetName &&
@@ -1986,7 +1974,6 @@ document.getElementById('loadRecordBtn').addEventListener('click', () => {
         x.opNo === r.opNo
     );
 
-    // Parse sheet name → month/year
     const parts = (r.sheetName || '').split(' ');
     const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
     const mIdx = months.indexOf(parts[0]);
@@ -1996,16 +1983,13 @@ document.getElementById('loadRecordBtn').addEventListener('click', () => {
         ? `${y}-${String(mIdx + 1).padStart(2, '0')}-${String(r.date).padStart(2, '0')}`
         : new Date().toISOString().split('T')[0];
 
-    // ✅ Fill in the header fields
     document.getElementById('or_date').value = dateStr;
     document.getElementById('or_orNo').value = r.orNo || '';
     document.getElementById('or_opNo').value = r.opNo || '';
 
-    // ✅ Load the payor name from the NAME sheet (not from column B anymore)
     const payorName = lookupNameFromCache(r.sheetName, r.date, r.orNo);
     document.getElementById('or_name').value = payorName || '';
 
-    // ✅ Fill in all entry rows
     const container = document.getElementById('orEntries');
     container.innerHTML = '';
     entryCounters.or = 0;
@@ -2127,9 +2111,6 @@ function escapeHtml(s) {
         .replace(/'/g, '&#39;');
 }
 
-// ============================================
-// FILTERS
-// ============================================
 function applyFilters() {
     const searchTerm = (document.getElementById('searchInput').value || '').trim().toLowerCase();
     const monthFilter = document.getElementById('filterMonth').value;
@@ -2215,9 +2196,6 @@ function populateYearFilter() {
     if (currentVal && [...years].includes(currentVal)) sel.value = currentVal;
 }
 
-// ============================================
-// TABLE RENDER
-// ============================================
 function renderTable(records) {
     let dayIcon, dayClass;
     if (daySortDir === 'asc') {
@@ -2365,9 +2343,6 @@ window.saveEdit = async function(rowNumber) {
     }
 };
 
-// ============================================
-// VIEW DETAILS
-// ============================================
 const detailsModal = document.getElementById('detailsModal');
 const detailsModalBody = document.getElementById('detailsModalBody');
 
@@ -2385,7 +2360,6 @@ window.openDetails = function(encodedRecord) {
             ? r.amountInWords
             : amountToWords(total);
 
-        // Try to fetch the payor name from the NAME log
         const payorName = lookupNameFromCache(r.sheetName, r.date, r.orNo);
 
         const hero = `
@@ -2472,9 +2446,6 @@ window.deleteRecord = async function(rowNumber, sheetName) {
     }
 };
 
-// ============================================
-// PRINT OR TEMPLATE WITH DETAILS (Background Image)
-// ============================================
 document.getElementById('or_printTemplateBtn').addEventListener('click', () => {
     const date = document.getElementById('or_date').value;
     const orNo = document.getElementById('or_orNo').value.trim();
@@ -2530,7 +2501,6 @@ function buildAndShowORPrintWithTemplate(date, orNo, opNo, name, entries) {
     const words = amountToWords(total) === '— auto —' ? '' : amountToWords(total);
     const dateLong = formatDateLong(date);
 
-    // Build 8 data rows (filled + blank)
     let rowsHtml = '';
     const MAX_ROWS = 8;
     for (let i = 0; i < MAX_ROWS; i++) {
@@ -2566,8 +2536,6 @@ function buildAndShowORPrintWithTemplate(date, orNo, opNo, name, entries) {
         : '';
     const orTemplateUrl = base + 'OR_Template.png';
 
-    // ✅ The .or-no div is included for reference but hidden via CSS (display: none)
-    //    so the O.R. No. does NOT appear on the printed receipt.
     const html = `
         <div class="or-page ${guideClass}">
             <img class="or-template-bg" src="${orTemplateUrl}" alt="" onerror="this.style.display='none'">
@@ -2586,9 +2554,6 @@ function buildAndShowORPrintWithTemplate(date, orNo, opNo, name, entries) {
     setTimeout(() => { window.print(); }, 400);
 }
 
-// ============================================
-// PRINT MODAL + STATEMENT OF INCOME (UPDATED v8.0)
-// ============================================
 const printModal = document.getElementById('printModal');
 
 function openPrintModal() {
@@ -2879,9 +2844,6 @@ async function fetchAllRecordsOnce() {
     }
 }
 
-// ============================================
-// PRINT SUMMARY OF COLLECTION (MULTI-PAGE LANDSCAPE)
-// ============================================
 const summaryPrintModal = document.getElementById('summaryPrintModal');
 
 function openSummaryPrintModal() {
@@ -3304,7 +3266,6 @@ async function buildSummaryPrintLandscape(weeks) {
         const weekRecords = normalRecords.filter(r => {
     const d = parseInt(r.date, 10);
     if (isNaN(d)) return false;
-    // ✅ Normalize both sides to midnight so time-of-day never affects the comparison
     const dateObj = new Date(week.year, week.month, d, 0, 0, 0, 0);
     const wkStart = new Date(week.start.getFullYear(), week.start.getMonth(), week.start.getDate(), 0, 0, 0, 0);
     const wkEnd   = new Date(week.end.getFullYear(),   week.end.getMonth(),   week.end.getDate(),   0, 0, 0, 0);
@@ -3496,18 +3457,12 @@ async function buildSummaryPrintLandscape(weeks) {
     setTimeout(() => { window.print(); }, 300);
 }
 
-// ============================================
-// BUTTON EVENTS
-// ============================================
 document.getElementById('viewAllBtn').addEventListener('click', openRecordsModal);
 document.getElementById('sheetBtn').addEventListener('click', () => {
     window.open(GOOGLE_SHEET_URL, '_blank');
     showToast('📊 Info', 'Opening Google Sheet...', 'info');
 });
 
-// ============================================
-// INIT
-// ============================================
 document.addEventListener('DOMContentLoaded', function() {
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('summary_date').value = today;
