@@ -1307,7 +1307,7 @@
 // ============================================
 // ⚠️ WEB APP URL
 // ============================================
-const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwSAhBNpa8VMW4x0bVkBKjsRZ5G_ozDsx2w3s4QyWIpJFu-ZyeYO_GAOnzQgGBE_Klh/exec';
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxfvepHRbZo0Ma7M7GrBEkI52lq99LQhpObAACIg6lEOiT1e9BQT4w6P6b30_HvluDK/exec';
 const GOOGLE_SHEET_URL = 'https://docs.google.com/spreadsheets/d/1CzOpsrOlC1eO97WQsLMSaUIxIK8qtVs7G2aKM6kizuM/edit';
 
 // ============================================
@@ -1747,29 +1747,41 @@ document.getElementById('summaryForm').addEventListener('submit', async (e) => {
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner"></span> Saving...';
 
-    // ✅ FIX: Send proper JSON payload with action
     const payload = {
         action: 'saveSummary',
         entries: entries
     };
 
-    console.log('📤 Sending payload:', JSON.stringify(payload, null, 2));
-
     try {
+        // ✅ FIX: text/plain avoids CORS preflight; we CAN read the response.
         const response = await fetch(WEB_APP_URL, {
             method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
             body: JSON.stringify(payload)
         });
 
-        // With no-cors, response is opaque — we can't read status, so we assume success.
-        showToast('✅ Success', `${entries.length} entr${entries.length === 1 ? 'y' : 'ies'} saved!`, 'success');
-        setStatus(`✅ Saved ${entries.length} entries to Google Sheet`, 'success');
-        resetForm('SUMMARY');
+        const text = await response.text();
+        let json;
+        try { json = JSON.parse(text); }
+        catch (parseErr) {
+            console.error('Non-JSON response:', text);
+            throw new Error('Server returned non-JSON: ' + text.slice(0, 200));
+        }
+
+        if (json.result === 'success') {
+            showToast('✅ Success',
+                `${json.saved || entries.length} entr${(json.saved || entries.length) === 1 ? 'y' : 'ies'} saved!`,
+                'success');
+            setStatus(`✅ Saved ${json.saved || entries.length} entries to Google Sheet`, 'success');
+            resetForm('SUMMARY');
+        } else {
+            showToast('❌ Server Error', json.message || 'Unknown error', 'error');
+            setStatus('❌ ' + (json.message || 'Save failed'), 'error');
+        }
     } catch (err) {
         console.error('❌ Save error:', err);
         showToast('❌ Error', 'Failed: ' + err.message, 'error');
+        setStatus('❌ ' + err.message, 'error');
     } finally {
         btn.disabled = false;
         btn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> <span>Save to Google Sheet (Summary)</span>';
@@ -2327,13 +2339,14 @@ window.saveEdit = async function(rowNumber) {
         accountsLabel: orig.accountsLabel || ''
     };
 
-    try {
-        await fetch(WEB_APP_URL, {
+        try {
+        const response = await fetch(WEB_APP_URL, {
             method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
             body: JSON.stringify(payload)
         });
+        const json = await response.json();
+        if (json.result !== 'success') throw new Error(json.message || 'Edit failed');
         showToast('✅ Saved', 'Record updated.', 'success');
         editingRowNumber = null;
         editingOriginalRecord = null;
@@ -2429,16 +2442,17 @@ detailsModal.addEventListener('click', (e) => { if (e.target === detailsModal) c
 window.deleteRecord = async function(rowNumber, sheetName) {
     if (!confirm('Delete this record? Cannot be undone.')) return;
     try {
-        await fetch(WEB_APP_URL, {
+        const response = await fetch(WEB_APP_URL, {
             method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
             body: JSON.stringify({
                 action: 'deleteRecord',
                 rowNumber: rowNumber,
                 sheetName: sheetName || null
             })
         });
+        const json = await response.json();
+        if (json.result !== 'success') throw new Error(json.message || 'Delete failed');
         showToast('🗑️ Deleted', 'Record deleted.', 'success');
         setTimeout(loadRecords, 900);
     } catch (e) {
